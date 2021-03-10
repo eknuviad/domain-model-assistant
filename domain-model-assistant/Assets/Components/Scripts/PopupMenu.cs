@@ -29,7 +29,6 @@ public class PopupMenu : MonoBehaviour
     }
 
 
-
     public void Destroy()
     {
         //kind of like a reset instance

@@ -3,70 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CompartmentedRectangle : Node
+public class CompartmentedRectangle : MonoBehaviour, BaseComponent
 {
-   
-    // private GameObject popup_menu;
-    public GameObject popupMenu;
-    public GameObject textbox;
-    public GameObject section;
-    public List<GameObject> sections;
-    
-    void Awake(){
-        
-    }
-    
+    // class attributes
+    static Vector3 savedPosition = Vector3.zero;
+    static GameObject compRect;
+    public string ID{get; set;}
+    float hold_timer = 0;
+    bool hold = false;
+    private GameObject popup_menu;
+    public GameObject popup_menu_prefab;
+    public GameObject textbox_prefab;
+    private GameObject textbox;
+    // public GameObject section;
+    // List<GameObject> sections = new List<GameObject>();
+
     // Start is called before the first frame update
-    void Start(){
-        CreateHeader();
-        CreateSection();
+    void Start()
+    {
+        savedPosition = getPosition();
+        compRect = this.gameObject;
     }
 
     // Update is called once per frame
-    void Update(){
-     
-    }
-
-
-
-// ************ Controller Methods for Compartmented Rectangle ****************//
-
-    public void CreateHeader(){
-        GameObject header = GameObject.Instantiate(textbox, this.transform);
-        //vector position will need to be obtained from transform of gameobject in the 
-        //future
-        header.transform.position = this.transform.position + new Vector3(0,45,0);
-        addHeader(header);
-    }
-    
-    public void CreateSection(){
-        Vector3 oldPosition = this.transform.position;
-        for (int i = 0; i<2; i++){
-            Debug.Log(oldPosition);
-            GameObject sect = GameObject.Instantiate(section, this.transform);
-            sect.transform.position = oldPosition;
-            // at the moment vector positions are hardcoded but will need to be obtained
-            //from the transform of the gameobject
-            oldPosition += new Vector3(0, - 46, 0);
-            Debug.Log(oldPosition);
-            addSection(sect);
+    void Update()
+    {
+        if (this.hold)
+        {
+            OnBeginHold();
         }
     }
 
 
-// ************ UI model Methods for Compartmented Rectangle ****************//
 
-    public bool addSection(GameObject aSection){
-        bool wasSet = false;
-        if(sections.Contains(aSection)){
-            return false;
-        }
-        sections.Add(aSection);
-        aSection.GetComponent<Section>().setCompartmentedRectangle(this.gameObject);
-        Debug.Log("Section added to list of sections for this compartmented rectangles");
-        wasSet = true;
-        return wasSet;
+// ************ Support Methods for Compartmented Rectangle ****************//
+    public void OnBeginHold(){
+        this.hold = true;
+        hold_timer += Time.deltaTime;
     }
 
+    public void OnEndHold(){
+         if(hold_timer > 1f - 5)
+        {
+            SpawnPopupMenu();
+        }
+        hold_timer = 0;
+        this.hold = false;
+    }
+     public void SpawnPopupMenu()
+    {
+        this.popup_menu = GameObject.Instantiate(this.popup_menu_prefab);
+        this.popup_menu.transform.position = savedPosition + new Vector3(100,0,0);
+        this.popup_menu.GetComponent<PopupMenu>().SetCompartmentRectangle(this);
+        Debug.Log("Displaying popup menu");
+    }
+
+    public void addTextbox(){
+        textbox = GameObject.Instantiate(textbox_prefab, compRect.transform);
+        Debug.Log("Add Textbox");
+    }
+
+    public void addSection(){
+        // if(sections.Count() == 2){
+        //   Debug.Log("No more sections can be added");  
+        // }else{
+        //     this.section = GameObject.Instantiate(this.section);
+        //     this.sections.Add(this.section);
+        // }
+    }
+    // public GameObject getSection(int index){
+    //     // return this.sections.ElementAt(index);
+    //     return 0;
+    // }
+
+    public Vector3 getPosition(){
+        return this.transform.position;
+    }
 
 }
