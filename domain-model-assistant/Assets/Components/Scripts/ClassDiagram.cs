@@ -37,7 +37,7 @@ public class ClassDiagram : MonoBehaviour, BaseComponent
     public void OnEndHold()
     {
         // TODO: Should initialize a pop up menu gameobject and destroy on close
-        if(hold_timer > 1f)
+        if(hold_timer > 1f-10)
         {
             SpawnPopupMenu();
         }
