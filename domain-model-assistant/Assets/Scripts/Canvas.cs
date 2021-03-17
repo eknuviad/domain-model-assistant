@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 public class Canvas : MonoBehaviour, IPointerClickHandler
 {
 
+    public GameObject compartmentedRectangle;
+    public List<GameObject> compRectList;
     public float zoomSpeed = 1;
     public CanvasScaler CanvasScaler;
     public float targetOrtho;
@@ -34,6 +36,7 @@ public class Canvas : MonoBehaviour, IPointerClickHandler
         {
             Vector2 tempFingerPos = (Input.mousePosition);
             CreateClassDiagram(tempFingerPos);
+            // CreateCompartmentedRectangle(tempFingerPos);
         }
         Zoom();
     }
@@ -53,6 +56,22 @@ public class Canvas : MonoBehaviour, IPointerClickHandler
         classDiagramList.Add(diagram);
         return diagram;
     }
+
+    // public GameObject CreateCompartmentedRectangle(Vector2 position)
+    // {
+    //     GameObject compRect = Instantiate(compartmentedRectangle, this.transform);
+    //     compRect.transform.position = position;
+    //     compRectList.Add(compartmentedRectangle);
+    //     return compRect;
+    // }
+
+    // public GameObject CreateCompartmentedRectangle(Vector2 position, GameObject prefab)
+    // {
+    //      GameObject compRect = Instantiate(prefab, this.transform);
+    //     compRect.transform.position = position;
+    //     compRectList.Add(compartmentedRectangle);
+    //     return compRect;
+    // }
 
     void Zoom()
     {
