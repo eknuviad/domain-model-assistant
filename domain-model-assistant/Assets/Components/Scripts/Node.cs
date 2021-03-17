@@ -1,52 +1,87 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Node: MonoBehaviour, BaseComponent {
-    // private string id;
-    public GameObject canvas;
-    // renamed textbox as header to avoid parent and child
-    // from having the same serializable field
-    public GameObject header;
-    public string ID{
-        get{
-            return ID;
-        }
-        set{
-            ID = value;
-        }
+
+    private String id;
+    private Canvas canvas;
+    private Textbox header;
+    private List<Node> composites;
+    private List<Edge> connections;
+
+    public String getId(){
+        return id;
     }
 
-    public GameObject getCanvas(){
+    public boolean setId(int id){
+        boolean wasSet = false;
+        this.id = id;
+        wasSet = true;
+        return wasSet; 
+
+    }
+
+    public Canvas getCanvas(){
         return canvas;
     }
 
-    public bool setCanvas(GameObject aCanvas){
-        bool wasSet = false;
+    public boolean setCanvas(Canvas aCanvas){
+        boolean wasSet = false;
         if(aCanvas == null){
             return wasSet;
         }
         canvas = aCanvas;
-        Debug.Log("Canvas has been set for Node");
+        canvas.addNode(this);
         wasSet = true;
         return wasSet;
     }
 
-    public GameObject getHeader(){
+    public Textbox getTextbox(){
         return header;
     }
-
-    public bool addHeader(GameObject aheader){
-        bool wasSet = false;
+    public boolean setTextbox(Texbox aheader){
+        boolean wasSet = false;
         if(aheader == null){
             return wasSet;
         }
         header = aheader;
-        Debug.Log("Header textbox has been set for Node");
+        header.addNode(this);
+        wasSet = true;
+        return wasSet;
+    }
+    public Node getNode(int index){
+        Node aNode = composites[index];
+        return aNode;
+    }
+
+    public List<Node> getNodes(){
+        List<Node> aComposites = Collections.unmodifiableList(composites);
+        return aComposites;
+    }
+
+    public boolean addNode(Node aNode){
+        boolean wasSet = false;
+        if(composites.contains(aNode)){
+            return false;
+        }
+        composites.add(aNode);
         wasSet = true;
         return wasSet;
     }
 
-
+    public Edge getEdge(int index){
+        Edge aEdge = connections[index];
+        return aEdge; 
+    }
+    public List<Edge> getEdges(){
+        List<Edge> aEdges = Collections.unmodifiableList(connections);
+        return aEdges;  
+    }
+    public boolean addEdge(Edge aEdge){
+        boolean wasSet = false;
+        if(connections.contains(aEdge)){
+            return wasSet;
+        }
+        connections.add(aEdge);
+        wasSet = true;
+        return wasSet;
+    }
 }

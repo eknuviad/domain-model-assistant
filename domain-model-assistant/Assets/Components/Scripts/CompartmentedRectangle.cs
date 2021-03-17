@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CompartmentedRectangle : MonoBehaviour, BaseComponent
+public class CompartmentedRectangle : Node
 {
     // class attributes
     static Vector3 savedPosition = Vector3.zero;
     static GameObject compRect;
     public string ID{get; set;}
+    // public string modelElementID{get; set;}
+    // public enum  modelElementType{}
+    // add getters and setters for enum
     float hold_timer = 0;
     bool hold = false;
     private GameObject popup_menu;
@@ -60,7 +63,9 @@ public class CompartmentedRectangle : MonoBehaviour, BaseComponent
 
     public void addTextbox(){
         textbox = GameObject.Instantiate(textbox_prefab, compRect.transform);
-        Debug.Log("Add Textbox");
+        // GameObject newField = (GameObject)GameObject.Instantiate(textbox);
+        // newField.transform.SetParent(this.transform);
+        // Debug.Log("Add Textbox");
     }
 
     public void addSection(){
