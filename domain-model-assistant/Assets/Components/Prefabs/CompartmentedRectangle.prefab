@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 4578845948308175789}
   - component: {fileID: 4578845948308175790}
   - component: {fileID: 660314544249708028}
+  - component: {fileID: 3084263690374593090}
   m_Layer: 5
   m_Name: CompartmentedRectangle
   m_TagString: Untagged
@@ -267,3 +268,15 @@ MonoBehaviour:
     type: 3}
   textbox_prefab: {fileID: 762860263867664750, guid: 094bd0ee80dee5e49ac0e92d4d1b1210,
     type: 3}
+--- !u!114 &3084263690374593090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4578845948308175784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcac52e06e651984fb222bbdb4f1fca2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

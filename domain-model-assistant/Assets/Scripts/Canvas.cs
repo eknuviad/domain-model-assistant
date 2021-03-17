@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 public class Canvas : MonoBehaviour, IPointerClickHandler
 {
 
+    public GameObject compartmentedRectangle;
+    public List<GameObject> compRectList;
     public float zoomSpeed = 1;
     public CanvasScaler CanvasScaler;
     public float targetOrtho;
@@ -34,6 +36,7 @@ public class Canvas : MonoBehaviour, IPointerClickHandler
         {
             Vector2 tempFingerPos = (Input.mousePosition);
             CreateClassDiagram(tempFingerPos);
+            // CreateCompartmentedRectangle(tempFingerPos);
         }
         Zoom();
     }
