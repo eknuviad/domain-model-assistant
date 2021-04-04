@@ -19,16 +19,23 @@ public class PopupMenu : MonoBehaviour
         
     }
 
-     public void SetCompartmentRectangle(CompartmentedRectangle compRect)
+
+    public void SetAssociatedObject(ClassDiagram classDiagram)
     {
         this.associatedObject = classDiagram.gameObject;
         this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(classDiagram.AddAttribute);
         this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(classDiagram.AddSubclass);
         this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(classDiagram.Destroy);
 
+     public void SetCompartmentRectangle(CompartmentedRectangle compRect)
+    {
+        this.associatedObject = compRect.gameObject;
+        Debug.Log("here");
+        // this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.addTextbox);
+        // this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.addSection);
     }
 
-
+   
     public void Destroy()
     {
         //kind of like a reset instance

@@ -1,11 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class TextBox : MonoBehaviour{
-    
-    public string text;
+public class TextBox : MonoBehaviour, BaseComponent{
     public string ID{
         get{
             return ID;
@@ -15,16 +12,15 @@ public class TextBox : MonoBehaviour{
         }
     }
 
-    public string getText(){
-        return GetComponent<InputField>().text;
+    // Start is called before the first frame update
+    void Start(){
+        
     }
 
-    public bool setText(string text){
-        bool wasSet = false;
-        GetComponent<InputField>().text = text;
-        Debug.Log("Text has been set");
-        wasSet = true;
-        return wasSet;
+    // Update is called once per frame
+    void Update(){
+        
     }
+
 
 }
