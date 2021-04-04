@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TextBox : MonoBehaviour, BaseComponent{
+public class TextBox : MonoBehaviour{
     public string ID{
         get{
             return ID;
