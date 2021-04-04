@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TextInputWithFieldsComponent : InputTextComponent, BaseComponent
+//Create the InputTextComponent prefab for this to work. I had deleted it.
+// public class TextInputWithFieldsComponent : InputTextComponent, BaseComponent
+public class TextInputWithFieldsComponent : TextBox, BaseComponent
 {
     // Equivalent to 'Attribute'
     static string[] field_types = {"string", "int", "double", "char"};    // TODO: Add types
