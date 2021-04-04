@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,8 +6,10 @@ public class PopupMenu : MonoBehaviour
 {
     // Start is called before the first frame update
     GameObject associatedObject;
+
     void Start()
     {
+        
         this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
     }
 
@@ -16,6 +18,7 @@ public class PopupMenu : MonoBehaviour
     {
         
     }
+
 
     public void SetAssociatedObject(ClassDiagram classDiagram)
     {
@@ -27,14 +30,17 @@ public class PopupMenu : MonoBehaviour
      public void SetCompartmentRectangle(CompartmentedRectangle compRect)
     {
         this.associatedObject = compRect.gameObject;
-        this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.addTextbox);
-        this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.addSection);
+        Debug.Log("here");
+        // this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.addTextbox);
+        // this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.addSection);
     }
 
-    
-
+   
     public void Destroy()
     {
-        Destroy(this.gameObject);
+        //kind of like a reset instance
+        // this.gameObject = GameObject.Instantiate(popupobj);
+        // Destroy(this.gameObject);
+        this.gameObject.SetActive(false);
     }
 }

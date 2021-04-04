@@ -10,12 +10,14 @@ public class ClassDiagram : MonoBehaviour, BaseComponent
     bool hold = false;
     bool selected = false;
     public GameObject popup_menu_prefab;
-    private GameObject popup_menu;
+    public GameObject popup_menu;
+    // public PopupMenu popup_menu;
     // Start is called before the first frame update
     public GameObject inputTextWithFields;
     List<Association> associations = new List<Association>();
     void Start()
     {
+    //   this.popup_menu = GameObject.Instantiate(this.popup_menu);
 
     }
 
@@ -54,9 +56,9 @@ public class ClassDiagram : MonoBehaviour, BaseComponent
     public void AddSubclass()
     {
         // Global manager
-        GameObject child = GameObject.Find("Canvas").GetComponent<Canvas>().CreateClassDiagram(Input.mousePosition);
-        Association association = new Association(this.gameObject, child);
-        this.associations.Add(association);
+        // GameObject child = GameObject.Find("Canvas").GetComponent<Canvas>().CreateClassDiagram(Input.mousePosition);
+        // Association association = new Association(this.gameObject, child);
+        // this.associations.Add(association);
     }
 
     void SpawnPopupMenu()
