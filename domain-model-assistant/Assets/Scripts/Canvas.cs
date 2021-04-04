@@ -16,6 +16,7 @@ public class Canvas : MonoBehaviour{
     private bool dragging = false;
     public GameObject compartmentedRectangle;
     public List<GameObject> compRectList;
+    private ClassDiagramDTO classDTO;
     public string ID{
         get{
             return ID;
@@ -24,6 +25,9 @@ public class Canvas : MonoBehaviour{
             ID = value;
         }
     }
+    void Awake(){
+         LoadData();
+    }
     // Start is called before the first frame update
     GraphicRaycaster raycaster;
     void Start()
@@ -31,7 +35,6 @@ public class Canvas : MonoBehaviour{
         CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
         targetOrtho = CanvasScaler.scaleFactor;
         this.raycaster = GetComponent<GraphicRaycaster>();
-
     }
 
     // Update is called once per frame
@@ -49,6 +52,20 @@ public class Canvas : MonoBehaviour{
 
 
 // ************ Controller Methods for Canvas/Diagram ****************//
+    private void LoadData(){
+        Debug.Log("Loading data ...");
+        string json = "{\"name\": \"My Class\", \"x\": 365.5, \"y\": 80.0}";
+        // obtain class DTO from json string format
+        classDTO = JsonUtility.FromJson<ClassDiagramDTO>(json);
+        // convert float positions to Vector2
+        Vector2 position = new Vector2(classDTO.x, classDTO.y);
+        // create comp rectangle with header and sections
+        GameObject newCompRect = CreateCompartmentedRectangle(position);
+        // set the header value of the created class
+        newCompRect.GetComponent<CompartmentedRectangle>().getHeader().
+                    GetComponent<TextBox>().setText(classDTO.name);
+    }
+
     public GameObject CreateCompartmentedRectangle(Vector2 position)
     {
         GameObject compRect = Instantiate(compartmentedRectangle, this.transform);

@@ -11,15 +11,11 @@ public class CompartmentedRectangle : Node
     public GameObject textbox;
     public GameObject section;
     public List<GameObject> sections;
-    public string ID{
-        get{
-            return ID;
-        }
-        set{
-            ID = value;
-        }
+    
+    void Awake(){
+        
     }
-
+    
     // Start is called before the first frame update
     void Start(){
         CreateHeader();

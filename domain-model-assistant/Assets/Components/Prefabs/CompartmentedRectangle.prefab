@@ -266,7 +266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 0}
-  header: {fileID: 0}
+  header: {fileID: 7945400382653598254, guid: 8d7b1debeaab24b41a5d839bab6b480f, type: 3}
   popupMenu: {fileID: 8564540208968287839, guid: 9913a5b3d214e7642a24bee2f858e6e7,
     type: 3}
   textbox: {fileID: 7945400382653598254, guid: 8d7b1debeaab24b41a5d839bab6b480f, type: 3}
