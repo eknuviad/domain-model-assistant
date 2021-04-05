@@ -8,6 +8,13 @@ The motivation of this project stems from the fact that domain models on their o
 
 Our domain modelling editor would incorporate other ongoing projects that involve a mistake detection system and a feedback system through a chatbot that supplies continuous feedback as the student designs their domain model. This project will potentially have positive impacts for future students and would be widely used by domain modelling beginners.
 
+## Running The Project
+In order to run our project, you will need to follow the steps below
+1. Download Unity
+2. Download Microsoft Visual Studio(or any other type of IDE)
+3. Clone the project onto your Desktop
+4. Open the project via Unity
+5. Click on the play button located on the top menu bar of the Unity window
 ___
 
 ## Team 
