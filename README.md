@@ -10,10 +10,10 @@ Our domain modelling editor would incorporate other ongoing projects that involv
 
 ## Running The Project
 In order to run our project, you will need to follow the steps below
-1. Download Unity
-2. Download Microsoft Visual Studio(or any other type of IDE)
+1. Download Unity 2.9 (https://unity3d.com/get-unity/download)
+2. Download Microsoft Visual Studio(or any other type of IDE, https://visualstudio.microsoft.com/downloads/)
 3. Clone the project onto your Desktop
-4. Open the project via Unity
+4. Open the project via Unity, by choosing domain-model-assistant/domain-model-assistant as your project folder
 5. Click on the play button located on the top menu bar of the Unity window
 ___
 
