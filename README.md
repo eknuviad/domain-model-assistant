@@ -2,7 +2,7 @@
 Capstone Design Project - Team 04
 
 ## Project Description
-Through this project, we hope to build a solid and user-friendly frontend interface for a domain modelling application. This app is important as it will allow students registered in software engineering classes to practice and self learn domain modelling in and outside of class times. This will be an improved cross-platform version of TouchCORE.
+Through this project, we hope to build a solid and user-friendly frontend interface for a domain modelling application, which may potentially have a broad impact on students leaning software engineering, especially domain modeling. This app is important as it will allow students registered in software engineering classes to practice and self-learn domain modelling in and outside of class times. This will be an improved cross-platform version of TouchCORE.
 
 The motivation of this project stems from the fact that domain models on their own are very ambiguous and with the increasing enrollment of software engineering students there is a need for such a domain modelling assistant. Additionally, there are not enough samples of domain models online. Our assistant will be able to determine the correctness of a domain model based on requirements written in plain English. 
 
