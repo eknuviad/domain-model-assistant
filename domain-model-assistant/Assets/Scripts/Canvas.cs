@@ -54,7 +54,7 @@ public class Canvas : MonoBehaviour{
 // ************ Controller Methods for Canvas/Diagram ****************//
     private void LoadData(){
         Debug.Log("Loading data ...");
-        string json = "{\"name\": \"My Class\", \"x\": 365.5, \"y\": 80.0}";
+        string json = "{\"name\": \"MyClass\", \"x\": 365.5, \"y\": 80.0}";
         // obtain class DTO from json string format
         classDTO = JsonUtility.FromJson<ClassDiagramDTO>(json);
         // convert float positions to Vector2
