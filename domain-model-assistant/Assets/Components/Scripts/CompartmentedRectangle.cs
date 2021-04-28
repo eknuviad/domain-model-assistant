@@ -5,21 +5,20 @@ using UnityEngine.EventSystems;
 
 public class CompartmentedRectangle : Node
 {
-   
-    // private GameObject popup_menu;
-    public GameObject popupMenu;
+    
     public GameObject textbox;
     public GameObject section;
     public List<GameObject> sections;
-    public string ID{
-        get{
-            return ID;
-        }
-        set{
-            ID = value;
-        }
-    }
+    
+    // popup menu variables
+    public GameObject popupMenu;
+    float hold_timer = 0;
+    bool hold = false;
 
+    void Awake(){
+        
+    }
+    
     // Start is called before the first frame update
     void Start(){
         CreateHeader();
@@ -28,13 +27,14 @@ public class CompartmentedRectangle : Node
 
     // Update is called once per frame
     void Update(){
-     
+        if (this.hold){
+            OnBeginHold();
+        }
     }
 
 
 
-// ************ Controller Methods for Compartmented Rectangle ****************//
-
+// ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
     public void CreateHeader(){
         GameObject header = GameObject.Instantiate(textbox, this.transform);
         //vector position will need to be obtained from transform of gameobject in the 
@@ -57,9 +57,33 @@ public class CompartmentedRectangle : Node
         }
     }
 
+    public void OnBeginHold(){
+        this.hold = true;
+        hold_timer += Time.deltaTime;
+    }
 
-// ************ UI model Methods for Compartmented Rectangle ****************//
+    public void OnEndHold(){
+        if(hold_timer > 1f - 5){
+            SpawnPopupMenu();
+        }
+        hold_timer = 0;
+        this.hold = false;
+    }
 
+     void SpawnPopupMenu()
+    {
+        this.popupMenu = GameObject.Instantiate(this.popupMenu);
+        this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
+        this.popupMenu.GetComponent<PopupMenu>().setCompartmentedRectangle(this);
+    }
+    public void Destroy() //destroy class diagram when click on delete class
+    {
+        Destroy(this.gameObject);
+    }
+
+// ************ END Controller Methods for Compartmented Rectangle ****************//
+
+// ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
     public bool addSection(GameObject aSection){
         bool wasSet = false;
         if(sections.Contains(aSection)){
@@ -72,5 +96,6 @@ public class CompartmentedRectangle : Node
         return wasSet;
     }
 
+// ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }
