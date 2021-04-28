@@ -75,13 +75,6 @@ public class Diagram : MonoBehaviour{
         return compRect;
     }
 
-    public GameObject DeleteClassDiagram(Vector2 position, GameObject prefab)
-    {
-        GameObject diagram = Instantiate(prefab, this.transform);
-        diagram.transform.position = position;
-        classDiagramList.Add(diagram);
-        return diagram;
-    }
 
     void Zoom()
     {
@@ -131,11 +124,7 @@ public class Diagram : MonoBehaviour{
 
     public List<GameObject> getCompartmentedRectangles(){
             return compRectList;
-        }
-
-
-
-
+    }
 
 
 

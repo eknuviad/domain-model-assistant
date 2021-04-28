@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//Create the InputTextComponent prefab for this to work. I had deleted it.
+//TODO: Create the InputTextComponent prefab for this to work. I had deleted it.
+
 // public class TextInputWithFieldsComponent : InputTextComponent, BaseComponent
-public class TextInputWithFieldsComponent : TextBox, BaseComponent
-{
+public class TextInputWithFieldsComponent : TextBox{
     // Equivalent to 'Attribute'
     static string[] field_types = {"string", "int", "double", "char"};    // TODO: Add types
     public string field_type;
