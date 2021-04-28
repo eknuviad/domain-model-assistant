@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Canvas : MonoBehaviour{
+public class Diagram : MonoBehaviour{
 
     public float zoomSpeed = 1;
     public CanvasScaler CanvasScaler;
@@ -122,7 +122,7 @@ public class Canvas : MonoBehaviour{
             return false;
         }
         compRectList.Add(aNode);
-        aNode.GetComponent<CompartmentedRectangle>().setCanvas(this.gameObject);
+        aNode.GetComponent<CompartmentedRectangle>().setDiagram(this.gameObject);
         Debug.Log("Node added to list of compartmented rectangles");
         wasSet = true;
         return wasSet;

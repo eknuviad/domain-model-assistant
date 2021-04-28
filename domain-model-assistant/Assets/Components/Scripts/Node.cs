@@ -18,11 +18,11 @@ public class Node: MonoBehaviour, BaseComponent {
         }
     }
 
-    public GameObject getCanvas(){
+    public GameObject getDiagram(){
         return canvas;
     }
 
-    public bool setCanvas(GameObject aCanvas){
+    public bool setDiagram(GameObject aCanvas){
         bool wasSet = false;
         if(aCanvas == null){
             return wasSet;
