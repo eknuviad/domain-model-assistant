@@ -70,14 +70,18 @@ public class CompartmentedRectangle : Node
         this.hold = false;
     }
 
-     void SpawnPopupMenu()
-    {
-        this.popupMenu = GameObject.Instantiate(this.popupMenu);
-        this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
-        this.popupMenu.GetComponent<PopupMenu>().setCompartmentedRectangle(this);
+     void SpawnPopupMenu(){
+        if(this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null){
+            this.popupMenu = GameObject.Instantiate(this.popupMenu);
+            this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
+            this.popupMenu.GetComponent<PopupMenu>().setCompartmentedRectangle(this);
+        }else{
+            this.popupMenu.GetComponent<PopupMenu>().Open(); 
+        } 
     }
     public void Destroy() //destroy class diagram when click on delete class
     {
+        this.popupMenu.GetComponent<PopupMenu>().Destroy(); 
         Destroy(this.gameObject);
     }
 

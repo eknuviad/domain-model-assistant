@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Node: MonoBehaviour, BaseComponent {
+public class Node: MonoBehaviour{
     // private string id;
     public GameObject canvas;
     // renamed textbox as header to avoid parent and child
