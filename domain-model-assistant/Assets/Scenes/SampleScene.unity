@@ -676,15 +676,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d35aab61e3473043b516b02c7ba406a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jsonFile: {fileID: 4900000, guid: 512b343a4788b1c4695bbabcefdfc65b, type: 3}
   zoomSpeed: 1
   CanvasScaler: {fileID: 0}
   targetOrtho: 0
   smoothSpeed: 2
   minOrtho: 0
   maxOrtho: 20
+  dragStartPos: {x: 0, y: 0, z: 0}
   compartmentedRectangle: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
     type: 3}
   compRectList: []
+  classDTO:
+    eClass: 
+    _id: 
+    name: 
+    classes: []
+    types: []
+    layout:
+      _id: 
+      containers: []
+  raycaster: {fileID: 0}
 --- !u!114 &1298229000
 MonoBehaviour:
   m_ObjectHideFlags: 0
