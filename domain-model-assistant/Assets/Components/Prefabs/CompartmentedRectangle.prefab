@@ -82,6 +82,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.01886791, g: 0.009166957, b: 0.009166957, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -161,6 +162,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -239,6 +241,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.6226415, g: 0.44730097, b: 0.41998932, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -266,12 +269,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 0}
-  header: {fileID: 0}
-  popupMenu: {fileID: 8564540208968287839, guid: 9913a5b3d214e7642a24bee2f858e6e7,
-    type: 3}
+  header: {fileID: 7945400382653598254, guid: 8d7b1debeaab24b41a5d839bab6b480f, type: 3}
   textbox: {fileID: 7945400382653598254, guid: 8d7b1debeaab24b41a5d839bab6b480f, type: 3}
   section: {fileID: 8699455690723162231, guid: 1396b8a5385e3cd4ca1b245b6b8891d1, type: 3}
   sections: []
+  popupMenu: {fileID: 8564540208968287839, guid: 9913a5b3d214e7642a24bee2f858e6e7,
+    type: 3}
 --- !u!114 &2934163152826966153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,6 +293,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 660314544249708028}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnBeginHold
           m_Mode: 1
           m_Arguments:
@@ -305,6 +309,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 660314544249708028}
+          m_TargetAssemblyTypeName: 
           m_MethodName: OnEndHold
           m_Mode: 1
           m_Arguments:
