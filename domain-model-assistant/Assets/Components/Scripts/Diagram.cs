@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 
 public class Diagram : MonoBehaviour{
 
@@ -69,12 +70,43 @@ public class Diagram : MonoBehaviour{
     
     public GameObject CreateCompartmentedRectangle(Vector2 position)
     {
+        // added this for debugging
+        StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld"));
+
         GameObject compRect = Instantiate(compartmentedRectangle, this.transform);
         compRect.transform.position = position;
         addNode(compRect);
         return compRect;
     }
 
+    /// <summary>
+    /// Example from docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.Get.html
+    /// </summary>
+    IEnumerator GetRequest(string uri)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+        {
+            // Request and wait for the desired page.
+            yield return webRequest.SendWebRequest();
+
+            string[] pages = uri.Split('/');
+            int page = pages.Length - 1;
+
+            switch (webRequest.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                    break;
+            }
+        }
+    }
 
     void Zoom()
     {
