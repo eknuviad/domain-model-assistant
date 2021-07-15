@@ -10,6 +10,7 @@ public class ClassDiagramDTO {
     public Classes[] classes;
     public Types[] types;
     public Layout layout;
+    // TODO add feedback(s) here
 };
 
 
