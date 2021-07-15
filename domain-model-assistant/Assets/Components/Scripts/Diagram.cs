@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -58,13 +59,21 @@ public class Diagram : MonoBehaviour
     // obtain class DTO from json string format
     classDTO = JsonUtility.FromJson<ClassDiagramDTO>(jsonFile.text);
     // convert float positions to Vector2
-    Vector2 position = new Vector2(classDTO.layout.containers[0].value[0].value.x,
-                                   classDTO.layout.containers[0].value[0].value.y);
+    Vector2 position = new Vector2(classDTO.layout.containers[0].values[0].value.x,
+                                   classDTO.layout.containers[0].values[0].value.y);
     // create comp rectangle with header and sections
     GameObject newCompRect = CreateCompartmentedRectangle(position);
     // set the header value of the created class
     newCompRect.GetComponent<CompartmentedRectangle>().getHeader().
                 GetComponent<TextBox>().setText(classDTO.classes[0].name);
+  }
+
+  private void LoadData(string cdmJson)
+  {
+    var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+    classDiagram.layout.containers.Select(container =>
+      new Vector2(container.values[0].value.x, container.values[0].value.y))
+      .Select(CreateCompartmentedRectangle);
   }
 
   public GameObject CreateCompartmentedRectangle(Vector2 position)

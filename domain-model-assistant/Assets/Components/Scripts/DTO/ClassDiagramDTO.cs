@@ -7,48 +7,48 @@ public class ClassDiagramDTO {
     public string eClass;
     public string _id;
     public string name;
-    public Classes[] classes;
-    public Types[] types;
+    public List<Class> classes;
+    public List<CDType> types;
     public Layout layout;
     // TODO add feedback(s) here
 };
 
 
 [System.Serializable]
-public class Classes{
+public class Class {
     public string eClass;
     public string _id;
     public string name;
 };
 
 [System.Serializable]
-public class Types{
+public class CDType {
     public string eClass;
     public string _id;
 };
 
 [System.Serializable]
-public class Layout{
+public class Layout {
     public string _id;
-    public Containers[] containers;
+    public List<Container> containers;
 };
 
 [System.Serializable]
-public class Containers{
+public class Container {
     public string _id;
     public string key;
-    public Value[] value;
+    public List<Value> values;
 };
 
 [System.Serializable]
-public class Value{
+public class Value {
     public string _id;
-    public string x;
-    public Cordinate value;
+    public string key;
+    public Coordinate value;
 };
 
 [System.Serializable]
-public class Cordinate{
+public class Coordinate {
     public string _id;
     public float x;
     public float y;
