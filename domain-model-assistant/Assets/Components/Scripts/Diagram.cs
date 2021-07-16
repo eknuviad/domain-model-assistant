@@ -59,8 +59,8 @@ public class Diagram : MonoBehaviour
     // obtain class DTO from json string format
     classDTO = JsonUtility.FromJson<ClassDiagramDTO>(jsonFile.text);
     // convert float positions to Vector2
-    Vector2 position = new Vector2(classDTO.layout.containers[0].values[0].value.x,
-                                   classDTO.layout.containers[0].values[0].value.y);
+    var value = classDTO.layout.containers[0].values[0].value;
+    Vector2 position = new Vector2(value.x, value.y);
     // create comp rectangle with header and sections
     GameObject newCompRect = CreateCompartmentedRectangle(position);
     // set the header value of the created class
@@ -68,12 +68,23 @@ public class Diagram : MonoBehaviour
                 GetComponent<TextBox>().setText(classDTO.classes[0].name);
   }
 
+  /// <summary>
+  /// Loads and displays the class diagram encoded by the input JSON string.
+  /// </summary>
   private void LoadData(string cdmJson)
   {
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
-    classDiagram.layout.containers.Select(container =>
-      new Vector2(container.values[0].value.x, container.values[0].value.y))
-      .Select(CreateCompartmentedRectangle);
+    var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
+    classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
+    classDiagram.layout.containers[0].values.ForEach(contVal => idsToClassesAndLayouts[contVal._id][1] = contVal);
+
+    foreach (var clsAndContval in idsToClassesAndLayouts.Values)
+    {
+      var cls = (Class)clsAndContval[0];
+      var coord = ((Value)clsAndContval[1]).value;
+      var compRect = CreateCompartmentedRectangle(new Vector2(coord.x, coord.y));
+      compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
+    }
   }
 
   public GameObject CreateCompartmentedRectangle(Vector2 position)
