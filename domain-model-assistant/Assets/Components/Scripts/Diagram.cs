@@ -45,8 +45,83 @@ public class Diagram : MonoBehaviour
   {
     if (InputExtender.MouseExtender.isDoubleClick(0))
     {
-      Vector2 tempFingerPos = (Input.mousePosition);
-      CreateCompartmentedRectangle(tempFingerPos);
+      // Vector2 tempFingerPos = (Input.mousePosition);
+      // CreateCompartmentedRectangle(tempFingerPos);
+
+      LoadJson(@"{
+  ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//ClassDiagram"",
+  ""_id"": ""100"",
+  ""name"": ""1CLASS"",
+  ""classes"": [
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//Class"",
+      ""_id"": ""1"",
+      ""name"": ""X""
+    }
+  ],
+  ""types"": [
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDVoid"",
+      ""_id"": ""2""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDAny"",
+      ""_id"": ""3""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDBoolean"",
+      ""_id"": ""4""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDDouble"",
+      ""_id"": ""5""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDInt"",
+      ""_id"": ""6""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDLong"",
+      ""_id"": ""7""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDString"",
+      ""_id"": ""8""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDByte"",
+      ""_id"": ""9""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDFloat"",
+      ""_id"": ""10""
+    },
+    {
+      ""eClass"": ""http://cs.mcgill.ca/sel/cdm/1.0#//CDChar"",
+      ""_id"": ""11""
+    }
+  ],
+  ""layout"": {
+    ""_id"": ""12"",
+    ""containers"": [
+      {
+        ""_id"": ""13"",
+        ""key"": ""null"",
+        ""values"": [
+          {
+            ""_id"": ""14"",
+            ""key"": ""1"",
+            ""value"": {
+              ""_id"": ""15"",
+              ""x"": 200,
+              ""y"": 100
+            }
+          }
+        ]
+      }
+    ]
+  }
+}");
     }
     Zoom();
   }
@@ -71,12 +146,12 @@ public class Diagram : MonoBehaviour
   /// <summary>
   /// Loads and displays the class diagram encoded by the input JSON string.
   /// </summary>
-  private void LoadData(string cdmJson)
+  private void LoadJson(string cdmJson)
   {
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
-    classDiagram.layout.containers[0].values.ForEach(contVal => idsToClassesAndLayouts[contVal._id][1] = contVal);
+    classDiagram.layout.containers[0].values.ForEach(contVal => idsToClassesAndLayouts[contVal.key][1] = contVal);
 
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
@@ -90,7 +165,7 @@ public class Diagram : MonoBehaviour
   public GameObject CreateCompartmentedRectangle(Vector2 position)
   {
     // added this for debugging
-    StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld"));
+    StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld/alice"));
 
     GameObject compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
