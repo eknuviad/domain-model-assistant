@@ -25,6 +25,10 @@ In the `Directory`s section, add the following entry, changing the path accordin
 
     ```ApacheConf
     <Directory /ABSOLUTE/PATH/TO/UNITY/WEBGL/OUTPUT/>
+
+      # TODO Secure this once no longer using localhost
+      Header set Access-Control-Allow-Origin "*"
+
       Options Indexes FollowSymLinks
       AllowOverride All
       Require all granted
@@ -73,10 +77,11 @@ In the `Directory`s section, add the following entry, changing the path accordin
     ```
 
 1. Modify the `DocumentRoot` in `/etc/apache2/sites-available/000-default.conf` to point to the same
-`/ABSOLUTE/PATH/TO/UNITY/WEBGL/OUTPUT/`. To setup multiple DocumentRoots, see the Apache documentation.
+   `/ABSOLUTE/PATH/TO/UNITY/WEBGL/OUTPUT/` (or a valid parent folder).
+   To setup multiple DocumentRoots, see the Apache documentation.
 1. Run `sudo apachectl start` to start the server.
 1. Navigate to `localhost` using a web browser. You should see something resembling the following image.
 
-![Unity WebGL application](documentation/webgl-in-browser.png)
+   ![Unity WebGL application](webgl-in-browser.png)
 
 1. To stop running the Apache server, run `sudo apachectl stop`.
