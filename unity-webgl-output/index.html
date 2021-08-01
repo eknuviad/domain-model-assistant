@@ -131,8 +131,13 @@
         if (false && event.origin !== "http://example.org:8080") { // TODO Secure later
           return; // Ignore messages from other origins
         }
-        console.log(`Invoking Canvas.LoadJson(${event.data})`);
-        unity.SendMessage("Canvas", "LoadJson", event.data);
+        if (event.data == "ResetDiagram") {
+          console.log("Invoking Canvas.ResetDiagram()");
+          unity.SendMessage("Canvas", "ResetDiagram");
+        } else {
+          console.log(`Invoking Canvas.LoadJson(${event.data})`);
+          unity.SendMessage("Canvas", "LoadJson", event.data);
+        }
       }, false);
     </script>
   </body>

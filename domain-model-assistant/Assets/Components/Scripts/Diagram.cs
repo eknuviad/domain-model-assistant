@@ -19,7 +19,7 @@ public class Diagram : MonoBehaviour
   private Vector3 dragStartPos;
   // private bool dragging = false;
   public GameObject compartmentedRectangle;
-  public List<GameObject> compRectList;
+  public List<GameObject> compartmentedRectangles;
   private ClassDiagramDTO classDTO;
 
   public string ID
@@ -45,7 +45,6 @@ public class Diagram : MonoBehaviour
   {
     if (InputExtender.MouseExtender.isDoubleClick(0))
     {
-      //Vector2 tempFingerPos = (Input.mousePosition);
       CreateCompartmentedRectangle(Input.mousePosition);
     }
     Zoom();
@@ -71,7 +70,7 @@ public class Diagram : MonoBehaviour
   /// <summary>
   /// Loads and displays the class diagram encoded by the input JSON string.
   /// </summary>
-  private void LoadJson(string cdmJson)
+  public void LoadJson(string cdmJson)
   {
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
@@ -85,6 +84,12 @@ public class Diagram : MonoBehaviour
       var compRect = CreateCompartmentedRectangle(new Vector2(layoutElement.x, layoutElement.y));
       compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
     }
+  }
+
+  public void ResetDiagram()
+  {
+    compartmentedRectangles.ForEach(Destroy);
+    compartmentedRectangles.Clear();
   }
 
   public GameObject CreateCompartmentedRectangle(Vector2 position) // should pass in _id
@@ -165,11 +170,11 @@ public class Diagram : MonoBehaviour
   public bool addNode(GameObject aNode)
   {
     bool wasSet = false;
-    if (compRectList.Contains(aNode))
+    if (compartmentedRectangles.Contains(aNode))
     {
       return false;
     }
-    compRectList.Add(aNode);
+    compartmentedRectangles.Add(aNode);
     aNode.GetComponent<CompartmentedRectangle>().setDiagram(this.gameObject);
     Debug.Log("Node added to list of compartmented rectangles");
     wasSet = true;
@@ -178,7 +183,7 @@ public class Diagram : MonoBehaviour
 
   public List<GameObject> getCompartmentedRectangles()
   {
-    return compRectList;
+    return compartmentedRectangles;
   }
 
 }
