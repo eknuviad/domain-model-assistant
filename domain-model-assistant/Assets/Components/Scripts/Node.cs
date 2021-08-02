@@ -3,50 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Node: MonoBehaviour{
+public class Node: MonoBehaviour
+{
     // private string id;
     public GameObject canvas;
+
     // renamed textbox as header to avoid parent and child
     // from having the same serializable field
-    public GameObject header;
-    public string ID{
-        get{
-            return ID;
-        }
-        set{
-            ID = value;
-        }
-    }
+    public GameObject /*TextBox*/ header;
+    
+    public string ID
+    { get; set; }
 
-    public GameObject getDiagram(){
+    public GameObject GetDiagram()
+    {
         return canvas;
     }
 
-    public bool setDiagram(GameObject aCanvas){
-        bool wasSet = false;
-        if(aCanvas == null){
-            return wasSet;
+    public bool SetDiagram(GameObject aCanvas)
+    {
+        if (aCanvas == null)
+        {
+            return false;
         }
         canvas = aCanvas;
         Debug.Log("Canvas has been set for Node");
-        wasSet = true;
-        return wasSet;
+        return true;
     }
 
-    public GameObject getHeader(){
+    public GameObject /*TextBox*/ GetHeader()
+    {
         return header;
     }
 
-    public bool addHeader(GameObject aheader){
-        bool wasSet = false;
-        if(aheader == null){
-            return wasSet;
+    public bool AddHeader(GameObject /*TextBox*/ aheader)
+    {
+        if(aheader == null)
+        {
+            return false;
         }
         header = aheader;
         Debug.Log("Header textbox has been set for Node");
-        wasSet = true;
-        return wasSet;
+        return true;
     }
-
 
 }

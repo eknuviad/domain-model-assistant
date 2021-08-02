@@ -692,7 +692,7 @@ MonoBehaviour:
   maxOrtho: 20
   compartmentedRectangle: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
     type: 3}
-  compRectList: []
+  compartmentedRectangles: []
 --- !u!114 &1298229000
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,36 +4,33 @@ using UnityEngine;
 
 public class Section : MonoBehaviour
 {
+
     public GameObject compRect;
 
     // Start is called before the first frame update
     void Start()
-    {
-        
-    }
+    {}
 
     // Update is called once per frame
     void Update()
+    {}
+
+    // ************ UI model Methods for Section ****************//
+
+    public bool SetCompartmentedRectangle(GameObject aCompRect)
     {
-        
-    }
-
-
-
-
-// ************ UI model Methods for Section ****************//
-    public bool setCompartmentedRectangle(GameObject aCompRect){
-        bool wasSet = false;
-        if(aCompRect == null){
-            return wasSet;
+        if(aCompRect == null)
+        {
+            return false;
         }
         compRect = aCompRect;
         Debug.Log("Compartmented rectangle has been set for this section");
-        wasSet = true;
-        return wasSet;
+        return true;
     }
 
-    public GameObject getCompartmentedRectangle(){
+    public GameObject GetCompartmentedRectangle()
+    {
         return compRect;
     }
+
 }

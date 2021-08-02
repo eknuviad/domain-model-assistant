@@ -6,7 +6,12 @@
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "1",
-      "name": "X"
+      "name": "ClassOne"
+    },
+    {
+      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
+      "_id": "102",
+      "name": "ClassTwo"
     }
   ],
   "types": [
@@ -65,6 +70,15 @@
               "_id": "15",
               "x": 365.5,
               "y": 80.0
+            }
+          },
+          {
+            "_id": "103",
+            "key": "102",
+            "value": {
+              "_id": "105",
+              "x": 565.5,
+              "y": 180.0
             }
           }
         ]

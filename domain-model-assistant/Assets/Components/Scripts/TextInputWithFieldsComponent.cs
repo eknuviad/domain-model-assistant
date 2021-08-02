@@ -6,7 +6,9 @@ using UnityEngine.UI;
 //TODO: Create the InputTextComponent prefab for this to work. I had deleted it.
 
 // public class TextInputWithFieldsComponent : InputTextComponent, BaseComponent
-public class TextInputWithFieldsComponent : TextBox{
+public class TextInputWithFieldsComponent : TextBox
+{
+
     // Equivalent to 'Attribute'
     static string[] field_types = {"string", "int", "double", "char"};    // TODO: Add types
     public string field_type;
@@ -14,18 +16,14 @@ public class TextInputWithFieldsComponent : TextBox{
     
     // Start is called before the first frame update
     void Start()
-    {
-        
-    }
+    {}
 
     // Update is called once per frame
     void Update()
-    {
-        
-    }
+    {}
 
 
-    public void parseField(string text)  
+    public void ParseField(string text)  
     {
         // TODO: restore to the previous text if not accepted
         string[] splitted = text.Split(' ');
@@ -40,8 +38,6 @@ public class TextInputWithFieldsComponent : TextBox{
             this.field_type = "";
             this.field_value = "";
         }
-        
-        
     }
 
     private bool CheckType(string type)
@@ -55,7 +51,5 @@ public class TextInputWithFieldsComponent : TextBox{
         }
         return false;
     }
-
-
 
 }

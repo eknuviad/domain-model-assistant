@@ -19,8 +19,10 @@ public class Diagram : MonoBehaviour
   private Vector3 dragStartPos;
   // private bool dragging = false;
   public GameObject compartmentedRectangle;
-  public List<GameObject> compartmentedRectangles;
+  public List<GameObject /*CompartmentedRectangle*/> compartmentedRectangles;
   private ClassDiagramDTO classDTO;
+
+  GraphicRaycaster raycaster;
 
   public string ID
   { get; set; }
@@ -30,9 +32,7 @@ public class Diagram : MonoBehaviour
     LoadData();
   }
 
-  // Start is called before the first frame update
-  GraphicRaycaster raycaster;
-
+   // Start is called before the first frame update
   void Start()
   {
     CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
@@ -45,7 +45,7 @@ public class Diagram : MonoBehaviour
   {
     if (InputExtender.MouseExtender.isDoubleClick(0))
     {
-      CreateCompartmentedRectangle(Input.mousePosition);
+      CreateCompartmentedRectangle("Class" + compartmentedRectangles.Count, Input.mousePosition);
     }
     Zoom();
   }
@@ -55,16 +55,7 @@ public class Diagram : MonoBehaviour
   private void LoadData()
   {
     Debug.Log("Loading data ...");
-    // obtain class DTO from json string format
-    classDTO = JsonUtility.FromJson<ClassDiagramDTO>(jsonFile.text);
-    // convert float positions to Vector2
-    var value = classDTO.layout.containers[0].values[0].value;
-    Vector2 position = new Vector2(value.x, value.y);
-    // create comp rectangle with header and sections
-    GameObject newCompRect = CreateCompartmentedRectangle(position);
-    // set the header value of the created class
-    newCompRect.GetComponent<CompartmentedRectangle>().getHeader().
-                GetComponent<TextBox>().setText(classDTO.classes[0].name);
+    LoadJson(jsonFile.text);
   }
 
   /// <summary>
@@ -81,8 +72,8 @@ public class Diagram : MonoBehaviour
     {
       var cls = (Class)clsAndContval[0];
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
-      var compRect = CreateCompartmentedRectangle(new Vector2(layoutElement.x, layoutElement.y));
-      compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
+      var compRect = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
+      //compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
     }
   }
 
@@ -92,14 +83,21 @@ public class Diagram : MonoBehaviour
     compartmentedRectangles.Clear();
   }
 
-  public GameObject CreateCompartmentedRectangle(Vector2 position) // should pass in _id
+  public GameObject /*CompartmentedRectangle*/ CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id
   {
     // added this for debugging
-    StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld/alice"));
+    //StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld/alice"));
 
-    GameObject compRect = Instantiate(compartmentedRectangle, this.transform);
+    var compRect = Instantiate(compartmentedRectangle, this.transform); // gameObject.AddComponent<CompartmentedRectangle>();
     compRect.transform.position = position;
-    addNode(compRect);
+    // Debug.Log("Setting text from " +
+    //     compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().getText() + " to " + name);
+    Debug.Log(compRect.GetComponent<CompartmentedRectangle>());
+    //compRect.CreateHeader();
+    Debug.Log(compRect.GetComponent<CompartmentedRectangle>().GetHeader());
+    Debug.Log(compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>());
+    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
+    AddNode(compRect);
     return compRect;
   }
 
@@ -167,21 +165,20 @@ public class Diagram : MonoBehaviour
 
   // ************ UI model Methods for Canvas/Diagram ****************//
 
-  public bool addNode(GameObject aNode)
+  public bool AddNode(GameObject /*CompartmentedRectangle*/ node)
   {
-    bool wasSet = false;
-    if (compartmentedRectangles.Contains(aNode))
+    if (compartmentedRectangles.Contains(node))
     {
       return false;
     }
-    compartmentedRectangles.Add(aNode);
-    aNode.GetComponent<CompartmentedRectangle>().setDiagram(this.gameObject);
+    compartmentedRectangles.Add(node);
+    node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
     Debug.Log("Node added to list of compartmented rectangles");
-    wasSet = true;
-    return wasSet;
+    Debug.Log(node.GetComponent<CompartmentedRectangle>());
+    return true;
   }
 
-  public List<GameObject> getCompartmentedRectangles()
+  public List<GameObject /*CompartmentedRectangle*/> GetCompartmentedRectangles()
   {
     return compartmentedRectangles;
   }

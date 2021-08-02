@@ -3,28 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TextBox : MonoBehaviour{
-    
-    public string text;
-    public string ID{
-        get{
-            return ID;
-        }
-        set{
-            ID = value;
-        }
-    }
+public class TextBox : MonoBehaviour
+{
 
-    public string getText(){
+    public string text;
+    public string ID
+    { get; set; }
+
+    public string GetText()
+    {
         return GetComponent<InputField>().text;
     }
 
-    public bool setText(string text){
-        bool wasSet = false;
-        GetComponent<InputField>().text = text;
+    public bool SetText(string text)
+    {
+        var inputField = GetComponent<InputField>();
+        if (inputField == null)
+        {
+            inputField = gameObject.AddComponent<InputField>();
+        }
+        inputField.text = text;
         Debug.Log("Text has been set");
-        wasSet = true;
-        return wasSet;
+        return true;
     }
 
 }
