@@ -3,10 +3,12 @@ using UnityEngine.UI;
  
 public class DrawLine : MonoBehaviour
 {
+
     private RectTransform object1;
     private RectTransform object2;
     private Image image;
     private RectTransform rectTransform;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +29,7 @@ public class DrawLine : MonoBehaviour
             object2 = aux;
         }
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -38,4 +41,5 @@ public class DrawLine : MonoBehaviour
             rectTransform.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
         }
     }
+
 }

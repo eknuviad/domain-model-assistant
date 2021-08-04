@@ -8,7 +8,7 @@ public class CompartmentedRectangle : Node
     
     public GameObject textbox;
     public GameObject section;
-    public List<GameObject /*Section*/> sections = new List<GameObject /*Section*/>();
+    public List<GameObject> sections = new List<GameObject>();
     
     // popup menu variables
     public GameObject popupMenu;
@@ -42,7 +42,7 @@ public class CompartmentedRectangle : Node
 
     public void CreateHeader()
     {
-        var header = GameObject.Instantiate(textbox, this.transform); // gameObject.AddComponent<TextBox>();
+        var header = GameObject.Instantiate(textbox, this.transform);
         //vector position will need to be obtained from transform of gameobject in the future
         header.transform.position = this.transform.position + new Vector3(0, 45, 0);
         AddHeader(header);
@@ -53,13 +53,11 @@ public class CompartmentedRectangle : Node
         Vector3 oldPosition = this.transform.position;
         for (int i = 0; i < 2; i++)
         {
-            //Debug.Log(oldPosition);
-            var sect = GameObject.Instantiate(section, this.transform); // gameObject.AddComponent<Section>();
+            var sect = GameObject.Instantiate(section, this.transform);
             sect.transform.position = oldPosition;
-            // at the moment vector positions are hardcoded but will need to be obtained
-            //from the transform of the gameobject
+            // At the moment vector positions are hardcoded but will need to be obtained
+            // from the transform of the gameobject
             oldPosition += new Vector3(0, -46, 0);
-            //Debug.Log(oldPosition);
             AddSection(sect);
         }
     }
@@ -107,7 +105,7 @@ public class CompartmentedRectangle : Node
 
     // ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
 
-    public bool AddSection(GameObject /*Section*/ aSection)
+    public bool AddSection(GameObject aSection)
     {
         if (sections.Contains(aSection))
         {
@@ -115,7 +113,6 @@ public class CompartmentedRectangle : Node
         }
         sections.Add(aSection);
         aSection.GetComponent<Section>().SetCompartmentedRectangle(this.gameObject);
-        //Debug.Log("Section added to list of sections for this compartmented rectangles");
         return true;
     }
 

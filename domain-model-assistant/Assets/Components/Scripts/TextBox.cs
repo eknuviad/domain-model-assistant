@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class TextBox : MonoBehaviour
 {
 
-    //public string text;
     public string ID
     { get; set; }
 
@@ -23,7 +22,6 @@ public class TextBox : MonoBehaviour
             inputField = gameObject.AddComponent<InputField>();
         }
         inputField.text = text;
-        Debug.Log("Text has been set to " + text);
         return true;
     }
 

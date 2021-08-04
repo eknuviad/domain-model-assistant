@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ClassDiagramDTO {
+public class ClassDiagramDTO
+{
     public string eClass;
     public string _id;
     public string name; // NamedElement?
@@ -13,42 +14,47 @@ public class ClassDiagramDTO {
     // TODO add feedback(s) here?
 }
 
-
 [System.Serializable]
-public class Class {
+public class Class
+{
     public string eClass;
     public string _id;
     public string name;
 }
 
 [System.Serializable]
-public class CDType {
+public class CDType
+{
     public string eClass;
     public string _id;
 }
 
 [System.Serializable]
-public class Layout {
+public class Layout
+{
     public string _id;
     public List<ContainerMap> containers;
 }
 
 [System.Serializable]
-public class ContainerMap {
+public class ContainerMap
+{
     public string _id;
     public string key;
     public List<ElementMap> values; // value in MM
 }
 
 [System.Serializable]
-public class ElementMap {
+public class ElementMap
+{
     public string _id;
     public string key;
     public LayoutElement value;
 }
 
 [System.Serializable]
-public class LayoutElement {
+public class LayoutElement
+{
     public string _id;
     public float x;
     public float y;

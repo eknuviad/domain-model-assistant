@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace InputExtender
 {
+
     public static class MouseExtender
     {
         private static float lastTime;
@@ -26,7 +27,7 @@ namespace InputExtender
                     float difference = currentTime - lastTime;
 
                     clicks = 0;
-                    if(difference <= 0.2f)
+                    if (difference <= 0.2f)
                     {
                         return true;
                     }
@@ -36,4 +37,5 @@ namespace InputExtender
             return false;
         }
     }
+
 }

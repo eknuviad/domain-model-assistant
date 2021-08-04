@@ -10,7 +10,7 @@ public class Node: MonoBehaviour
 
     // renamed textbox as header to avoid parent and child
     // from having the same serializable field
-    public GameObject /*TextBox*/ header;
+    public GameObject header;
     
     public string ID
     { get; set; }
@@ -27,23 +27,21 @@ public class Node: MonoBehaviour
             return false;
         }
         canvas = aCanvas;
-        Debug.Log("Canvas has been set for Node");
         return true;
     }
 
-    public GameObject /*TextBox*/ GetHeader()
+    public GameObject GetHeader()
     {
         return header;
     }
 
-    public bool AddHeader(GameObject /*TextBox*/ aHeader)
+    public bool AddHeader(GameObject aHeader)
     {
         if(aHeader == null)
         {
             return false;
         }
         header = aHeader;
-        Debug.Log("Header textbox has been set for Node with text " + aHeader.GetComponent<TextBox>().GetText());
         return true;
     }
 

@@ -24,7 +24,6 @@ public class Section : MonoBehaviour
             return false;
         }
         compRect = aCompRect;
-        Debug.Log("Compartmented rectangle has been set for this section");
         return true;
     }
 

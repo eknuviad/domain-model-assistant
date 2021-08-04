@@ -29,12 +29,16 @@ public class Diagram : MonoBehaviour
 
   GraphicRaycaster raycaster;
 
+  Dictionary<string, GameObject> _namesToRects;
+
+  private bool _namesUpToDate = false;
+
   public string ID
   { get; set; }
 
   void Awake()
   {
-    LoadData();
+    //LoadData();
   }
 
    // Start is called before the first frame update
@@ -53,6 +57,10 @@ public class Diagram : MonoBehaviour
       CreateCompartmentedRectangle("Class" + compartmentedRectangles.Count, Input.mousePosition);
     }
     Zoom();
+    if (!_namesUpToDate)
+    {
+      UpdateNames();
+    }
   }
 
   // ************ Controller Methods for Canvas/Diagram ****************//
@@ -73,22 +81,26 @@ public class Diagram : MonoBehaviour
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
     classDiagram.layout.containers[0].values.ForEach(contVal => idsToClassesAndLayouts[contVal.key][1] = contVal);
 
+    _namesToRects = new Dictionary<string, GameObject>();
+
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
       var cls = (Class)clsAndContval[0];
-      Debug.Log("Creating class with name " + cls.name);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
-      var compRect = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
-      //compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(cls.name);
+      _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
     }
 
-    // foreach (var clsAndContval in idsToClassesAndLayouts.Values)
-    // {
-    //   var cls = (Class)clsAndContval[0];
-    //   var layoutElement = ((ElementMap)clsAndContval[1]).value;
-    //   var compRect = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
-    //   compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
-    // }
+    _namesUpToDate = false;
+  }
+
+  public void UpdateNames()
+  {
+    foreach (var nameRectPair in _namesToRects)
+    {
+      nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
+          .SetText(nameRectPair.Key);
+    }
+    _namesUpToDate = true;
   }
 
   public void ResetDiagram()
@@ -97,16 +109,14 @@ public class Diagram : MonoBehaviour
     compartmentedRectangles.Clear();
   }
 
-  public GameObject /*CompartmentedRectangle*/ CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id
+  public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id
   {
     // added this for debugging
     //StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld/alice"));
 
-    var compRect = Instantiate(compartmentedRectangle, this.transform); // gameObject.AddComponent<CompartmentedRectangle>();
+    var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
-    var textBox = compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>();
-    Debug.Log("Setting text from " + textBox.GetText() + " to " + name);
-    textBox.SetText(name);
+    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
     AddNode(compRect);
     return compRect;
   }
@@ -175,7 +185,7 @@ public class Diagram : MonoBehaviour
 
   // ************ UI model Methods for Canvas/Diagram ****************//
 
-  public bool AddNode(GameObject /*CompartmentedRectangle*/ node)
+  public bool AddNode(GameObject node)
   {
     if (compartmentedRectangles.Contains(node))
     {
@@ -183,12 +193,10 @@ public class Diagram : MonoBehaviour
     }
     compartmentedRectangles.Add(node);
     node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
-    Debug.Log("Node added to list of compartmented rectangles");
-    Debug.Log(node.GetComponent<CompartmentedRectangle>());
     return true;
   }
 
-  public bool RemoveNode(GameObject /*CompartmentedRectangle*/ node)
+  public bool RemoveNode(GameObject node)
   {
     if (compartmentedRectangles.Contains(node))
     {
