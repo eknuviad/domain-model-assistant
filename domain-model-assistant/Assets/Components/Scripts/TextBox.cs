@@ -23,7 +23,7 @@ public class TextBox : MonoBehaviour
             inputField = gameObject.AddComponent<InputField>();
         }
         inputField.text = text;
-        Debug.Log("Text has been set");
+        Debug.Log("Text has been set to " + text);
         return true;
     }
 

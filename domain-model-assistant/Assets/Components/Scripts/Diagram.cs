@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class Diagram : MonoBehaviour
 {
@@ -20,6 +21,10 @@ public class Diagram : MonoBehaviour
   // private bool dragging = false;
   public GameObject compartmentedRectangle;
   public List<GameObject /*CompartmentedRectangle*/> compartmentedRectangles;
+
+  // [Header("The reset event.")]
+  // public UnityEvent resetEvent;
+
   private ClassDiagramDTO classDTO;
 
   GraphicRaycaster raycaster;
@@ -29,7 +34,7 @@ public class Diagram : MonoBehaviour
 
   void Awake()
   {
-    LoadData();
+    //LoadData();
   }
 
    // Start is called before the first frame update
@@ -73,8 +78,16 @@ public class Diagram : MonoBehaviour
       var cls = (Class)clsAndContval[0];
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       var compRect = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
-      //compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
+      //compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(cls.name);
     }
+
+    // foreach (var clsAndContval in idsToClassesAndLayouts.Values)
+    // {
+    //   var cls = (Class)clsAndContval[0];
+    //   var layoutElement = ((ElementMap)clsAndContval[1]).value;
+    //   var compRect = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
+    //   compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().setText(cls.name);
+    // }
   }
 
   public void ResetDiagram()
@@ -90,13 +103,10 @@ public class Diagram : MonoBehaviour
 
     var compRect = Instantiate(compartmentedRectangle, this.transform); // gameObject.AddComponent<CompartmentedRectangle>();
     compRect.transform.position = position;
-    // Debug.Log("Setting text from " +
-    //     compRect.GetComponent<CompartmentedRectangle>().getHeader().GetComponent<TextBox>().getText() + " to " + name);
-    Debug.Log(compRect.GetComponent<CompartmentedRectangle>());
-    //compRect.CreateHeader();
-    Debug.Log(compRect.GetComponent<CompartmentedRectangle>().GetHeader());
-    Debug.Log(compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>());
-    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
+    Debug.Log("Setting text from " +
+        compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().GetText() + " to " + name);
+    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name); // set prefab or GO?
+    Debug.Log("CompRect Count = " + compRect.GetComponents<CompartmentedRectangle>().Count()); // 1
     AddNode(compRect);
     return compRect;
   }

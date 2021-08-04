@@ -36,14 +36,14 @@ public class Node: MonoBehaviour
         return header;
     }
 
-    public bool AddHeader(GameObject /*TextBox*/ aheader)
+    public bool AddHeader(GameObject /*TextBox*/ aHeader)
     {
-        if(aheader == null)
+        if(aHeader == null)
         {
             return false;
         }
-        header = aheader;
-        Debug.Log("Header textbox has been set for Node");
+        header = aHeader;
+        Debug.Log("Header textbox has been set for Node with text " + aHeader.GetComponent<TextBox>().text);
         return true;
     }
 

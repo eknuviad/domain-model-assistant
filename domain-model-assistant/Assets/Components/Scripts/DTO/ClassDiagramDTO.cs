@@ -4,7 +4,7 @@ using UnityEngine;
 
 [System.Serializable]
 public class ClassDiagramDTO {
-    public string eClass; // is this really necessary?
+    public string eClass;
     public string _id;
     public string name; // NamedElement?
     public List<Class> classes;
@@ -23,7 +23,6 @@ public class Class {
 
 [System.Serializable]
 public class CDType {
-    // name? (this is a NamedElement in the MM)
     public string eClass;
     public string _id;
 }
@@ -37,14 +36,14 @@ public class Layout {
 [System.Serializable]
 public class ContainerMap {
     public string _id;
-    public string key; // reference to EObject?
+    public string key;
     public List<ElementMap> values; // value in MM
 }
 
 [System.Serializable]
 public class ElementMap {
     public string _id;
-    public string key; // reference to EObject?
+    public string key;
     public LayoutElement value;
 }
 
