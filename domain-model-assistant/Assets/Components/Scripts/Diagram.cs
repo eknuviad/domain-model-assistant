@@ -193,4 +193,13 @@ public class Diagram : MonoBehaviour
     return compartmentedRectangles;
   }
 
+  /// <summary>
+  /// Perform the debug action specified in the body upon the Debug button getting clicked.
+  /// </summary>
+  public void DebugAction()
+  {
+    Debug.Log("Debug button clicked!");
+    LoadData();
+  }
+
 }

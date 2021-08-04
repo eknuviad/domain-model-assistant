@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-public class Reset : MonoBehaviour
+public class DebugAction : MonoBehaviour
 {
 
   [SerializeField]
-  private Button ResetButton; // assigned in the editor
+  private Button DebugButton; // assigned in the editor
 
   private Diagram _diagram;
 
@@ -19,9 +19,9 @@ public class Reset : MonoBehaviour
   void Update()
   {}
 
-  public void ResetAction()
+  public void Debug()
   {
-    _diagram.ResetDiagram();
+    _diagram.DebugAction();
   }
 
 }
