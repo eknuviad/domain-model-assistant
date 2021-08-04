@@ -43,7 +43,7 @@ public class Node: MonoBehaviour
             return false;
         }
         header = aHeader;
-        Debug.Log("Header textbox has been set for Node with text " + aHeader.GetComponent<TextBox>().text);
+        Debug.Log("Header textbox has been set for Node with text " + aHeader.GetComponent<TextBox>().GetText());
         return true;
     }
 

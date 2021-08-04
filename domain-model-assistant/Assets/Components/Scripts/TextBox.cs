@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class TextBox : MonoBehaviour
 {
 
-    public string text;
+    //public string text;
     public string ID
     { get; set; }
 

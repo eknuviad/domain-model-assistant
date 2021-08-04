@@ -34,7 +34,7 @@ public class Diagram : MonoBehaviour
 
   void Awake()
   {
-    //LoadData();
+    LoadData();
   }
 
    // Start is called before the first frame update
@@ -76,6 +76,7 @@ public class Diagram : MonoBehaviour
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
       var cls = (Class)clsAndContval[0];
+      Debug.Log("Creating class with name " + cls.name);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       var compRect = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
       //compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(cls.name);
@@ -103,10 +104,9 @@ public class Diagram : MonoBehaviour
 
     var compRect = Instantiate(compartmentedRectangle, this.transform); // gameObject.AddComponent<CompartmentedRectangle>();
     compRect.transform.position = position;
-    Debug.Log("Setting text from " +
-        compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().GetText() + " to " + name);
-    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name); // set prefab or GO?
-    Debug.Log("CompRect Count = " + compRect.GetComponents<CompartmentedRectangle>().Count()); // 1
+    var textBox = compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>();
+    Debug.Log("Setting text from " + textBox.GetText() + " to " + name);
+    textBox.SetText(name);
     AddNode(compRect);
     return compRect;
   }
@@ -188,6 +188,16 @@ public class Diagram : MonoBehaviour
     return true;
   }
 
+  public bool RemoveNode(GameObject /*CompartmentedRectangle*/ node)
+  {
+    if (compartmentedRectangles.Contains(node))
+    {
+      compartmentedRectangles.Remove(node);
+      return true;
+    }
+    return false;
+  }
+
   public List<GameObject /*CompartmentedRectangle*/> GetCompartmentedRectangles()
   {
     return compartmentedRectangles;
@@ -199,7 +209,9 @@ public class Diagram : MonoBehaviour
   public void DebugAction()
   {
     Debug.Log("Debug button clicked!");
-    LoadData();
+    //LoadData();
+    GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
+        .SetText("Rabbit");
   }
 
 }
