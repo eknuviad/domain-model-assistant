@@ -254,6 +254,21 @@ public class Diagram : MonoBehaviour
   }
 
   /// <summary>
+  /// Called by AddClassAction when the AddClass button is pressed.
+  /// </summary>
+  public void AddClassButtonPressed()
+  {
+    if (_currentMode == CanvasMode.AddingClass)
+    {
+      ActivateDefaultMode();
+    }
+    else
+    {
+      EnterAddClassMode();
+    }
+  }
+
+  /// <summary>
   /// Perform the debug action specified in the body upon the Debug button getting clicked.
   /// </summary>
   public void DebugAction()

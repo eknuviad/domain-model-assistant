@@ -4,7 +4,6 @@ using System;
 
 public class AddClassAction : MonoBehaviour
 {
-  bool _isAdding;
 
   [SerializeField]
   private Button AddClassButton; // assigned in the editor
@@ -22,15 +21,7 @@ public class AddClassAction : MonoBehaviour
 
   public void AddClass()
   {
-    if (_isAdding)
-    {
-      _diagram.ActivateDefaultMode();
-    }
-    else
-    {
-      _diagram.EnterAddClassMode();
-    }
-    _isAdding = !_isAdding;
+    _diagram.AddClassButtonPressed();
   }
 
 }
