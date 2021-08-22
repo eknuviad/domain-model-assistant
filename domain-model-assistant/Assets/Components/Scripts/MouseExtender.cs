@@ -33,6 +33,7 @@ namespace InputExtender
       {
         var now = Time.unscaledTime;
 
+        // Special case for the first click since it has no previous click time
         if (!_prevClickTimes.ContainsKey(mouseBtn))
         {
            _prevClickTimes[mouseBtn] = now;
@@ -41,7 +42,6 @@ namespace InputExtender
 
         var clicks = PressedRecently(mouseBtn) ? 2 : 1;
         _prevClickTimes[mouseBtn] = now;
-        Debug.Log(clicks + " click(s)");
         return clicks;
       }
       return 0;

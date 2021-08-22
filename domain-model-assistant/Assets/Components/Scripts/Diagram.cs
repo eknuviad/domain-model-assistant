@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Dynamic;
 using System.Linq;
 using System.Runtime.InteropServices;
+//using System.Text.Json; // TODO Use JsonSerializer.Serialize when Unity moves to .NET 6
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -23,6 +25,14 @@ public class Diagram : MonoBehaviour
   // private bool dragging = false;
   public GameObject compartmentedRectangle;
   public List<GameObject /*CompartmentedRectangle*/> compartmentedRectangles;
+
+  public const string WebcoreEndpoint = "http://localhost:8080/";
+
+  public const string cdmName = "MULTIPLE_CLASSES"; // TODO Remove this once API is updated
+
+  public const string GetCdmEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName;
+
+  public const string AddClassEndpoint = GetCdmEndpoint + "/class";
 
   private ClassDiagramDTO classDTO;
 
@@ -75,7 +85,7 @@ public class Diagram : MonoBehaviour
     if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
         (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
     {
-      CreateCompartmentedRectangle("Class" + compartmentedRectangles.Count, Input.mousePosition);
+      AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
       ActivateDefaultMode();
     }
     Zoom();
@@ -115,6 +125,22 @@ public class Diagram : MonoBehaviour
     _namesUpToDate = false;
   }
 
+  public void AddClass(string name, Vector2 position)
+  {
+    // TODO Replace this ugly string once Unity moves to .NET 6
+    var jsonData = $@"{{
+      ""className"": ""{name}"",
+      ""dataType"": false,
+      ""isInterface"": false,
+      ""x"": {position.x},
+      ""y"": {position.y},
+    }}";
+    Debug.Log(jsonData);
+    PostRequest(AddClassEndpoint, jsonData);
+    var response = GetRequest(GetCdmEndpoint);
+    LoadJson(response);
+  }
+
   public void UpdateNames()
   {
     foreach (var nameRectPair in _namesToRects)
@@ -133,9 +159,6 @@ public class Diagram : MonoBehaviour
 
   public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id
   {
-    // added this for debugging
-    //StartCoroutine(GetRequest("http://127.0.0.1:8538/helloworld/alice"));
-
     var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
     compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
@@ -144,30 +167,37 @@ public class Diagram : MonoBehaviour
   }
 
   /// <summary>
-  /// Example from docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.Get.html
+  /// Returns the data from the server as a string.
   /// </summary>
-  IEnumerator GetRequest(string uri)
+  public string GetRequest(string uri)
   {
-    using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+    using (var webRequest = UnityWebRequest.Get(uri))
     {
-      // Request and wait for the desired page.
-      yield return webRequest.SendWebRequest();
-
-      string[] pages = uri.Split('/');
-      int page = pages.Length - 1;
-
-      switch (webRequest.result)
+      webRequest.SetRequestHeader("Content-Type", "application/json");
+      webRequest.SendWebRequest();
+      if (webRequest.result == UnityWebRequest.Result.Success)
       {
-        case UnityWebRequest.Result.ConnectionError:
-        case UnityWebRequest.Result.DataProcessingError:
-          Debug.LogError(pages[page] + ": Error: " + webRequest.error);
-          break;
-        case UnityWebRequest.Result.ProtocolError:
-          Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
-          break;
-        case UnityWebRequest.Result.Success:
-          Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
-          break;
+        return webRequest.downloadHandler.text;
+      }
+      else
+      {
+        Debug.Log("HTTP GET error: " + webRequest.error);
+        return "";
+      }
+    }
+  }
+
+  public void PostRequest(string uri, string data)
+  {
+    using (var webRequest = UnityWebRequest.Put(uri, data))
+    {
+      webRequest.method = "POST";
+      webRequest.SetRequestHeader("Content-Type", "application/json");
+      webRequest.SendWebRequest();
+
+      if (webRequest.result != UnityWebRequest.Result.Success)
+      {
+        Debug.Log("HTTP POST error: " + webRequest.error);
       }
     }
   }
