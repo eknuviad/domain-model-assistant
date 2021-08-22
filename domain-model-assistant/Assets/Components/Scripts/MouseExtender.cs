@@ -7,18 +7,22 @@ namespace InputExtender
 
   public static class MouseExtender
   {
-    public const int LEFT_BUTTON = 0;
-    
-    private static float lastTime;
+    public const int LeftButton = 0;
 
-    private static int clicks = 0;
+    public const int RightButton = 1;
 
-    public static bool IsSingleClick(int mouseBtn = LEFT_BUTTON)
+    public const int MiddleButton = 2;
+
+    public const float DoubleClickTime = 0.2f;
+
+    private static Dictionary<int, float> _prevClickTimes = new Dictionary<int, float>();
+
+    public static bool IsSingleClick(int mouseBtn = LeftButton)
     {
       return NumberOfClicks(mouseBtn) == 1;
     }
 
-    public static bool IsDoubleClick(int mouseBtn = LEFT_BUTTON)
+    public static bool IsDoubleClick(int mouseBtn = LeftButton)
     {
       return NumberOfClicks(mouseBtn) == 2;
     }
@@ -27,42 +31,25 @@ namespace InputExtender
     {
       if (Input.GetMouseButtonDown(mouseBtn))
       {
-        clicks += 1;
-
         var now = Time.unscaledTime;
-        var diff = now - lastTime;
-        //lastTime = now;
 
-        if (clicks % 2 == 1)
+        if (!_prevClickTimes.ContainsKey(mouseBtn))
         {
-          lastTime = now;
+           _prevClickTimes[mouseBtn] = now;
+           return 1;
         }
 
-        if (diff <= 0.2f)
-        {
-          if (clicks >= 2)
-          {
-            Debug.Log("Double click");
-            clicks = 0;
-            return 2;
-          }
-        }
-        else if (diff > 0.2f)
-        {
-          if (clicks == 1)
-          {
-            lastTime = Time.unscaledTime;
-            Debug.Log("Single click");
-            clicks = 0;
-            return 1;
-          }
-        }
-        else
-        {
-          return clicks;
-        }
+        var clicks = PressedRecently(mouseBtn) ? 2 : 1;
+        _prevClickTimes[mouseBtn] = now;
+        Debug.Log(clicks + " click(s)");
+        return clicks;
       }
       return 0;
+    }
+
+    private static bool PressedRecently(int mouseBtn)
+    {
+      return (Time.unscaledTime - _prevClickTimes[mouseBtn]) <= DoubleClickTime;
     }
 
   }
