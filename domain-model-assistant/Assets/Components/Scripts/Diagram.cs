@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -22,23 +24,41 @@ public class Diagram : MonoBehaviour
   public GameObject compartmentedRectangle;
   public List<GameObject /*CompartmentedRectangle*/> compartmentedRectangles;
 
-  // [Header("The reset event.")]
-  // public UnityEvent resetEvent;
-
   private ClassDiagramDTO classDTO;
 
   GraphicRaycaster raycaster;
 
-  Dictionary<string, GameObject> _namesToRects;
+  Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
+
+  enum CanvasMode
+  {
+    Default,
+    AddingClass,
+    AddingAttribute,
+    // ...
+  }
+
+  CanvasMode _currentMode = CanvasMode.Default;
+
+  [DllImport("__Internal")]
+  private static extern void SetCursorToAddMode();
+
+  [DllImport("__Internal")]
+  private static extern void ResetCursor();
 
   private bool _namesUpToDate = false;
+
+  private bool _isWebGl = false;
 
   public string ID
   { get; set; }
 
   void Awake()
   {
-    //LoadData();
+    if (Application.platform == RuntimePlatform.WebGLPlayer)
+    {
+      _isWebGl = true;
+    }
   }
 
    // Start is called before the first frame update
@@ -52,9 +72,11 @@ public class Diagram : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (InputExtender.MouseExtender.isDoubleClick(0))
+    if (InputExtender.MouseExtender.IsDoubleClick() ||
+        (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
     {
       CreateCompartmentedRectangle("Class" + compartmentedRectangles.Count, Input.mousePosition);
+      ActivateDefaultMode();
     }
     Zoom();
     if (!_namesUpToDate)
@@ -81,7 +103,7 @@ public class Diagram : MonoBehaviour
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
     classDiagram.layout.containers[0].values.ForEach(contVal => idsToClassesAndLayouts[contVal.key][1] = contVal);
 
-    _namesToRects = new Dictionary<string, GameObject>();
+    _namesToRects.Clear();
 
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
@@ -206,9 +228,29 @@ public class Diagram : MonoBehaviour
     return false;
   }
 
-  public List<GameObject /*CompartmentedRectangle*/> GetCompartmentedRectangles()
+  public List<GameObject> GetCompartmentedRectangles()
   {
     return compartmentedRectangles;
+  }
+
+  public void ActivateDefaultMode()
+  {
+    if (_isWebGl)
+    {
+      ResetCursor();
+    }
+    Debug.Log("Activating default mode");
+    _currentMode = CanvasMode.Default;
+  }
+
+  public void EnterAddClassMode()
+  {
+    if (_isWebGl)
+    {
+      SetCursorToAddMode();
+    }
+    Debug.Log("Entering Add class mode");
+    _currentMode = CanvasMode.AddingClass;
   }
 
   /// <summary>
