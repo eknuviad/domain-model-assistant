@@ -72,7 +72,7 @@ public class Diagram : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (InputExtender.MouseExtender.IsDoubleClick() ||
+    if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
         (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
     {
       CreateCompartmentedRectangle("Class" + compartmentedRectangles.Count, Input.mousePosition);
