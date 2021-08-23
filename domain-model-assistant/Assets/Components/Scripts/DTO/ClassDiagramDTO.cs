@@ -41,7 +41,7 @@ public class ContainerMap
 {
     public string _id;
     public string key;
-    public List<ElementMap> values; // value in MM
+    public List<ElementMap> value/*s*/; // TODO Change this after WebCORE is updated
 }
 
 [System.Serializable]

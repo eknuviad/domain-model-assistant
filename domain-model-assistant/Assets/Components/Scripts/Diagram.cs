@@ -56,9 +56,17 @@ public class Diagram : MonoBehaviour
   [DllImport("__Internal")]
   private static extern void ResetCursor();
 
+  private bool _updateNeeded = false;
+
   private bool _namesUpToDate = false;
 
   private bool _isWebGl = false;
+
+  private UnityWebRequestAsyncOperation _getRequestAsyncOp;
+
+  private UnityWebRequestAsyncOperation _postRequestAsyncOp;
+
+  private string _getResult = "";
 
   public string ID
   { get; set; }
@@ -77,6 +85,7 @@ public class Diagram : MonoBehaviour
     CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
     targetOrtho = CanvasScaler.scaleFactor;
     this.raycaster = GetComponent<GraphicRaycaster>();
+    GetRequest(GetCdmEndpoint);
   }
 
   // Update is called once per frame
@@ -89,6 +98,21 @@ public class Diagram : MonoBehaviour
       ActivateDefaultMode();
     }
     Zoom();
+    if (_updateNeeded && _getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+    {
+      var req = _getRequestAsyncOp.webRequest;
+      if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+      {
+        var newResult = req.downloadHandler.text;
+        if (newResult != _getResult)
+        {
+          LoadJson(newResult);
+          _getResult = newResult;
+          _updateNeeded = false;
+        }
+      }
+      req.Dispose();
+    }
     if (!_namesUpToDate)
     {
       UpdateNames();
@@ -108,15 +132,25 @@ public class Diagram : MonoBehaviour
   /// </summary>
   public void LoadJson(string cdmJson)
   {
+    Debug.Log("Loading JSON:" + cdmJson);
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
-    classDiagram.layout.containers[0].values.ForEach(contVal => idsToClassesAndLayouts[contVal.key][1] = contVal);
+    // Debug.Log(String.Join(",", idsToClassesAndLayouts.Keys.ToList()));
+    // Debug.Log(String.Join(",", classDiagram.layout.containers[0].value.Select(cv => cv.key).ToList()));
+    classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
+    {
+      if (idsToClassesAndLayouts.ContainsKey(contVal.key))
+      {
+        idsToClassesAndLayouts[contVal.key][1] = contVal;
+      }
+    });
 
     _namesToRects.Clear();
 
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
+      Debug.Log("cls: " + clsAndContval[0] + ", contval: " + clsAndContval[1]);
       var cls = (Class)clsAndContval[0];
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
@@ -137,8 +171,7 @@ public class Diagram : MonoBehaviour
     }}";
     Debug.Log(jsonData);
     PostRequest(AddClassEndpoint, jsonData);
-    var response = GetRequest(GetCdmEndpoint);
-    LoadJson(response);
+    GetRequest(GetCdmEndpoint);
   }
 
   public void UpdateNames()
@@ -169,22 +202,24 @@ public class Diagram : MonoBehaviour
   /// <summary>
   /// Returns the data from the server as a string.
   /// </summary>
-  public string GetRequest(string uri)
+  public void /*string*/ GetRequest(string uri)
   {
-    using (var webRequest = UnityWebRequest.Get(uri))
-    {
+    /*using (*/var webRequest = UnityWebRequest.Get(uri);/*)
+    {*/
       webRequest.SetRequestHeader("Content-Type", "application/json");
-      webRequest.SendWebRequest();
-      if (webRequest.result == UnityWebRequest.Result.Success)
-      {
-        return webRequest.downloadHandler.text;
-      }
-      else
-      {
-        Debug.Log("HTTP GET error: " + webRequest.error);
-        return "";
-      }
-    }
+      webRequest.disposeDownloadHandlerOnDispose = false;
+      _getRequestAsyncOp = webRequest.SendWebRequest();
+      _updateNeeded = true;
+      // if (webRequest.result == UnityWebRequest.Result.Success)
+      // {
+      //   return webRequest.downloadHandler.text;
+      // }
+      // else
+      // {
+      //   Debug.Log("HTTP GET error: " + webRequest.error);
+      //   return "";
+      // }
+    // }
   }
 
   public void PostRequest(string uri, string data)
@@ -192,13 +227,14 @@ public class Diagram : MonoBehaviour
     using (var webRequest = UnityWebRequest.Put(uri, data))
     {
       webRequest.method = "POST";
+      webRequest.disposeDownloadHandlerOnDispose = false;
       webRequest.SetRequestHeader("Content-Type", "application/json");
       webRequest.SendWebRequest();
 
-      if (webRequest.result != UnityWebRequest.Result.Success)
-      {
-        Debug.Log("HTTP POST error: " + webRequest.error);
-      }
+      // if (webRequest.result != UnityWebRequest.Result.Success)
+      // {
+      //   Debug.Log("HTTP POST error: " + webRequest.error);
+      // }
     }
   }
 
