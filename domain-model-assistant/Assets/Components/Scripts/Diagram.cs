@@ -104,13 +104,15 @@ public class Diagram : MonoBehaviour
       if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
       {
         var newResult = req.downloadHandler.text;
+        Debug.Log(newResult);
         if (newResult != _getResult)
         {
           LoadJson(newResult);
           _getResult = newResult;
-          _updateNeeded = false;
+          // _updateNeeded = false;
         }
       }
+      _updateNeeded = false;
       req.Dispose();
     }
     if (!_namesUpToDate)
@@ -133,6 +135,7 @@ public class Diagram : MonoBehaviour
   public void LoadJson(string cdmJson)
   {
     Debug.Log("Loading JSON:" + cdmJson);
+    ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
