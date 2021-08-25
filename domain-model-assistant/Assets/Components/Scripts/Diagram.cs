@@ -115,6 +115,10 @@ public class Diagram : MonoBehaviour
       _updateNeeded = false;
       req.Dispose();
     }
+  }
+
+  public void LateUpdate()
+  {
     if (!_namesUpToDate)
     {
       UpdateNames();
