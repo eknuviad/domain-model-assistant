@@ -17,6 +17,8 @@ public class CompartmentedRectangle : Node
 
     private Diagram _diagram;
 
+    private Vector2 _prevPosition;
+
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
@@ -66,11 +68,14 @@ public class CompartmentedRectangle : Node
     {
         this.hold = true;
         holdTimer += Time.deltaTime;
+        _prevPosition = this.transform.position;
     }
 
     public void OnEndHold()
     {
-        if(holdTimer > 1f - 5){
+        // TODO Don't spawn popup if class is being dragged
+        if(holdTimer > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/)
+        {
             SpawnPopupMenu();
         }
         holdTimer = 0;

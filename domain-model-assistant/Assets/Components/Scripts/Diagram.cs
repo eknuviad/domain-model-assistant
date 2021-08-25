@@ -115,6 +115,10 @@ public class Diagram : MonoBehaviour
       _updateNeeded = false;
       req.Dispose();
     }
+    if (_updateNeeded && _postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+    {
+      _postRequestAsyncOp.webRequest.Dispose(); 
+    }
   }
 
   public void LateUpdate()
@@ -231,18 +235,18 @@ public class Diagram : MonoBehaviour
 
   public void PostRequest(string uri, string data)
   {
-    using (var webRequest = UnityWebRequest.Put(uri, data))
-    {
+    /*using (*/var webRequest = UnityWebRequest.Put(uri, data);/*)
+    {*/
       webRequest.method = "POST";
       webRequest.disposeDownloadHandlerOnDispose = false;
       webRequest.SetRequestHeader("Content-Type", "application/json");
-      webRequest.SendWebRequest();
+      _postRequestAsyncOp = webRequest.SendWebRequest();
 
       // if (webRequest.result != UnityWebRequest.Result.Success)
       // {
       //   Debug.Log("HTTP POST error: " + webRequest.error);
       // }
-    }
+    // }
   }
 
   void Zoom()
