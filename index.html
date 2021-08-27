@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" name="viewport" content="width=device-width"/>
+    <meta name="theme-color" content="#FF7F50"/>
+    <!-- <link rel="shortcut icon" type="image/png" href="TBD"/> -->
+    <title>Class Diagram Editor Debug Page</title>
+    <style>
+      body {
+        font-family: Lato, Arial, Helvetica, sans-serif;
+      }
+      #ma_wrapper {
+        display: flex;
+      }
+      #ma_main {
+        flex: 1;
+      }
+      #cde {
+        flex: 1.1;
+      }
+      button {
+        background-color: inherit; border: none; outline: none; padding: 7px 7px; transition: 0.3s;
+        color: grey; font-size: 13px;
+      }
+      button:hover {
+        color: coral;
+      }
+    </style>
+    <script>
+      let cdmEditor = null;
+      window.onload = () => {
+        cdmEditor = document.createElement("iframe");
+        Object.assign(cdmEditor, {
+          style: "",
+          src: "http://localhost/domain-model-assistant/unity-webgl-output",
+          id: "cdm_editor",
+          name: "cdm_editor",
+          height: `${0.95 * window.innerHeight}px`,
+          width: "100%",
+          frameBorder: 0,
+        });
+        g("cde").appendChild(cdmEditor);
+        g("cdm_json").oninput = validateCdmJson;
+      }
+
+      function updateDiagram() {
+        const json = g("cdm_json").value;
+        if (validateCdmJson()) {
+          g("cdm_editor").contentWindow.postMessage(json, "*")
+        }
+      }
+
+      function resetAll() {
+        const cdmJson = g("cdm_json");
+        cdmJson.value = "";
+        cdmJson.style.border = "1px solid gray";
+        g("feedback_text").value = "";
+        g("cdm_editor").contentWindow.postMessage("ResetDiagram", "*");
+      }
+
+      function validateCdmJson() {
+        const cdmJson = g("cdm_json");
+        const content = cdmJson.value;
+        if (!content.length) {
+          cdmJson.style.border = "1px solid gray";
+          return false;
+        }
+        try {
+          JSON.parse(content);
+          cdmJson.style.border = "2px solid LimeGreen";
+          return true;
+        } catch (e) {
+          cdmJson.style.border = "2px solid red";
+          return false;
+        }
+      }
+
+      /** Shorthand for document.getElementById(). */
+      function g(id) {
+        return document.getElementById(id);
+      }
+    </script>
+  </head>
+
+  <body>
+  <div id="ma_wrapper">
+    <div id="ma_main">
+      <h1>Class Diagram Editor Debug Page</h1>
+      <p>This is a wrapper page for the Unity Cdm Editor, to allow for easier debugging.</p>
+
+      <div style="float: right; padding: 5px;">
+        <button id="update_diagram_btn" onclick="updateDiagram()">UPDATE DIAGRAM</button>
+        <button id="reset_all_btn" onclick="resetAll()">RESET ALL</button>
+        <button id="get_feedback_btn" disabled title="TBD" style="color: lightgrey;" onclick="giveFeedback()">GET FEEDBACK</button>
+      </div><br><br>
+
+      <p>Class Diagram JSON</p>
+      <textarea id="cdm_json" style="width: 100%; height: 40%; border: 1; outline: none;"></textarea>
+
+      <p>Feedback (TBD)</p>
+      <textarea id="feedback_text" readonly style="width: 100%; height: 20%; border: 1; outline: none;"></textarea>
+
+    </div>
+    <div id="cde"></div>
+  </div>
+  </body>
+</html>

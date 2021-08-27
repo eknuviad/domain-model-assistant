@@ -24,7 +24,9 @@ public class Diagram : MonoBehaviour
   private Vector3 dragStartPos;
   // private bool dragging = false;
   public GameObject compartmentedRectangle;
-  public List<GameObject /*CompartmentedRectangle*/> compartmentedRectangles;
+  public List<GameObject> compartmentedRectangles;
+
+  public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
 
   public const string WebcoreEndpoint = "http://localhost:8080/";
 
@@ -50,6 +52,8 @@ public class Diagram : MonoBehaviour
 
   CanvasMode _currentMode = CanvasMode.Default;
 
+  // References to the JavaScript functions defined in Assets/Plugins/cdmeditor.jslib
+
   [DllImport("__Internal")]
   private static extern void SetCursorToAddMode();
 
@@ -60,6 +64,7 @@ public class Diagram : MonoBehaviour
 
   private bool _namesUpToDate = false;
 
+  // true if app is run in browser, false if run in Unity editor
   private bool _isWebGl = false;
 
   private UnityWebRequestAsyncOperation _getRequestAsyncOp;
@@ -71,6 +76,7 @@ public class Diagram : MonoBehaviour
   public string ID
   { get; set; }
 
+  // Awake is called once to initialize this game object
   void Awake()
   {
     if (Application.platform == RuntimePlatform.WebGLPlayer)
@@ -97,30 +103,35 @@ public class Diagram : MonoBehaviour
       AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
       ActivateDefaultMode();
     }
+
     Zoom();
-    if (_updateNeeded && _getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+
+    if (UseWebcore && _updateNeeded)
     {
-      var req = _getRequestAsyncOp.webRequest;
-      if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+      if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
       {
-        var newResult = req.downloadHandler.text;
-        Debug.Log(newResult);
-        if (newResult != _getResult)
+        var req = _getRequestAsyncOp.webRequest;
+        if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
         {
-          LoadJson(newResult);
-          _getResult = newResult;
-          // _updateNeeded = false;
+          var newResult = req.downloadHandler.text;
+          Debug.Log(newResult);
+          if (newResult != _getResult)
+          {
+            LoadJson(newResult);
+            _getResult = newResult;
+          }
         }
+        _updateNeeded = false;
+        req.Dispose();
       }
-      _updateNeeded = false;
-      req.Dispose();
-    }
-    if (_updateNeeded && _postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-    {
-      _postRequestAsyncOp.webRequest.Dispose(); 
+      if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+      {
+        _postRequestAsyncOp.webRequest.Dispose(); 
+      }
     }
   }
 
+  // LateUpdate is called at the end of a frame update, after all Update operations are done
   public void LateUpdate()
   {
     if (!_namesUpToDate)
@@ -131,6 +142,9 @@ public class Diagram : MonoBehaviour
 
   // ************ Controller Methods for Canvas/Diagram ****************//
 
+  /// <summary>
+  /// Loads and displays the contents of jsonFile defined in Unity editor. 
+  /// </summary>
   private void LoadData()
   {
     Debug.Log("Loading data ...");
@@ -145,10 +159,11 @@ public class Diagram : MonoBehaviour
     Debug.Log("Loading JSON:" + cdmJson);
     ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+
+    // maps each _id to its (class object, position) pair 
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
+
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
-    // Debug.Log(String.Join(",", idsToClassesAndLayouts.Keys.ToList()));
-    // Debug.Log(String.Join(",", classDiagram.layout.containers[0].value.Select(cv => cv.key).ToList()));
     classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
     {
       if (idsToClassesAndLayouts.ContainsKey(contVal.key))
@@ -161,7 +176,6 @@ public class Diagram : MonoBehaviour
 
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
-      Debug.Log("cls: " + clsAndContval[0] + ", contval: " + clsAndContval[1]);
       var cls = (Class)clsAndContval[0];
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
@@ -170,21 +184,33 @@ public class Diagram : MonoBehaviour
     _namesUpToDate = false;
   }
 
+  /// <summary>
+  /// Adds a class to the diagram with the given name and position.
+  /// </summary>
   public void AddClass(string name, Vector2 position)
   {
-    // TODO Replace this ugly string once Unity moves to .NET 6
-    var jsonData = $@"{{
-      ""className"": ""{name}"",
-      ""dataType"": false,
-      ""isInterface"": false,
-      ""x"": {position.x},
-      ""y"": {position.y},
-    }}";
-    Debug.Log(jsonData);
-    PostRequest(AddClassEndpoint, jsonData);
-    GetRequest(GetCdmEndpoint);
+    if (UseWebcore)
+    {
+      // TODO Replace this ugly string once Unity moves to .NET 6
+      var jsonData = $@"{{
+        ""className"": ""{name}"",
+        ""dataType"": false,
+        ""isInterface"": false,
+        ""x"": {position.x},
+        ""y"": {position.y},
+      }}";
+      PostRequest(AddClassEndpoint, jsonData);
+      GetRequest(GetCdmEndpoint);
+    }
+    else
+    {
+      CreateCompartmentedRectangle(name, position);
+    }
   }
 
+  /// <summary>
+  /// Updates the names of the classes (otherwise, they all have the name of the most recently added class).
+  /// </summary>
   public void UpdateNames()
   {
     foreach (var nameRectPair in _namesToRects)
@@ -195,13 +221,19 @@ public class Diagram : MonoBehaviour
     _namesUpToDate = true;
   }
 
+  /// <summary>
+  /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
+  /// </summary>
   public void ResetDiagram()
   {
     compartmentedRectangles.ForEach(Destroy);
     compartmentedRectangles.Clear();
   }
 
-  public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id
+  /// <summary>
+  /// Creates a compartmented rectangle with the given name and position.
+  /// </summary>
+  public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id?
   {
     var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
@@ -211,44 +243,33 @@ public class Diagram : MonoBehaviour
   }
 
   /// <summary>
-  /// Returns the data from the server as a string.
+  /// Sends a GET request to the server. The response is the class diagram JSON and is stored in _getResult.
   /// </summary>
-  public void /*string*/ GetRequest(string uri)
+  public void GetRequest(string uri)
   {
-    /*using (*/var webRequest = UnityWebRequest.Get(uri);/*)
-    {*/
-      webRequest.SetRequestHeader("Content-Type", "application/json");
-      webRequest.disposeDownloadHandlerOnDispose = false;
-      _getRequestAsyncOp = webRequest.SendWebRequest();
-      _updateNeeded = true;
-      // if (webRequest.result == UnityWebRequest.Result.Success)
-      // {
-      //   return webRequest.downloadHandler.text;
-      // }
-      // else
-      // {
-      //   Debug.Log("HTTP GET error: " + webRequest.error);
-      //   return "";
-      // }
-    // }
+    // TODO Check if a `using` block can be used here, to auto-dispose the web request
+    var webRequest = UnityWebRequest.Get(uri);
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    _getRequestAsyncOp = webRequest.SendWebRequest();
+    _updateNeeded = true;
   }
 
+  /// <summary>
+  /// Sends a POST request to the server to modify the class diagram.
+  /// </summary>
   public void PostRequest(string uri, string data)
   {
-    /*using (*/var webRequest = UnityWebRequest.Put(uri, data);/*)
-    {*/
-      webRequest.method = "POST";
-      webRequest.disposeDownloadHandlerOnDispose = false;
-      webRequest.SetRequestHeader("Content-Type", "application/json");
-      _postRequestAsyncOp = webRequest.SendWebRequest();
-
-      // if (webRequest.result != UnityWebRequest.Result.Success)
-      // {
-      //   Debug.Log("HTTP POST error: " + webRequest.error);
-      // }
-    // }
+    var webRequest = UnityWebRequest.Put(uri, data);
+    webRequest.method = "POST";
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    _postRequestAsyncOp = webRequest.SendWebRequest();
   }
 
+  /// <summary>
+  /// Zooms the user interface.
+  /// </summary>
   void Zoom()
   {
     if (Input.touchSupported)
@@ -284,6 +305,9 @@ public class Diagram : MonoBehaviour
 
   // ************ UI model Methods for Canvas/Diagram ****************//
 
+  /// <summary>
+  /// Adds a node to the diagram.
+  /// </summary>
   public bool AddNode(GameObject node)
   {
     if (compartmentedRectangles.Contains(node))
@@ -305,11 +329,17 @@ public class Diagram : MonoBehaviour
     return false;
   }
 
+  /// <summary>
+  /// Returns the list of compartmented rectangles.
+  /// </summary>
   public List<GameObject> GetCompartmentedRectangles()
   {
     return compartmentedRectangles;
   }
 
+  /// <summary>
+  /// Activates the default mode.
+  /// </summary>
   public void ActivateDefaultMode()
   {
     if (_isWebGl)
