@@ -27,7 +27,8 @@ In order to run our project, you will need to follow the steps below:
 1. Download the release of [Unity](https://unity3d.com/get-unity/download) mentioned in
 [ProjectVersion.txt](domain-model-assistant/ProjectSettings/ProjectVersion.txt)
 1. Download [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/), or any other compatible IDE
-1. Setup and start a [WebCORE](https://bitbucket.org/mcgillram/) server instance on your local machine
+1. Setup and start a [WebCORE](https://bitbucket.org/mcgillram/) server instance on your local machine.
+See [this page](documentation/webcore.md) for more information about WebCORE.
 1. Clone this project onto your local machine
 1. [Setup](documentation/Unity-WebGL-Apache-Server-Setup.md) the Apache/IIS server to serve the project
 1. Open the project via Unity, by choosing
@@ -41,6 +42,8 @@ http://localhost/domain-model-assistant/unity-webgl-output/
 to view the project in a standalone page, or
 http://localhost/domain-model-assistant/ to view the project
 with a wrapper page for easier debugging
+
+For more information about the project implementation, see [here](documentation/implementation-details.md).
 
 
 ___
