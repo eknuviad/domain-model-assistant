@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
+
     // Start is called before the first frame update
     public float zoomSpeed = 1;
     public float targetOrtho;
@@ -24,8 +25,8 @@ public class CameraScript : MonoBehaviour
             targetOrtho = Mathf.Clamp (targetOrtho, minOrtho, maxOrtho);
         }
         
-        Camera.main.orthographicSize = Mathf.MoveTowards (Camera.main.orthographicSize, targetOrtho, smoothSpeed * Time.deltaTime);
+        Camera.main.orthographicSize =
+            Mathf.MoveTowards(Camera.main.orthographicSize, targetOrtho, smoothSpeed * Time.deltaTime);
     }
 
-    
 }

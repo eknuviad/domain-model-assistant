@@ -3,52 +3,59 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ClassDiagramDTO {
+public class ClassDiagramDTO
+{
     public string eClass;
     public string _id;
-    public string name;
-    public Classes[] classes;
-    public Types[] types;
+    public string name; // NamedElement?
+    public List<Class> classes;
+    public List<CDType> types;
     public Layout layout;
-};
-
+    // TODO add feedback(s) here?
+}
 
 [System.Serializable]
-public class Classes{
+public class Class
+{
     public string eClass;
     public string _id;
     public string name;
-};
+}
 
 [System.Serializable]
-public class Types{
+public class CDType
+{
     public string eClass;
     public string _id;
-};
+}
 
 [System.Serializable]
-public class Layout{
+public class Layout
+{
     public string _id;
-    public Containers[] containers;
-};
+    public List<ContainerMap> containers;
+}
 
 [System.Serializable]
-public class Containers{
+public class ContainerMap
+{
     public string _id;
     public string key;
-    public Value[] value;
-};
+    public List<ElementMap> value/*s*/; // TODO Change this after WebCORE is updated
+}
 
 [System.Serializable]
-public class Value{
+public class ElementMap
+{
     public string _id;
-    public string x;
-    public Cordinate value;
-};
+    public string key;
+    public LayoutElement value;
+}
 
 [System.Serializable]
-public class Cordinate{
+public class LayoutElement
+{
     public string _id;
     public float x;
     public float y;
-};
+}

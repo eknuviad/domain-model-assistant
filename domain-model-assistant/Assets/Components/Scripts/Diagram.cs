@@ -1,133 +1,389 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+//using System.Dynamic;
+using System.Linq;
+using System.Runtime.InteropServices;
+//using System.Text.Json; // TODO Use JsonSerializer.Serialize when Unity moves to .NET 6
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
-public class Diagram : MonoBehaviour{
+public class Diagram : MonoBehaviour
+{
 
-    public TextAsset jsonFile;
-    public float zoomSpeed = 1;
-    public CanvasScaler CanvasScaler;
-    public float targetOrtho;
-    public float smoothSpeed = 2.0f;
-    public float minOrtho = 0.0f;
-    public float maxOrtho = 20.0f;
-    private Vector3 dragStartPos;
-    // private bool dragging = false;
-    public GameObject compartmentedRectangle;
-    public List<GameObject> compRectList;
-    private ClassDiagramDTO classDTO;
-    public string ID{
-        get{
-            return ID;
-        }
-        set{
-            ID = value;
-        }
-    }
-    void Awake(){
-         LoadData();
-    }
-    // Start is called before the first frame update
-    GraphicRaycaster raycaster;
-    void Start()
+  public TextAsset jsonFile;
+  public float zoomSpeed = 1;
+  public CanvasScaler CanvasScaler;
+  public float targetOrtho;
+  public float smoothSpeed = 2.0f;
+  public float minOrtho = 0.0f;
+  public float maxOrtho = 20.0f;
+  private Vector3 dragStartPos;
+  // private bool dragging = false;
+  public GameObject compartmentedRectangle;
+  public List<GameObject> compartmentedRectangles;
+
+  public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
+
+  public const string WebcoreEndpoint = "http://localhost:8080/";
+
+  public const string cdmName = "MULTIPLE_CLASSES"; // TODO Remove this once API is updated
+
+  public const string GetCdmEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName;
+
+  public const string AddClassEndpoint = GetCdmEndpoint + "/class";
+
+  private ClassDiagramDTO classDTO;
+
+  GraphicRaycaster raycaster;
+
+  Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
+
+  enum CanvasMode
+  {
+    Default,
+    AddingClass,
+    AddingAttribute,
+    // ...
+  }
+
+  CanvasMode _currentMode = CanvasMode.Default;
+
+  // References to the JavaScript functions defined in Assets/Plugins/cdmeditor.jslib
+
+  [DllImport("__Internal")]
+  private static extern void SetCursorToAddMode();
+
+  [DllImport("__Internal")]
+  private static extern void ResetCursor();
+
+  private bool _updateNeeded = false;
+
+  private bool _namesUpToDate = false;
+
+  // true if app is run in browser, false if run in Unity editor
+  private bool _isWebGl = false;
+
+  private UnityWebRequestAsyncOperation _getRequestAsyncOp;
+
+  private UnityWebRequestAsyncOperation _postRequestAsyncOp;
+
+  private string _getResult = "";
+
+  public string ID
+  { get; set; }
+
+  // Awake is called once to initialize this game object
+  void Awake()
+  {
+    if (Application.platform == RuntimePlatform.WebGLPlayer)
     {
-        CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
-        targetOrtho = CanvasScaler.scaleFactor;
-        this.raycaster = GetComponent<GraphicRaycaster>();
+      _isWebGl = true;
+    }
+  }
+
+   // Start is called before the first frame update
+  void Start()
+  {
+    CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
+    targetOrtho = CanvasScaler.scaleFactor;
+    this.raycaster = GetComponent<GraphicRaycaster>();
+    GetRequest(GetCdmEndpoint);
+  }
+
+  // Update is called once per frame
+  void Update()
+  {
+    if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
+        (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
+    {
+      AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+      ActivateDefaultMode();
     }
 
-    // Update is called once per frame
-    void Update()
+    Zoom();
+
+    if (UseWebcore && _updateNeeded)
     {
-        if(InputExtender.MouseExtender.isDoubleClick(0))
+      if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+      {
+        var req = _getRequestAsyncOp.webRequest;
+        if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
         {
-            Vector2 tempFingerPos = (Input.mousePosition);
-            CreateCompartmentedRectangle(tempFingerPos);
+          var newResult = req.downloadHandler.text;
+          Debug.Log(newResult);
+          if (newResult != _getResult)
+          {
+            LoadJson(newResult);
+            _getResult = newResult;
+          }
         }
-        Zoom();
+        _updateNeeded = false;
+        req.Dispose();
+      }
+      if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+      {
+        _postRequestAsyncOp.webRequest.Dispose(); 
+      }
     }
+  }
 
-
-
-
-// ************ Controller Methods for Canvas/Diagram ****************//
-   private void LoadData(){
-        Debug.Log("Loading data ...");
-        // obtain class DTO from json string format
-        classDTO = JsonUtility.FromJson<ClassDiagramDTO>(jsonFile.text);
-        // convert float positions to Vector2
-        Vector2 position = new Vector2(classDTO.layout.containers[0].value[0].value.x, 
-                                        classDTO.layout.containers[0].value[0].value.y);
-        // create comp rectangle with header and sections
-        GameObject newCompRect = CreateCompartmentedRectangle(position);
-        // set the header value of the created class
-        newCompRect.GetComponent<CompartmentedRectangle>().getHeader().
-                    GetComponent<TextBox>().setText(classDTO.classes[0].name);
-    }
-    
-    public GameObject CreateCompartmentedRectangle(Vector2 position)
+  // LateUpdate is called at the end of a frame update, after all Update operations are done
+  public void LateUpdate()
+  {
+    if (!_namesUpToDate)
     {
-        GameObject compRect = Instantiate(compartmentedRectangle, this.transform);
-        compRect.transform.position = position;
-        addNode(compRect);
-        return compRect;
+      UpdateNames();
+    }
+  }
+
+  // ************ Controller Methods for Canvas/Diagram ****************//
+
+  /// <summary>
+  /// Loads and displays the contents of jsonFile defined in Unity editor. 
+  /// </summary>
+  private void LoadData()
+  {
+    Debug.Log("Loading data ...");
+    LoadJson(jsonFile.text);
+  }
+
+  /// <summary>
+  /// Loads and displays the class diagram encoded by the input JSON string.
+  /// </summary>
+  public void LoadJson(string cdmJson)
+  {
+    Debug.Log("Loading JSON:" + cdmJson);
+    ResetDiagram();
+    var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+
+    // maps each _id to its (class object, position) pair 
+    var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
+
+    classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
+    classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
+    {
+      if (idsToClassesAndLayouts.ContainsKey(contVal.key))
+      {
+        idsToClassesAndLayouts[contVal.key][1] = contVal;
+      }
+    });
+
+    _namesToRects.Clear();
+
+    foreach (var clsAndContval in idsToClassesAndLayouts.Values)
+    {
+      var cls = (Class)clsAndContval[0];
+      var layoutElement = ((ElementMap)clsAndContval[1]).value;
+      _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
     }
 
+    _namesUpToDate = false;
+  }
 
-    void Zoom()
+  /// <summary>
+  /// Adds a class to the diagram with the given name and position.
+  /// </summary>
+  public void AddClass(string name, Vector2 position)
+  {
+    if (UseWebcore)
     {
-        if (Input.touchSupported)
+      // TODO Replace this ugly string once Unity moves to .NET 6
+      var jsonData = $@"{{
+        ""className"": ""{name}"",
+        ""dataType"": false,
+        ""isInterface"": false,
+        ""x"": {position.x},
+        ""y"": {position.y},
+      }}";
+      PostRequest(AddClassEndpoint, jsonData);
+      GetRequest(GetCdmEndpoint);
+    }
+    else
+    {
+      CreateCompartmentedRectangle(name, position);
+    }
+  }
+
+  /// <summary>
+  /// Updates the names of the classes (otherwise, they all have the name of the most recently added class).
+  /// </summary>
+  public void UpdateNames()
+  {
+    foreach (var nameRectPair in _namesToRects)
+    {
+      nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
+          .SetText(nameRectPair.Key);
+    }
+    _namesUpToDate = true;
+  }
+
+  /// <summary>
+  /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
+  /// </summary>
+  public void ResetDiagram()
+  {
+    compartmentedRectangles.ForEach(Destroy);
+    compartmentedRectangles.Clear();
+  }
+
+  /// <summary>
+  /// Creates a compartmented rectangle with the given name and position.
+  /// </summary>
+  public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id?
+  {
+    var compRect = Instantiate(compartmentedRectangle, this.transform);
+    compRect.transform.position = position;
+    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
+    AddNode(compRect);
+    return compRect;
+  }
+
+  /// <summary>
+  /// Sends a GET request to the server. The response is the class diagram JSON and is stored in _getResult.
+  /// </summary>
+  public void GetRequest(string uri)
+  {
+    // TODO Check if a `using` block can be used here, to auto-dispose the web request
+    var webRequest = UnityWebRequest.Get(uri);
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    _getRequestAsyncOp = webRequest.SendWebRequest();
+    _updateNeeded = true;
+  }
+
+  /// <summary>
+  /// Sends a POST request to the server to modify the class diagram.
+  /// </summary>
+  public void PostRequest(string uri, string data)
+  {
+    var webRequest = UnityWebRequest.Put(uri, data);
+    webRequest.method = "POST";
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    _postRequestAsyncOp = webRequest.SendWebRequest();
+  }
+
+  /// <summary>
+  /// Zooms the user interface.
+  /// </summary>
+  void Zoom()
+  {
+    if (Input.touchSupported)
+    {
+      if (Input.touchCount == 2)
+      {
+        // get current touch positions
+        Touch tZero = Input.GetTouch(0);
+        Touch tOne = Input.GetTouch(1);
+        // get touch position from the previous frame
+        Vector2 tZeroPrevious = tZero.position - tZero.deltaPosition;
+        Vector2 tOnePrevious = tOne.position - tOne.deltaPosition;
+        float oldTouchDistance = Vector2.Distance(tZeroPrevious, tOnePrevious);
+        float currentTouchDistance = Vector2.Distance(tZero.position, tOne.position);
+        if ((oldTouchDistance - currentTouchDistance) != 0.0f)
         {
-            if (Input.touchCount == 2)
-            {
-                // get current touch positions
-                Touch tZero = Input.GetTouch(0);
-                Touch tOne = Input.GetTouch(1);
-                // get touch position from the previous frame
-                Vector2 tZeroPrevious = tZero.position - tZero.deltaPosition;
-                Vector2 tOnePrevious = tOne.position - tOne.deltaPosition;
-                float oldTouchDistance = Vector2.Distance (tZeroPrevious, tOnePrevious);
-                float currentTouchDistance = Vector2.Distance (tZero.position, tOne.position);
-                if ((oldTouchDistance - currentTouchDistance) != 0.0f){
-                    targetOrtho += Mathf.Clamp ((oldTouchDistance - currentTouchDistance), -1, 1) * zoomSpeed * 0.03f ;
-                    targetOrtho = Mathf.Clamp (targetOrtho, minOrtho, maxOrtho);
-                }
-            }
+          targetOrtho += Mathf.Clamp((oldTouchDistance - currentTouchDistance), -1, 1) * zoomSpeed * 0.03f;
+          targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
         }
-        else{
-            float scroll = Input.GetAxis ("Mouse ScrollWheel");
-            if (scroll != 0.0f) {
-                targetOrtho += scroll * zoomSpeed * 0.3f;
-                targetOrtho = Mathf.Clamp (targetOrtho, minOrtho, maxOrtho);
-            }
-        }
-        CanvasScaler.scaleFactor = Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
+      }
     }
-
-
-
-
-// ************ UI model Methods for Canvas/Diagram ****************//
-    public bool addNode(GameObject aNode){
-        bool wasSet = false;
-        if(compRectList.Contains(aNode)){
-            return false;
-        }
-        compRectList.Add(aNode);
-        aNode.GetComponent<CompartmentedRectangle>().setDiagram(this.gameObject);
-        Debug.Log("Node added to list of compartmented rectangles");
-        wasSet = true;
-        return wasSet;
+    else
+    {
+      float scroll = Input.GetAxis("Mouse ScrollWheel");
+      if (scroll != 0.0f)
+      {
+        targetOrtho += scroll * zoomSpeed * 0.3f;
+        targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
+      }
     }
+    CanvasScaler.scaleFactor = Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
+  }
 
-    public List<GameObject> getCompartmentedRectangles(){
-            return compRectList;
+  // ************ UI model Methods for Canvas/Diagram ****************//
+
+  /// <summary>
+  /// Adds a node to the diagram.
+  /// </summary>
+  public bool AddNode(GameObject node)
+  {
+    if (compartmentedRectangles.Contains(node))
+    {
+      return false;
     }
+    compartmentedRectangles.Add(node);
+    node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
+    return true;
+  }
 
+  public bool RemoveNode(GameObject node)
+  {
+    if (compartmentedRectangles.Contains(node))
+    {
+      compartmentedRectangles.Remove(node);
+      return true;
+    }
+    return false;
+  }
 
+  /// <summary>
+  /// Returns the list of compartmented rectangles.
+  /// </summary>
+  public List<GameObject> GetCompartmentedRectangles()
+  {
+    return compartmentedRectangles;
+  }
 
+  /// <summary>
+  /// Activates the default mode.
+  /// </summary>
+  public void ActivateDefaultMode()
+  {
+    if (_isWebGl)
+    {
+      ResetCursor();
+    }
+    Debug.Log("Activating default mode");
+    _currentMode = CanvasMode.Default;
+  }
 
+  public void EnterAddClassMode()
+  {
+    if (_isWebGl)
+    {
+      SetCursorToAddMode();
+    }
+    Debug.Log("Entering Add class mode");
+    _currentMode = CanvasMode.AddingClass;
+  }
+
+  /// <summary>
+  /// Called by AddClassAction when the AddClass button is pressed.
+  /// </summary>
+  public void AddClassButtonPressed()
+  {
+    if (_currentMode == CanvasMode.AddingClass)
+    {
+      ActivateDefaultMode();
+    }
+    else
+    {
+      EnterAddClassMode();
+    }
+  }
+
+  /// <summary>
+  /// Perform the debug action specified in the body upon the Debug button getting clicked.
+  /// </summary>
+  public void DebugAction()
+  {
+    Debug.Log("Debug button clicked!");
+    //LoadData();
+    GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
+        .SetText("Rabbit");
+  }
 
 }

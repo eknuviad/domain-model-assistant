@@ -8,98 +8,119 @@ public class CompartmentedRectangle : Node
     
     public GameObject textbox;
     public GameObject section;
-    public List<GameObject> sections;
+    public List<GameObject> sections = new List<GameObject>();
     
     // popup menu variables
     public GameObject popupMenu;
-    float hold_timer = 0;
+    float holdTimer = 0;
     bool hold = false;
 
-    void Awake(){
-        
+    private Diagram _diagram;
+
+    private Vector2 _prevPosition;
+
+    void Awake()
+    {
+        _diagram = GetComponentInParent<Diagram>();
     }
     
     // Start is called before the first frame update
-    void Start(){
+    void Start()
+    {
         CreateHeader();
         CreateSection();
     }
 
     // Update is called once per frame
-    void Update(){
-        if (this.hold){
+    void Update()
+    {
+        if (this.hold)
+        {
             OnBeginHold();
         }
     }
 
+    // ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
 
-
-// ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
-    public void CreateHeader(){
-        GameObject header = GameObject.Instantiate(textbox, this.transform);
-        //vector position will need to be obtained from transform of gameobject in the 
-        //future
-        header.transform.position = this.transform.position + new Vector3(0,45,0);
-        addHeader(header);
+    public void CreateHeader()
+    {
+        var header = GameObject.Instantiate(textbox, this.transform);
+        //vector position will need to be obtained from transform of gameobject in the future
+        header.transform.position = this.transform.position + new Vector3(0, 45, 0);
+        AddHeader(header);
     }
     
-    public void CreateSection(){
+    public void CreateSection()
+    {
         Vector3 oldPosition = this.transform.position;
-        for (int i = 0; i<2; i++){
-            Debug.Log(oldPosition);
-            GameObject sect = GameObject.Instantiate(section, this.transform);
+        for (int i = 0; i < 2; i++)
+        {
+            var sect = GameObject.Instantiate(section, this.transform);
             sect.transform.position = oldPosition;
-            // at the moment vector positions are hardcoded but will need to be obtained
-            //from the transform of the gameobject
-            oldPosition += new Vector3(0, - 46, 0);
-            Debug.Log(oldPosition);
-            addSection(sect);
+            // At the moment vector positions are hardcoded but will need to be obtained
+            // from the transform of the gameobject
+            oldPosition += new Vector3(0, -46, 0);
+            AddSection(sect);
         }
     }
 
-    public void OnBeginHold(){
+    public void OnBeginHold()
+    {
         this.hold = true;
-        hold_timer += Time.deltaTime;
+        holdTimer += Time.deltaTime;
+        _prevPosition = this.transform.position;
     }
 
-    public void OnEndHold(){
-        if(hold_timer > 1f - 5){
+    public void OnEndHold()
+    {
+        // TODO Don't spawn popup if class is being dragged
+        if(holdTimer > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/)
+        {
             SpawnPopupMenu();
         }
-        hold_timer = 0;
+        holdTimer = 0;
         this.hold = false;
     }
 
-     void SpawnPopupMenu(){
-        if(this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null){
+    void SpawnPopupMenu()
+    {
+        if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null)
+        {
             this.popupMenu = GameObject.Instantiate(this.popupMenu);
             this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
             this.popupMenu.GetComponent<PopupMenu>().setCompartmentedRectangle(this);
-        }else{
+        }
+        else
+        {
             this.popupMenu.GetComponent<PopupMenu>().Open(); 
         } 
     }
-    public void Destroy() //destroy class diagram when click on delete class
+
+    /// <summary>
+    /// Destroy class when click on delete class.
+    /// </summary>
+    public void Destroy()
     {
+        _diagram.RemoveNode(this.gameObject);
         this.popupMenu.GetComponent<PopupMenu>().Destroy(); 
         Destroy(this.gameObject);
     }
 
-// ************ END Controller Methods for Compartmented Rectangle ****************//
+    // ************ END Controller Methods for Compartmented Rectangle ****************//
 
-// ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
-    public bool addSection(GameObject aSection){
-        bool wasSet = false;
-        if(sections.Contains(aSection)){
+    // ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
+
+    public bool AddSection(GameObject aSection)
+    {
+        if (sections.Contains(aSection))
+        {
             return false;
         }
         sections.Add(aSection);
-        aSection.GetComponent<Section>().setCompartmentedRectangle(this.gameObject);
-        Debug.Log("Section added to list of sections for this compartmented rectangles");
-        wasSet = true;
-        return wasSet;
+        aSection.GetComponent<Section>().SetCompartmentedRectangle(this.gameObject);
+        return true;
     }
 
-// ************ END UI model Methods for Compartmented Rectangle ****************//
+    // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }

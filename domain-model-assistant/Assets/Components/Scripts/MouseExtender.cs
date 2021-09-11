@@ -4,36 +4,54 @@ using UnityEngine;
 
 namespace InputExtender
 {
-    public static class MouseExtender
+
+  public static class MouseExtender
+  {
+    public const int LeftButton = 0;
+
+    public const int RightButton = 1;
+
+    public const int MiddleButton = 2;
+
+    public const float DoubleClickTime = 0.2f;
+
+    private static Dictionary<int, float> _prevClickTimes = new Dictionary<int, float>();
+
+    public static bool IsSingleClick(int mouseBtn = LeftButton)
     {
-        private static float lastTime;
-        private static float currentTime;
-        private static int clicks = 0;
-
-        public static bool isDoubleClick(int mouseBtn)
-        {
-            if(Input.GetMouseButtonDown(mouseBtn))
-            {
-                clicks += 1;
-                if(clicks == 1)
-                {
-                    lastTime = Time.unscaledTime;
-                }
-
-                if(clicks >= 2)
-                {
-                    currentTime = Time.unscaledTime;
-                    float difference = currentTime - lastTime;
-
-                    clicks = 0;
-                    if(difference <= 0.2f)
-                    {
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        }
+      return NumberOfClicks(mouseBtn) == 1;
     }
+
+    public static bool IsDoubleClick(int mouseBtn = LeftButton)
+    {
+      return NumberOfClicks(mouseBtn) == 2;
+    }
+
+    public static int NumberOfClicks(int mouseBtn)
+    {
+      if (Input.GetMouseButtonDown(mouseBtn))
+      {
+        var now = Time.unscaledTime;
+
+        // Special case for the first click since it has no previous click time
+        if (!_prevClickTimes.ContainsKey(mouseBtn))
+        {
+           _prevClickTimes[mouseBtn] = now;
+           return 1;
+        }
+
+        var clicks = PressedRecently(mouseBtn) ? 2 : 1;
+        _prevClickTimes[mouseBtn] = now;
+        return clicks;
+      }
+      return 0;
+    }
+
+    private static bool PressedRecently(int mouseBtn)
+    {
+      return (Time.unscaledTime - _prevClickTimes[mouseBtn]) <= DoubleClickTime;
+    }
+
+  }
+
 }

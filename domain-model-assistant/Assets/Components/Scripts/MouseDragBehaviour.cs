@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+
     private Vector2 lastMousePosition;
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -30,7 +31,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        //Implement your funtionlity here
+        // Implement your functionality here
     }
 
 
@@ -41,17 +42,18 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
         rectTransform.GetWorldCorners(corners);
         int visibleCorners = 0;
         Rect rect = new Rect(0,0,Screen.width, Screen.height);
-        foreach(Vector3 corner in corners)
+        foreach (Vector3 corner in corners)
         {
             if(rect.Contains(corner))
             {
                 visibleCorners++;
             }
         }
-        if(visibleCorners == 4)
+        if (visibleCorners == 4)
         {
             isInside = true;
         }
         return isInside;
     }
+
 }
