@@ -17,6 +17,12 @@ using Eclipse or Maven.
 The following `curl` commands are useful for debugging and can
 be translated into C# code to be used within the application.
 
+
+Get the entire class diagram
+```bash
+curl --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES' --header 'Content-Type: application/json'
+```
+
 Get all class `_id`s and names
 ```bash
 echo "console.log(JSON.parse(process.argv.slice(2).join('')).classes.map(c=>c._id+': '+c.name))" | node - `curl --silent --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/' --header 'Content-Type: application/json'`
@@ -27,7 +33,7 @@ Sample output: `[ 'X', 'City', 'Y' ]`
 Add a class
 
 ```bash
-curl --location --request POST 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/class' --header 'Content-Type: application/json' --data '{"className":"Class3","dataType":false,"isInterface":false,"x":116,"y":249,}'
+curl --location --request POST 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/class' --header 'Content-Type: application/json' --data '{"className":"Class3","dataType":false,"isInterface":false,"x":116,"y":249}'
 ```
 
 Delete a class by `_id`

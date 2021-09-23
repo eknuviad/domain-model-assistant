@@ -36,6 +36,8 @@ public class Diagram : MonoBehaviour
 
   public const string AddClassEndpoint = GetCdmEndpoint + "/class";
 
+  public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
+
   private ClassDiagramDTO classDTO;
 
   GraphicRaycaster raycaster;
@@ -70,6 +72,8 @@ public class Diagram : MonoBehaviour
   private UnityWebRequestAsyncOperation _getRequestAsyncOp;
 
   private UnityWebRequestAsyncOperation _postRequestAsyncOp;
+
+  private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
 
   private string _getResult = "";
 
@@ -114,7 +118,6 @@ public class Diagram : MonoBehaviour
         if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
         {
           var newResult = req.downloadHandler.text;
-          Debug.Log(newResult);
           if (newResult != _getResult)
           {
             LoadJson(newResult);
@@ -127,6 +130,10 @@ public class Diagram : MonoBehaviour
       if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
       {
         _postRequestAsyncOp.webRequest.Dispose(); 
+      }
+      if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+      {
+        _deleteRequestAsyncOp.webRequest.Dispose();
       }
     }
   }
@@ -147,7 +154,6 @@ public class Diagram : MonoBehaviour
   /// </summary>
   private void LoadData()
   {
-    Debug.Log("Loading data ...");
     LoadJson(jsonFile.text);
   }
 
@@ -156,7 +162,7 @@ public class Diagram : MonoBehaviour
   /// </summary>
   public void LoadJson(string cdmJson)
   {
-    Debug.Log("Loading JSON:" + cdmJson);
+    // Debug.Log("Loading JSON:" + cdmJson);
     ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
@@ -177,6 +183,7 @@ public class Diagram : MonoBehaviour
     foreach (var clsAndContval in idsToClassesAndLayouts.Values)
     {
       var cls = (Class)clsAndContval[0];
+      Debug.Log(clsAndContval[1]);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
     }
@@ -205,6 +212,21 @@ public class Diagram : MonoBehaviour
     else
     {
       CreateCompartmentedRectangle(name, position);
+    }
+  }
+
+  public void DeleteClass(GameObject node)
+  {
+    if (UseWebcore)
+    {
+      string _id = node.GetComponent<CompartmentedRectangle>().ID;
+      DeleteRequest(DeleteClassEndpoint, _id);
+      GetRequest(GetCdmEndpoint);
+    }
+    else
+    {
+      RemoveNode(node);
+      Destroy(node);
     }
   }
 
@@ -265,6 +287,19 @@ public class Diagram : MonoBehaviour
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");
     _postRequestAsyncOp = webRequest.SendWebRequest();
+  }
+
+
+  /// <summary>
+  /// Sends a DELETE request to the server to remove an item from the class diagram.
+  /// </summary>
+  public void DeleteRequest(string uri, string _id)
+  {
+    var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
+    webRequest.method = "DELETE";
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    _deleteRequestAsyncOp = webRequest.SendWebRequest();
   }
 
   /// <summary>
