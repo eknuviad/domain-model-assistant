@@ -112,14 +112,13 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', function (req, res) {
 // Delete class
 app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', function (req, res) {
   const classId = req.params.class_id;
-  console.log(JSON.stringify(req.body));
   const allClassIds = classDiagram.classes.map(c => c._id);
   var indexToRemove = allClassIds.indexOf(classId);
   if (indexToRemove > -1) {
     classDiagram.classes.splice(indexToRemove, 1);
   }
 
-  var values =  classDiagram.layout.containers[0].value; // TODO Change to "values" later
+  var values = classDiagram.layout.containers[0].value; // TODO Change to "values" later
   const allLayoutIds = values.map(c => c.key);
   var indexToRemove2 = allLayoutIds.indexOf(classId);
   if (indexToRemove2 > -1) {

@@ -180,12 +180,14 @@ public class Diagram : MonoBehaviour
 
     _namesToRects.Clear();
 
-    foreach (var clsAndContval in idsToClassesAndLayouts.Values)
+    foreach (var keyValuePair in idsToClassesAndLayouts)
     {
+      var _id = keyValuePair.Key;
+      var clsAndContval = keyValuePair.Value;
       var cls = (Class)clsAndContval[0];
       Debug.Log(clsAndContval[1]);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
-      _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
+      _namesToRects[cls.name] = CreateCompartmentedRectangle(_id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
     }
 
     _namesUpToDate = false;
@@ -211,7 +213,7 @@ public class Diagram : MonoBehaviour
     }
     else
     {
-      CreateCompartmentedRectangle(name, position);
+      CreateCompartmentedRectangle((compartmentedRectangles.Capacity + 1).ToString(), name, position);
     }
   }
 
@@ -255,10 +257,11 @@ public class Diagram : MonoBehaviour
   /// <summary>
   /// Creates a compartmented rectangle with the given name and position.
   /// </summary>
-  public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id?
+  public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
   {
     var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
+    compRect.GetComponent<CompartmentedRectangle>().ID = _id;
     compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
     AddNode(compRect);
     return compRect;
