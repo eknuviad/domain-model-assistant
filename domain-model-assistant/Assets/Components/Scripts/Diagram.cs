@@ -163,8 +163,13 @@ public class Diagram : MonoBehaviour
     // maps each _id to its (class object, position) pair 
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
 
+    //Create List<object> for each class in the new dictionary, whose key is the class id. 
+    //First element in List<object> = Class Object
+    //Second elemnet in List<object> = ElementMap Object
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
-    classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
+
+    //Associate a specific ElementMap to its corresponding class in its List<object> of the dictionary
+    classDiagram.layout.containers[0].values.ForEach(contVal =>
     {
       if (idsToClassesAndLayouts.ContainsKey(contVal.key))
       {
