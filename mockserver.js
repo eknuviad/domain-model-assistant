@@ -70,7 +70,7 @@ var classDiagram = {
       {
         "_id": "13",
         "key": "null",
-        "values": [
+        "value": [ // TODO Change to "values" when WebCORE is updated
           {
             "_id": "14",
             "key": "1", // is the same as the class id
@@ -118,10 +118,12 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', function (req, res)
   if (indexToRemove > -1) {
     classDiagram.classes.splice(indexToRemove, 1);
   }
-  const allLayoutIds = classDiagram.layout.containers[0].values.map(c => c.key);
+
+  var values =  classDiagram.layout.containers[0].value; // TODO Change to "values" later
+  const allLayoutIds = values.map(c => c.key);
   var indexToRemove2 = allLayoutIds.indexOf(classId);
   if (indexToRemove2 > -1) {
-    classDiagram.layout.containers[0].values.splice(indexToRemove2, 1);
+    values.splice(indexToRemove2, 1);
   }
   res.sendStatus(200);
 });
