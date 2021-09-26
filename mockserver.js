@@ -6,6 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const SUCCESS = 200;
+const PORT = 8080;
+
 var classDiagram = {
   "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//ClassDiagram",
   "_id": "100",
@@ -96,21 +99,21 @@ var classDiagram = {
 };
 
 // GET class diagram
-app.get('/classdiagram/MULTIPLE_CLASSES', function (req, res) {
+app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
   console.log(classDiagram);
   res.json(classDiagram); // TODO change
 });
 
 // Add class
-app.post('/classdiagram/MULTIPLE_CLASSES/class', function (req, res) {
-  console.log("1:" + JSON.stringify(req.body));
+app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
+  console.log(">>> Adding class given req.body: " + JSON.stringify(req.body));
   // TODO
 
-  res.sendStatus(200);
+  res.sendStatus(SUCCESS);
 });
 
 // Delete class
-app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', function (req, res) {
+app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   const classId = req.params.class_id;
   const allClassIds = classDiagram.classes.map(c => c._id);
   var indexToRemove = allClassIds.indexOf(classId);
@@ -118,16 +121,16 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', function (req, res)
     classDiagram.classes.splice(indexToRemove, 1);
   }
 
-  var values = classDiagram.layout.containers[0].value; // TODO Change to "values" later
+  var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
   const allLayoutIds = values.map(c => c.key);
   var indexToRemove2 = allLayoutIds.indexOf(classId);
   if (indexToRemove2 > -1) {
     values.splice(indexToRemove2, 1);
   }
-  res.sendStatus(200);
+  res.sendStatus(SUCCESS);
 });
 
-var server = app.listen(8080, function () {
+var server = app.listen(PORT, () => {
   var host = server.address().address
   var port = server.address().port
   console.log("Example app listening at http://%s:%s", host, port)

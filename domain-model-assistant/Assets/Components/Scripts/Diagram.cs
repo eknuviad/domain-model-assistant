@@ -187,7 +187,8 @@ public class Diagram : MonoBehaviour
       var cls = (Class)clsAndContval[0];
       Debug.Log(clsAndContval[1]);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
-      _namesToRects[cls.name] = CreateCompartmentedRectangle(_id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
+      _namesToRects[cls.name] = CreateCompartmentedRectangle(
+          _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
     }
 
     _namesUpToDate = false;
@@ -224,6 +225,7 @@ public class Diagram : MonoBehaviour
       string _id = node.GetComponent<CompartmentedRectangle>().ID;
       DeleteRequest(DeleteClassEndpoint, _id);
       GetRequest(GetCdmEndpoint);
+      // No need to remove or destroy the node here since entire class diagram is recreated
     }
     else
     {
