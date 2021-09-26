@@ -101,9 +101,8 @@ public class CompartmentedRectangle : Node
     /// </summary>
     public void Destroy()
     {
-        _diagram.RemoveNode(this.gameObject);
+        _diagram.DeleteClass(this.gameObject);
         this.popupMenu.GetComponent<PopupMenu>().Destroy(); 
-        Destroy(this.gameObject);
     }
 
     // ************ END Controller Methods for Compartmented Rectangle ****************//

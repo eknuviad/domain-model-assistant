@@ -36,6 +36,8 @@ public class Diagram : MonoBehaviour
 
   public const string AddClassEndpoint = GetCdmEndpoint + "/class";
 
+  public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
+
   private ClassDiagramDTO classDTO;
 
   GraphicRaycaster raycaster;
@@ -70,6 +72,8 @@ public class Diagram : MonoBehaviour
   private UnityWebRequestAsyncOperation _getRequestAsyncOp;
 
   private UnityWebRequestAsyncOperation _postRequestAsyncOp;
+
+  private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
 
   private string _getResult = "";
 
@@ -114,7 +118,6 @@ public class Diagram : MonoBehaviour
         if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
         {
           var newResult = req.downloadHandler.text;
-          Debug.Log(newResult);
           if (newResult != _getResult)
           {
             LoadJson(newResult);
@@ -127,6 +130,10 @@ public class Diagram : MonoBehaviour
       if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
       {
         _postRequestAsyncOp.webRequest.Dispose(); 
+      }
+      if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+      {
+        _deleteRequestAsyncOp.webRequest.Dispose();
       }
     }
   }
@@ -147,7 +154,6 @@ public class Diagram : MonoBehaviour
   /// </summary>
   private void LoadData()
   {
-    Debug.Log("Loading data ...");
     LoadJson(jsonFile.text);
   }
 
@@ -156,7 +162,7 @@ public class Diagram : MonoBehaviour
   /// </summary>
   public void LoadJson(string cdmJson)
   {
-    Debug.Log("Loading JSON:" + cdmJson);
+    // Debug.Log("Loading JSON:" + cdmJson);
     ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
@@ -174,11 +180,15 @@ public class Diagram : MonoBehaviour
 
     _namesToRects.Clear();
 
-    foreach (var clsAndContval in idsToClassesAndLayouts.Values)
+    foreach (var keyValuePair in idsToClassesAndLayouts)
     {
+      var _id = keyValuePair.Key;
+      var clsAndContval = keyValuePair.Value;
       var cls = (Class)clsAndContval[0];
+      Debug.Log(clsAndContval[1]);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
-      _namesToRects[cls.name] = CreateCompartmentedRectangle(cls.name, new Vector2(layoutElement.x, layoutElement.y));
+      _namesToRects[cls.name] = CreateCompartmentedRectangle(
+          _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
     }
 
     _namesUpToDate = false;
@@ -204,7 +214,23 @@ public class Diagram : MonoBehaviour
     }
     else
     {
-      CreateCompartmentedRectangle(name, position);
+      CreateCompartmentedRectangle((compartmentedRectangles.Capacity + 1).ToString(), name, position);
+    }
+  }
+
+  public void DeleteClass(GameObject node)
+  {
+    if (UseWebcore)
+    {
+      string _id = node.GetComponent<CompartmentedRectangle>().ID;
+      DeleteRequest(DeleteClassEndpoint, _id);
+      GetRequest(GetCdmEndpoint);
+      // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+    else
+    {
+      RemoveNode(node);
+      Destroy(node);
     }
   }
 
@@ -233,10 +259,11 @@ public class Diagram : MonoBehaviour
   /// <summary>
   /// Creates a compartmented rectangle with the given name and position.
   /// </summary>
-  public GameObject CreateCompartmentedRectangle(string name, Vector2 position) // should pass in _id?
+  public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
   {
     var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
+    compRect.GetComponent<CompartmentedRectangle>().ID = _id;
     compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
     AddNode(compRect);
     return compRect;
@@ -265,6 +292,19 @@ public class Diagram : MonoBehaviour
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");
     _postRequestAsyncOp = webRequest.SendWebRequest();
+  }
+
+
+  /// <summary>
+  /// Sends a DELETE request to the server to remove an item from the class diagram.
+  /// </summary>
+  public void DeleteRequest(string uri, string _id)
+  {
+    var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
+    webRequest.method = "DELETE";
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    _deleteRequestAsyncOp = webRequest.SendWebRequest();
   }
 
   /// <summary>
