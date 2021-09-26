@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 
+/*
+ * Mock server used instead of WebCORE to test the Unity code.
+ * 
+ * Setup:
+ * Install/update `node` and `npm` if needed, then run `npm i` to install dependencies
+ * 
+ * Run:
+ * `node mockserver.js` or `./mockserver.js` on *nix
+ */
+
 const express = require('express');
 const app = express();
 
