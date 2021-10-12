@@ -129,8 +129,7 @@ var classDiagram = {
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
-  // console.log(req);
-  // console.log(classDiagram);
+  console.log(classDiagram);
   res.json(classDiagram); // TODO change
   // res.sendStatus(SUCCESS);
 });
