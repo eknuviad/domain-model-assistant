@@ -38,6 +38,7 @@ public class Diagram : MonoBehaviour
 
   public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
 
+  public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
   private ClassDiagramDTO classDTO;
 
   GraphicRaycaster raycaster;
@@ -74,6 +75,8 @@ public class Diagram : MonoBehaviour
   private UnityWebRequestAsyncOperation _postRequestAsyncOp;
 
   private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
+
+  private UnityWebRequestAsyncOperation _putRequestAsyncOp;
 
   private string _getResult = "";
 
@@ -112,9 +115,14 @@ public class Diagram : MonoBehaviour
 
     if (UseWebcore && _updateNeeded)
     {
+      Debug.Log("Status:"+_getRequestAsyncOp.isDone);
       if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
       {
         var req = _getRequestAsyncOp.webRequest;
+        if(req.result == UnityWebRequest.Result.Success)
+          Debug.Log($"Success:{req.downloadHandler.text}");
+        else
+          Debug.Log($"Failed:{req.responseCode}");
         if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
         {
           var newResult = req.downloadHandler.text;
@@ -234,6 +242,22 @@ public class Diagram : MonoBehaviour
     }
   }
 
+  public void UpdateClass(GameObject header, GameObject node){
+    if (UseWebcore)
+    {
+      string _id = node.GetComponent<CompartmentedRectangle>().ID;
+      string clsName = header.GetComponent<TextBox>().GetText();
+      Vector3 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
+      //JSON body param to be set
+      var jsonData = $@"{{
+        ""x"": {newPosition.x},
+        ""y"": {newPosition.y},
+      }}";
+      PutRequest(UpdateClassEndpoint, jsonData,_id);
+      GetRequest(GetCdmEndpoint);
+    }
+  }
+
   /// <summary>
   /// Updates the names of the classes (otherwise, they all have the name of the most recently added class).
   /// </summary>
@@ -276,6 +300,8 @@ public class Diagram : MonoBehaviour
   {
     // TODO Check if a `using` block can be used here, to auto-dispose the web request
     var webRequest = UnityWebRequest.Get(uri);
+    Debug.Log(uri);
+    webRequest.method = "GET";
     webRequest.SetRequestHeader("Content-Type", "application/json");
     webRequest.disposeDownloadHandlerOnDispose = false;
     _getRequestAsyncOp = webRequest.SendWebRequest();
@@ -305,6 +331,16 @@ public class Diagram : MonoBehaviour
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");
     _deleteRequestAsyncOp = webRequest.SendWebRequest();
+  }
+
+  public void PutRequest(string uri, string data, string _id)
+  {
+    var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
+    Debug.Log("Test:" + webRequest);
+    webRequest.method = "PUT";
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    _putRequestAsyncOp = webRequest.SendWebRequest();
   }
 
   /// <summary>

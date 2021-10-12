@@ -37,7 +37,9 @@ public class CompartmentedRectangle : Node
         if (this.hold)
         {
             OnBeginHold();
+            _diagram.UpdateClass(this.textbox, this.gameObject);
         }
+        
     }
 
     // ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
@@ -120,6 +122,9 @@ public class CompartmentedRectangle : Node
         return true;
     }
 
+    public Vector3 GetPosition(){
+        return this.transform.position;
+    }
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }
