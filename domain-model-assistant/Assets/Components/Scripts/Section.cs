@@ -6,6 +6,7 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
+    public List<GameObject> textBList = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -32,4 +33,23 @@ public class Section : MonoBehaviour
         return compRect;
     }
 
+    // Get, Set for TextBox
+    public bool AddTextBox(GameObject TB)
+    {
+        if (textBList.Contains(TB))
+        {
+            return false;
+        }
+        textBList.Add(TB);
+        TB.GetComponent<TextBox>().SetSection(this.gameObject);
+        return true;
+    }
+
+    public GameObject GetTextBox(int index){
+        if(index >= 0 && index < textBList.Capacity -1){
+            return this.textBList[index];
+        }else{
+            return null;
+        }
+    }
 }
