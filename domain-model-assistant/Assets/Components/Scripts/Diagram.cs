@@ -99,6 +99,10 @@ public class Diagram : MonoBehaviour
     targetOrtho = CanvasScaler.scaleFactor;
     this.raycaster = GetComponent<GraphicRaycaster>();
     GetRequest(GetCdmEndpoint);
+    
+    /* Edem's test section*/
+    // LoadData();
+    //-----------------------------------------//
   }
 
   // Update is called once per frame
@@ -142,6 +146,10 @@ public class Diagram : MonoBehaviour
       if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
       {
         _deleteRequestAsyncOp.webRequest.Dispose();
+      }
+      if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+      {
+        _putRequestAsyncOp.webRequest.Dispose(); 
       }
     }
   }
@@ -255,6 +263,7 @@ public class Diagram : MonoBehaviour
       }}";
       PutRequest(UpdateClassEndpoint, jsonData,_id);
       GetRequest(GetCdmEndpoint);
+      // Debug.Log("Updated position for"+ _id +":"+"x=" + newPosition.x +"y="+ newPosition.y);
     }
   }
 

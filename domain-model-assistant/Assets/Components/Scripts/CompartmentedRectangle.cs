@@ -37,7 +37,6 @@ public class CompartmentedRectangle : Node
         if (this.hold)
         {
             OnBeginHold();
-            _diagram.UpdateClass(this.textbox, this.gameObject);
         }
         
     }
@@ -55,7 +54,7 @@ public class CompartmentedRectangle : Node
     public void CreateSection()
     {
         Vector3 oldPosition = this.transform.position;
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++)/*this loop assumes that class always has 2 sections*/
         {
             var sect = GameObject.Instantiate(section, this.transform);
             sect.transform.position = oldPosition;
@@ -82,6 +81,10 @@ public class CompartmentedRectangle : Node
         }
         holdTimer = 0;
         this.hold = false;
+        
+        //update class position
+         _diagram.UpdateClass(this.textbox, this.gameObject);
+        
     }
 
     void SpawnPopupMenu()
@@ -122,9 +125,10 @@ public class CompartmentedRectangle : Node
         return true;
     }
 
-    public Vector3 GetPosition(){
+    public Vector2 GetPosition(){
         return this.transform.position;
     }
+
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }
