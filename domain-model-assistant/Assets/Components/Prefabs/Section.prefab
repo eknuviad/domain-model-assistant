@@ -153,7 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2386d21abc504144588c581b38a0ced6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  compRect: {fileID: 0}
+  compRect: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
+    type: 3}
+  textB: {fileID: 7945400382653598254, guid: 8d7b1debeaab24b41a5d839bab6b480f, type: 3}
+  textBList: []
 --- !u!1001 &5474399875125675822
 PrefabInstance:
   m_ObjectHideFlags: 0
