@@ -6,6 +6,7 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
+    public GameObject textB;
 
     // Start is called before the first frame update
     void Start()
@@ -32,4 +33,21 @@ public class Section : MonoBehaviour
         return compRect;
     }
 
+    // Get, Set for TextBox
+    public bool SetTextBox(GameObject aTextBox)
+    {
+        if(aTextBox == null)
+        {
+            return false;
+        }
+        textB = aTextBox;
+        return true;
+    }
+
+    public GameObject GetTextBox()
+    {
+        return textB;
+    }
+
+    
 }
