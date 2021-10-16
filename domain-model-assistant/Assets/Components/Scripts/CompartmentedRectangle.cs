@@ -125,6 +125,13 @@ public class CompartmentedRectangle : Node
         return true;
     }
 
+    public GameObject GetSection(int index){
+        if(index >= 0 && index < sections.Capacity -1){
+            return this.sections[index];
+        }else{
+            return null;
+        }
+    }
     public Vector2 GetPosition(){
         return this.transform.position;
     }

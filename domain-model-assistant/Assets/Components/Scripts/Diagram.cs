@@ -101,57 +101,57 @@ public class Diagram : MonoBehaviour
     GetRequest(GetCdmEndpoint);
     
     /* Edem's test section*/
-    // LoadData();
+    LoadData();
     //-----------------------------------------//
   }
 
   // Update is called once per frame
   void Update()
   {
-    if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
-        (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
-    {
-      AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
-      ActivateDefaultMode();
-    }
+    // if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
+    //     (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
+    // {
+    //   AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+    //   ActivateDefaultMode();
+    // }
 
-    Zoom();
+    // Zoom();
 
-    if (UseWebcore && _updateNeeded)
-    {
-      Debug.Log("Status:"+_getRequestAsyncOp.isDone);
-      if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
-      {
-        var req = _getRequestAsyncOp.webRequest;
-        if(req.result == UnityWebRequest.Result.Success)
-          Debug.Log($"Success:{req.downloadHandler.text}");
-        else
-          Debug.Log($"Failed:{req.responseCode}");
-        if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-        {
-          var newResult = req.downloadHandler.text;
-          if (newResult != _getResult)
-          {
-            LoadJson(newResult);
-            _getResult = newResult;
-          }
-        }
-        _updateNeeded = false;
-        req.Dispose();
-      }
-      if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-      {
-        _postRequestAsyncOp.webRequest.Dispose(); 
-      }
-      if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-      {
-        _deleteRequestAsyncOp.webRequest.Dispose();
-      }
-      if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-      {
-        _putRequestAsyncOp.webRequest.Dispose(); 
-      }
-    }
+    // if (UseWebcore && _updateNeeded)
+    // {
+    //   Debug.Log("Status:"+_getRequestAsyncOp.isDone);
+    //   if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+    //   {
+    //     var req = _getRequestAsyncOp.webRequest;
+    //     if(req.result == UnityWebRequest.Result.Success)
+    //       Debug.Log($"Success:{req.downloadHandler.text}");
+    //     else
+    //       Debug.Log($"Failed:{req.responseCode}");
+    //     if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+    //     {
+    //       var newResult = req.downloadHandler.text;
+    //       if (newResult != _getResult)
+    //       {
+    //         LoadJson(newResult);
+    //         _getResult = newResult;
+    //       }
+    //     }
+    //     _updateNeeded = false;
+    //     req.Dispose();
+    //   }
+    //   if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+    //   {
+    //     _postRequestAsyncOp.webRequest.Dispose(); 
+    //   }
+    //   if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+    //   {
+    //     _deleteRequestAsyncOp.webRequest.Dispose();
+    //   }
+    //   if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+    //   {
+    //     _putRequestAsyncOp.webRequest.Dispose(); 
+    //   }
+    // }
   }
 
   // LateUpdate is called at the end of a frame update, after all Update operations are done
@@ -201,10 +201,17 @@ public class Diagram : MonoBehaviour
       var _id = keyValuePair.Key;
       var clsAndContval = keyValuePair.Value;
       var cls = (Class)clsAndContval[0];
-      Debug.Log(clsAndContval[1]);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       _namesToRects[cls.name] = CreateCompartmentedRectangle(
           _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
+      
+      //get first section of compartmented rectangle
+      GameObject sect = _namesToRects[cls.name].GetComponent<CompartmentedRectangle>().GetSection(0);
+      for (int i = 0; i< cls.attributes.Count ; i++){
+      //create texboxes with respective values for comp rect with id
+        Debug.Log("Attribute "+ cls.attributes[i]._id+":"+"name=" + cls.attributes[i].name +"type="+ cls.attributes[i].type);
+        // sect.GetComponent<Section>.addTextbox(cls.attributes[i]._id, cls.attributes[i].name, cls.attributes[i].type);
+      }
     }
 
     _namesUpToDate = false;
@@ -261,9 +268,9 @@ public class Diagram : MonoBehaviour
         ""x"": {newPosition.x},
         ""y"": {newPosition.y},
       }}";
-      PutRequest(UpdateClassEndpoint, jsonData,_id);
-      GetRequest(GetCdmEndpoint);
-      // Debug.Log("Updated position for"+ _id +":"+"x=" + newPosition.x +"y="+ newPosition.y);
+      // PutRequest(UpdateClassEndpoint, jsonData,_id);
+      // GetRequest(GetCdmEndpoint);
+      Debug.Log("Updated position for"+ _id +":"+"x=" + newPosition.x +"y="+ newPosition.y);
     }
   }
 
