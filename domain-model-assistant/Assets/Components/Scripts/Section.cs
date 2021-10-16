@@ -6,6 +6,8 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
+    
+    public GameObject textB;
     public List<GameObject> textBList = new List<GameObject>();
 
     // Start is called before the first frame update
@@ -51,5 +53,13 @@ public class Section : MonoBehaviour
         }else{
             return null;
         }
+    }
+
+    public void AddAttribute()
+    {
+        var TB = GameObject.Instantiate(textB, this.transform);
+        TB.GetComponent<TextBox>().SetText("Enter Attribute");
+        TB.transform.position = this.transform.position; 
+        this.AddTextBox(TB);
     }
 }

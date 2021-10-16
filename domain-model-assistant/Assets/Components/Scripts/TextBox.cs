@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class TextBox : MonoBehaviour
 {
 
+    public GameObject sect;
     public string ID
     { get; set; }
 
@@ -24,5 +25,21 @@ public class TextBox : MonoBehaviour
         inputField.text = text;
         return true;
     }
+
+    public bool SetSection(GameObject sSection)
+    {
+        if(sSection == null)
+        {
+            return false;
+        }
+        sect = sSection;
+        return true;
+    }
+
+    public GameObject GetSection()
+    {
+        return sect;
+    }
+
 
 }
