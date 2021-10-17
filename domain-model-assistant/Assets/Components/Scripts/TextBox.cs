@@ -6,16 +6,33 @@ using UnityEngine.UI;
 public class TextBox : MonoBehaviour
 {
 
+    public GameObject sect;
     public string ID
     { get; set; }
 
+     void Start()
+    {
+        this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+    }
+
+
+    public string GetTextWithNameType(string name, string type){
+        string s;
+        if(type.Equals("7")){
+            s = "int" + " " + name;
+        }else{
+            s = name;
+        }
+        return s;
+    }
+    
     public string GetText()
     {
         return GetComponent<InputField>().text;
     }
 
     public bool SetText(string text)
-    {
+    {   
         var inputField = GetComponent<InputField>();
         if (inputField == null)
         {
@@ -24,5 +41,21 @@ public class TextBox : MonoBehaviour
         inputField.text = text;
         return true;
     }
+
+    public bool SetSection(GameObject sSection)
+    {
+        if(sSection == null)
+        {
+            return false;
+        }
+        sect = sSection;
+        return true;
+    }
+
+    public GameObject GetSection()
+    {
+        return sect;
+    }
+
 
 }

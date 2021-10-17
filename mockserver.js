@@ -15,6 +15,25 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const cors=require("cors");
+const corsOptions ={
+   origin: ['http://localhost:8080','http://127.0.0.1'],
+   methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions)) // Use this after the variable declaration
+
+// app.use(function (req, res, next) {
+
+//   res.header('Access-Control-Allow-Origin', 'http://127.0.0.1');
+//   res.header('Access-Control-Allow-Headers', true);
+//   res.header('Access-Control-Allow-Credentials', true);
+//   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   next();
+// });
+
 
 const SUCCESS = 200;
 const PORT = 8080;
@@ -112,6 +131,7 @@ var classDiagram = {
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
   console.log(classDiagram);
   res.json(classDiagram); // TODO change
+  // res.sendStatus(SUCCESS);
 });
 
 // Add class
@@ -122,6 +142,17 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   res.sendStatus(SUCCESS);
 });
 
+//Update class position
+app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res)=>{
+  console.log("here");
+  const classId = req.params.classId;
+  var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
+  const allLayoutIds = values.map(c => c.key);
+  var index = allLayoutIds.indexOf(classId);
+  classDiagram.layout.containers[0].value[index].value.x = req.body.xPosition;
+  classDiagram.layout.containers[0].value[index].value.y = req.body.yPosition;
+  res.json(classDiagram);
+});
 // Delete class
 app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   const classId = req.params.class_id;

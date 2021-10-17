@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3466169481931202284}
   - component: {fileID: 7622629696153032133}
   m_Layer: 5
-  m_Name: Section 1
+  m_Name: Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,6 +64,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -103,6 +104,7 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!114 &8699455690723162217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,4 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2386d21abc504144588c581b38a0ced6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  compRect: {fileID: 0}
+  compRect: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
+    type: 3}
+  textB: {fileID: 7945400382653598254, guid: 8d7b1debeaab24b41a5d839bab6b480f, type: 3}
+  textBList: []

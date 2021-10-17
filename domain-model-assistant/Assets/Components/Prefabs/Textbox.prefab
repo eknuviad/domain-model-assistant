@@ -291,6 +291,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
+  m_OnSubmit:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -314,4 +317,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41484c546806a8d47bcd64c32164fd90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: 
+  sect: {fileID: 0}

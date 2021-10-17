@@ -6,10 +6,14 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
+    
+    public GameObject textB;
+    public List<GameObject> textBList = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
-    {}
+    {
+    }
 
     // Update is called once per frame
     void Update()
@@ -30,6 +34,43 @@ public class Section : MonoBehaviour
     public GameObject GetCompartmentedRectangle()
     {
         return compRect;
+    }
+
+    // Get, Set for TextBox
+    public bool AddTextBox(GameObject TB)
+    {
+        if (textBList.Contains(TB))
+        {
+            return false;
+        }
+        textBList.Add(TB);
+        TB.GetComponent<TextBox>().SetSection(this.gameObject);
+        return true;
+    }
+
+    public GameObject GetTextBox(int index){
+        if(index >= 0 && index < textBList.Capacity -1){
+            return this.textBList[index];
+        }else{
+            return null;
+        }
+    }
+
+    public void AddAttribute()
+    {
+        var TB = GameObject.Instantiate(textB, this.transform);
+        TB.GetComponent<TextBox>().SetText("Enter attribute");
+        TB.transform.position = this.transform.position; 
+        this.AddTextBox(TB);
+    }
+
+    public void AddAttribute(string _id, string name, string type){
+        var TB = GameObject.Instantiate(textB, this.transform);
+        TB.GetComponent<TextBox>().ID = _id;
+        string s = TB.GetComponent<TextBox>().GetTextWithNameType(name, type);
+        TB.GetComponent<TextBox>().SetText(s);
+        TB.transform.position = this.transform.position; 
+        this.AddTextBox(TB);
     }
 
 }

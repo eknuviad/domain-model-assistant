@@ -38,11 +38,14 @@ public class Diagram : MonoBehaviour
 
   public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
 
+  public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
   private ClassDiagramDTO classDTO;
 
   GraphicRaycaster raycaster;
 
   Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
+
+  Dictionary<string, List<Attribute>> idsToClassesAndAttributes = new Dictionary<string, List<Attribute>>();
 
   enum CanvasMode
   {
@@ -75,6 +78,8 @@ public class Diagram : MonoBehaviour
 
   private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
 
+  private UnityWebRequestAsyncOperation _putRequestAsyncOp;
+
   private string _getResult = "";
 
   public string ID
@@ -96,46 +101,59 @@ public class Diagram : MonoBehaviour
     targetOrtho = CanvasScaler.scaleFactor;
     this.raycaster = GetComponent<GraphicRaycaster>();
     GetRequest(GetCdmEndpoint);
+    
+    /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
+    LoadData();
+    //---------------------------------------//
   }
 
   // Update is called once per frame
   void Update()
   {
-    if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
-        (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
-    {
-      AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
-      ActivateDefaultMode();
-    }
+    // if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
+    //     (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
+    // {
+    //   AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+    //   ActivateDefaultMode();
+    // }
 
-    Zoom();
+    // Zoom();
 
-    if (UseWebcore && _updateNeeded)
-    {
-      if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
-      {
-        var req = _getRequestAsyncOp.webRequest;
-        if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-        {
-          var newResult = req.downloadHandler.text;
-          if (newResult != _getResult)
-          {
-            LoadJson(newResult);
-            _getResult = newResult;
-          }
-        }
-        _updateNeeded = false;
-        req.Dispose();
-      }
-      if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-      {
-        _postRequestAsyncOp.webRequest.Dispose(); 
-      }
-      if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-      {
-        _deleteRequestAsyncOp.webRequest.Dispose();
-      }
-    }
+    // if (UseWebcore && _updateNeeded)
+    // {
+    //   Debug.Log("Status:"+_getRequestAsyncOp.isDone);
+    //   if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+    //   {
+    //     var req = _getRequestAsyncOp.webRequest;
+    //     if(req.result == UnityWebRequest.Result.Success)
+    //       Debug.Log($"Success:{req.downloadHandler.text}");
+    //     else
+    //       Debug.Log($"Failed:{req.responseCode}");
+    //     if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+    //     {
+    //       var newResult = req.downloadHandler.text;
+    //       if (newResult != _getResult)
+    //       {
+    //         LoadJson(newResult);
+    //         _getResult = newResult;
+    //       }
+    //     }
+    //     _updateNeeded = false;
+    //     req.Dispose();
+    //   }
+    //   if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+    //   {
+    //     _postRequestAsyncOp.webRequest.Dispose(); 
+    //   }
+    //   if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+    //   {
+    //     _deleteRequestAsyncOp.webRequest.Dispose();
+    //   }
+    //   if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+    //   {
+    //     _putRequestAsyncOp.webRequest.Dispose(); 
+    //   }
+    // }
   }
 
   // LateUpdate is called at the end of a frame update, after all Update operations are done
@@ -166,9 +184,11 @@ public class Diagram : MonoBehaviour
     ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
+    //store attributes to class in a dictionary
+    classDiagram.classes.ForEach (cls => this.idsToClassesAndAttributes[cls._id] = cls.attributes);
     // maps each _id to its (class object, position) pair 
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
-
+    
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
     classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
     {
@@ -177,7 +197,6 @@ public class Diagram : MonoBehaviour
         idsToClassesAndLayouts[contVal.key][1] = contVal;
       }
     });
-
     _namesToRects.Clear();
 
     foreach (var keyValuePair in idsToClassesAndLayouts)
@@ -185,13 +204,24 @@ public class Diagram : MonoBehaviour
       var _id = keyValuePair.Key;
       var clsAndContval = keyValuePair.Value;
       var cls = (Class)clsAndContval[0];
-      Debug.Log(clsAndContval[1]);
       var layoutElement = ((ElementMap)clsAndContval[1]).value;
       _namesToRects[cls.name] = CreateCompartmentedRectangle(
           _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
+      
     }
-
     _namesUpToDate = false;
+  }
+
+  public void AddAttributes(GameObject sect, int i){
+    int first = 0;
+    if(i == first){
+      var compId = sect.GetComponent<Section>().GetCompartmentedRectangle()
+                      .GetComponent<CompartmentedRectangle>().ID;
+      foreach(var attr in idsToClassesAndAttributes[compId]){
+        Debug.Log("Attribute "+ attr._id+":"+"name=" + attr.name +"type="+ attr.type);
+          sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr.type);
+      }
+    }
   }
 
   /// <summary>
@@ -231,6 +261,23 @@ public class Diagram : MonoBehaviour
     {
       RemoveNode(node);
       Destroy(node);
+    }
+  }
+
+  public void UpdateClass(GameObject header, GameObject node){
+    if (UseWebcore)
+    {
+      string _id = node.GetComponent<CompartmentedRectangle>().ID;
+      string clsName = header.GetComponent<TextBox>().GetText();
+      Vector3 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
+      //JSON body param to be set
+      var jsonData = $@"{{
+        ""x"": {newPosition.x},
+        ""y"": {newPosition.y},
+      }}";
+      // PutRequest(UpdateClassEndpoint, jsonData,_id);
+      // GetRequest(GetCdmEndpoint);
+      Debug.Log("Updated position for"+ _id +":"+"x=" + newPosition.x +"y="+ newPosition.y);
     }
   }
 
@@ -276,6 +323,8 @@ public class Diagram : MonoBehaviour
   {
     // TODO Check if a `using` block can be used here, to auto-dispose the web request
     var webRequest = UnityWebRequest.Get(uri);
+    Debug.Log(uri);
+    webRequest.method = "GET";
     webRequest.SetRequestHeader("Content-Type", "application/json");
     webRequest.disposeDownloadHandlerOnDispose = false;
     _getRequestAsyncOp = webRequest.SendWebRequest();
@@ -305,6 +354,16 @@ public class Diagram : MonoBehaviour
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");
     _deleteRequestAsyncOp = webRequest.SendWebRequest();
+  }
+
+  public void PutRequest(string uri, string data, string _id)
+  {
+    var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
+    Debug.Log("Test:" + webRequest);
+    webRequest.method = "PUT";
+    webRequest.disposeDownloadHandlerOnDispose = false;
+    webRequest.SetRequestHeader("Content-Type", "application/json");
+    _putRequestAsyncOp = webRequest.SendWebRequest();
   }
 
   /// <summary>

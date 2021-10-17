@@ -38,6 +38,7 @@ public class CompartmentedRectangle : Node
         {
             OnBeginHold();
         }
+        
     }
 
     // ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
@@ -53,7 +54,7 @@ public class CompartmentedRectangle : Node
     public void CreateSection()
     {
         Vector3 oldPosition = this.transform.position;
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++)/*this loop assumes that class always has 2 sections*/
         {
             var sect = GameObject.Instantiate(section, this.transform);
             sect.transform.position = oldPosition;
@@ -61,6 +62,7 @@ public class CompartmentedRectangle : Node
             // from the transform of the gameobject
             oldPosition += new Vector3(0, -46, 0);
             AddSection(sect);
+            _diagram.AddAttributes(GetSection(i), i);//add atrributes to section
         }
     }
 
@@ -80,6 +82,10 @@ public class CompartmentedRectangle : Node
         }
         holdTimer = 0;
         this.hold = false;
+        
+        //update class position
+         _diagram.UpdateClass(this.textbox, this.gameObject);
+        
     }
 
     void SpawnPopupMenu()
@@ -108,9 +114,9 @@ public class CompartmentedRectangle : Node
     // ************ END Controller Methods for Compartmented Rectangle ****************//
 
     // ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
-
     public bool AddSection(GameObject aSection)
     {
+        Debug.Log("addsec");
         if (sections.Contains(aSection))
         {
             return false;
@@ -118,6 +124,17 @@ public class CompartmentedRectangle : Node
         sections.Add(aSection);
         aSection.GetComponent<Section>().SetCompartmentedRectangle(this.gameObject);
         return true;
+    }
+
+    public GameObject GetSection(int index){
+        if(index >= 0 && index < sections.Count){
+            return this.sections[index];
+        }else{
+            return null;
+        }
+    }
+    public Vector2 GetPosition(){
+        return this.transform.position;
     }
 
     // ************ END UI model Methods for Compartmented Rectangle ****************//

@@ -20,7 +20,7 @@ public class PopupMenu : MonoBehaviour
     public void setCompartmentedRectangle(CompartmentedRectangle aCompRect){
         this.compRect = aCompRect.gameObject;
         // NB: we'll need to properly implement these two methods based on UI model diagram
-        // this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.AddAttribute);
+        this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.GetSection(0).GetComponent<Section>().AddAttribute);
         // this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.AddSubclass);
         this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.Destroy);
     }
