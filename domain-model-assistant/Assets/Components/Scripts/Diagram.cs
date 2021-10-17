@@ -102,9 +102,9 @@ public class Diagram : MonoBehaviour
     this.raycaster = GetComponent<GraphicRaycaster>();
     GetRequest(GetCdmEndpoint);
     
-    /* Edem's test section*/
+    /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
     LoadData();
-    //-----------------------------------------//
+    //---------------------------------------//
   }
 
   // Update is called once per frame
