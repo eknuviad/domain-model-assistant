@@ -10,13 +10,29 @@ public class TextBox : MonoBehaviour
     public string ID
     { get; set; }
 
+     void Start()
+    {
+        this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+    }
+
+
+    public string GetTextWithNameType(string name, string type){
+        string s;
+        if(type.Equals("7")){
+            s = "int" + " " + name;
+        }else{
+            s = name;
+        }
+        return s;
+    }
+    
     public string GetText()
     {
         return GetComponent<InputField>().text;
     }
 
     public bool SetText(string text)
-    {
+    {   
         var inputField = GetComponent<InputField>();
         if (inputField == null)
         {

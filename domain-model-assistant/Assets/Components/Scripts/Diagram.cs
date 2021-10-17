@@ -45,6 +45,8 @@ public class Diagram : MonoBehaviour
 
   Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
 
+  Dictionary<string, List<Attribute>> idsToClassesAndAttributes = new Dictionary<string, List<Attribute>>();
+
   enum CanvasMode
   {
     Default,
@@ -182,9 +184,11 @@ public class Diagram : MonoBehaviour
     ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
+    //store attributes to class in a dictionary
+    classDiagram.classes.ForEach (cls => this.idsToClassesAndAttributes[cls._id] = cls.attributes);
     // maps each _id to its (class object, position) pair 
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
-
+    
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
     classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
     {
@@ -193,7 +197,6 @@ public class Diagram : MonoBehaviour
         idsToClassesAndLayouts[contVal.key][1] = contVal;
       }
     });
-
     _namesToRects.Clear();
 
     foreach (var keyValuePair in idsToClassesAndLayouts)
@@ -205,16 +208,20 @@ public class Diagram : MonoBehaviour
       _namesToRects[cls.name] = CreateCompartmentedRectangle(
           _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
       
-      //get first section of compartmented rectangle
-      GameObject sect = _namesToRects[cls.name].GetComponent<CompartmentedRectangle>().GetSection(0);
-      for (int i = 0; i< cls.attributes.Count ; i++){
-      //create texboxes with respective values for comp rect with id
-        Debug.Log("Attribute "+ cls.attributes[i]._id+":"+"name=" + cls.attributes[i].name +"type="+ cls.attributes[i].type);
-        // sect.GetComponent<Section>.addTextbox(cls.attributes[i]._id, cls.attributes[i].name, cls.attributes[i].type);
+    }
+    _namesUpToDate = false;
+  }
+
+  public void AddAttributes(GameObject sect, int i){
+    int first = 0;
+    if(i == first){
+      var compId = sect.GetComponent<Section>().GetCompartmentedRectangle()
+                      .GetComponent<CompartmentedRectangle>().ID;
+      foreach(var attr in idsToClassesAndAttributes[compId]){
+        Debug.Log("Attribute "+ attr._id+":"+"name=" + attr.name +"type="+ attr.type);
+          sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr.type);
       }
     }
-
-    _namesUpToDate = false;
   }
 
   /// <summary>

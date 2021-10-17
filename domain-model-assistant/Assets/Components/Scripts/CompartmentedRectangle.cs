@@ -62,6 +62,7 @@ public class CompartmentedRectangle : Node
             // from the transform of the gameobject
             oldPosition += new Vector3(0, -46, 0);
             AddSection(sect);
+            _diagram.AddAttributes(GetSection(i), i);//add atrributes to section
         }
     }
 
@@ -113,9 +114,9 @@ public class CompartmentedRectangle : Node
     // ************ END Controller Methods for Compartmented Rectangle ****************//
 
     // ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
-
     public bool AddSection(GameObject aSection)
     {
+        Debug.Log("addsec");
         if (sections.Contains(aSection))
         {
             return false;
@@ -126,7 +127,7 @@ public class CompartmentedRectangle : Node
     }
 
     public GameObject GetSection(int index){
-        if(index >= 0 && index < sections.Capacity -1){
+        if(index >= 0 && index < sections.Count){
             return this.sections[index];
         }else{
             return null;
