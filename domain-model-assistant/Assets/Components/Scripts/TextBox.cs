@@ -10,6 +10,11 @@ public class TextBox : MonoBehaviour
     public string ID
     { get; set; }
 
+    // void Start()
+    // {
+    //     this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+    // }
+
     public string GetText()
     {
         return GetComponent<InputField>().text;
