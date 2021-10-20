@@ -13,7 +13,6 @@ using UnityEngine.UI;
 
 public class Diagram : MonoBehaviour
 {
-
   public TextAsset jsonFile;
   public float zoomSpeed = 1;
   public CanvasScaler CanvasScaler;
@@ -103,57 +102,55 @@ public class Diagram : MonoBehaviour
     GetRequest(GetCdmEndpoint);
     
     /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
-    LoadData();
+    // LoadData();
     //---------------------------------------//
   }
 
   // Update is called once per frame
   void Update()
   {
-    // if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
-    //     (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
-    // {
-    //   AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
-    //   ActivateDefaultMode();
-    // }
+    if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
+        (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
+    {
+      AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+      ActivateDefaultMode();
+    }
 
-    // Zoom();
+    Zoom();
 
-    // if (UseWebcore && _updateNeeded)
-    // {
-    //   Debug.Log("Status:"+_getRequestAsyncOp.isDone);
-    //   if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
-    //   {
-    //     var req = _getRequestAsyncOp.webRequest;
-    //     if(req.result == UnityWebRequest.Result.Success)
-    //       Debug.Log($"Success:{req.downloadHandler.text}");
-    //     else
-    //       Debug.Log($"Failed:{req.responseCode}");
-    //     if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-    //     {
-    //       var newResult = req.downloadHandler.text;
-    //       if (newResult != _getResult)
-    //       {
-    //         LoadJson(newResult);
-    //         _getResult = newResult;
-    //       }
-    //     }
-    //     _updateNeeded = false;
-    //     req.Dispose();
-    //   }
-    //   if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-    //   {
-    //     _postRequestAsyncOp.webRequest.Dispose(); 
-    //   }
-    //   if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-    //   {
-    //     _deleteRequestAsyncOp.webRequest.Dispose();
-    //   }
-    //   if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-    //   {
-    //     _putRequestAsyncOp.webRequest.Dispose(); 
-    //   }
-    // }
+    if (UseWebcore && _updateNeeded)
+    {
+      if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+      {
+        var req = _getRequestAsyncOp.webRequest;
+        if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+        {
+          var newResult = req.downloadHandler.text;
+          if (newResult != _getResult)
+          {
+            LoadJson(newResult);
+            _getResult = newResult;
+          }
+        }
+        _updateNeeded = false;
+        req.Dispose();
+      }
+      if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+      {
+        _postRequestAsyncOp.webRequest.Dispose(); 
+      }
+      if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+      {
+        _deleteRequestAsyncOp.webRequest.Dispose();
+      }
+      if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+      {
+        var req = _putRequestAsyncOp.webRequest;
+        _putRequestAsyncOp.webRequest.Dispose(); 
+        _updateNeeded = false;
+        req.Dispose();
+      }
+    }
   }
 
   // LateUpdate is called at the end of a frame update, after all Update operations are done
@@ -269,15 +266,15 @@ public class Diagram : MonoBehaviour
     {
       string _id = node.GetComponent<CompartmentedRectangle>().ID;
       string clsName = header.GetComponent<TextBox>().GetText();
-      Vector3 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
-      //JSON body param to be set
-      var jsonData = $@"{{
-        ""x"": {newPosition.x},
-        ""y"": {newPosition.y},
-      }}";
-      // PutRequest(UpdateClassEndpoint, jsonData,_id);
-      // GetRequest(GetCdmEndpoint);
-      Debug.Log("Updated position for"+ _id +":"+"x=" + newPosition.x +"y="+ newPosition.y);
+      Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
+      //JSON body. Create new serializable JSON object.
+      PositionInfo pInfo= new PositionInfo();
+      pInfo.xPosition = newPosition.x;
+      pInfo.yPosition = newPosition.y;
+      string jsonData = JsonUtility.ToJson(pInfo);
+      //send updated position via PUT request
+      PutRequest(UpdateClassEndpoint, jsonData, _id);
+      GetRequest(GetCdmEndpoint);
     }
   }
 
@@ -359,11 +356,12 @@ public class Diagram : MonoBehaviour
   public void PutRequest(string uri, string data, string _id)
   {
     var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
-    Debug.Log("Test:" + webRequest);
+    Debug.Log("PutURI:" + uri + "/" + _id + "/" + "position");
     webRequest.method = "PUT";
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");
     _putRequestAsyncOp = webRequest.SendWebRequest();
+    _updateNeeded = true;
   }
 
   /// <summary>
