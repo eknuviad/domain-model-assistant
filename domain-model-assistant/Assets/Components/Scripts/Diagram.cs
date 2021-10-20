@@ -361,7 +361,6 @@ public class Diagram : MonoBehaviour
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");
     _putRequestAsyncOp = webRequest.SendWebRequest();
-    _updateNeeded = true;
   }
 
   /// <summary>
