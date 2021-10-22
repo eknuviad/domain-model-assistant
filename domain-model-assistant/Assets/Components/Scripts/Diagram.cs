@@ -217,7 +217,7 @@ public class Diagram : MonoBehaviour
                       .GetComponent<CompartmentedRectangle>().ID;
       foreach(var attr in idsToClassesAndAttributes[compId]){
         Debug.Log("Attribute "+ attr._id+":"+"name=" + attr.name +"type="+ attr.type);
-          sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr.type);
+          // sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr.type);
       }
     }
   }
@@ -266,7 +266,7 @@ public class Diagram : MonoBehaviour
     if (UseWebcore)
     {
       string _id = node.GetComponent<CompartmentedRectangle>().ID;
-      string clsName = header.GetComponent<TextBox>().GetText();
+      string clsName = header.GetComponent<InputField>().text;
       Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
       //JSON body. Create new serializable JSON object.
       PositionInfo pInfo= new PositionInfo();
