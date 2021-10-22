@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Section : MonoBehaviour
 {
@@ -45,8 +46,7 @@ public class Section : MonoBehaviour
             return false;
         }
         textBList.Add(TB);
-        // TB.GetComponent<TextBox>().SetSection(this.gameObject);
-        TB.GetComponent<Attribute1>().SetSection(this.gameObject);
+        TB.GetComponent<TextBox>().SetSection(this.gameObject);
         return true;
     }
 
@@ -60,21 +60,11 @@ public class Section : MonoBehaviour
 
     public void AddAttribute()
     {
-        // this.transform.localScale +=  new Vector3(0,(float)0.5,0);
+
         var TB = GameObject.Instantiate(textB, this.transform);
-        // TB.transform.SetParent(this.transform);
-        // TB.GetComponent<TextBox>().SetText("Enter Attribute");
-        TB.transform.position = this.transform.position + new Vector3(0, -46, 0)*textBList.Count;
+        TB.GetComponent<InputField>().text = "Enter Text ...";
+        TB.transform.position = this.transform.position + new Vector3(0, -10, 0)*textBList.Count;
         this.AddTextBox(TB);
-        //TB.GetComponent<TextBox>().SetText("Enter Attribute");
-
-
-        // TB.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(this.UpdateTextB());
-
     }
 
-    // public void UpdateTextB()
-    // {
-    //     this.GetComponent<TextBox>().SetText(this.GetComponent<TextBox>().GetText());
-    // }
 }

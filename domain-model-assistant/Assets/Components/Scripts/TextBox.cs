@@ -12,25 +12,7 @@ public class TextBox : MonoBehaviour
 
     void Start()
     {
-        // this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-        // this.gameObject.transform.SetParent(this.sect.transform);
 
-    }
-
-    public string GetText()
-    {
-        return GetComponent<InputField>().text;
-    }
-
-    public bool SetText(string text)
-    {
-        var inputField = GetComponent<InputField>();
-        if (inputField == null)
-        {
-            inputField = gameObject.AddComponent<InputField>();
-        }
-        inputField.text = text;
-        return true;
     }
 
     public bool SetSection(GameObject sSection)

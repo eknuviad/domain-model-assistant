@@ -101,57 +101,57 @@ public class Diagram : MonoBehaviour
     GetRequest(GetCdmEndpoint);
     
     /* Edem's test section*/
-    LoadData();
+    // LoadData();
     //-----------------------------------------//
   }
 
   // Update is called once per frame
   void Update()
   {
-    // if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
-    //     (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
-    // {
-    //   AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
-    //   ActivateDefaultMode();
-    // }
+    if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
+        (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
+    {
+      AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+      ActivateDefaultMode();
+    }
 
-    // Zoom();
+    Zoom();
 
-    // if (UseWebcore && _updateNeeded)
-    // {
-    //   Debug.Log("Status:"+_getRequestAsyncOp.isDone);
-    //   if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
-    //   {
-    //     var req = _getRequestAsyncOp.webRequest;
-    //     if(req.result == UnityWebRequest.Result.Success)
-    //       Debug.Log($"Success:{req.downloadHandler.text}");
-    //     else
-    //       Debug.Log($"Failed:{req.responseCode}");
-    //     if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-    //     {
-    //       var newResult = req.downloadHandler.text;
-    //       if (newResult != _getResult)
-    //       {
-    //         LoadJson(newResult);
-    //         _getResult = newResult;
-    //       }
-    //     }
-    //     _updateNeeded = false;
-    //     req.Dispose();
-    //   }
-    //   if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-    //   {
-    //     _postRequestAsyncOp.webRequest.Dispose(); 
-    //   }
-    //   if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-    //   {
-    //     _deleteRequestAsyncOp.webRequest.Dispose();
-    //   }
-    //   if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-    //   {
-    //     _putRequestAsyncOp.webRequest.Dispose(); 
-    //   }
-    // }
+    if (UseWebcore && _updateNeeded)
+    {
+      Debug.Log("Status:"+_getRequestAsyncOp.isDone);
+      if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+      {
+        var req = _getRequestAsyncOp.webRequest;
+        if(req.result == UnityWebRequest.Result.Success)
+          Debug.Log($"Success:{req.downloadHandler.text}");
+        else
+          Debug.Log($"Failed:{req.responseCode}");
+        if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+        {
+          var newResult = req.downloadHandler.text;
+          if (newResult != _getResult)
+          {
+            LoadJson(newResult);
+            _getResult = newResult;
+          }
+        }
+        _updateNeeded = false;
+        req.Dispose();
+      }
+      if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+      {
+        _postRequestAsyncOp.webRequest.Dispose(); 
+      }
+      if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+      {
+        _deleteRequestAsyncOp.webRequest.Dispose();
+      }
+      if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+      {
+        _putRequestAsyncOp.webRequest.Dispose(); 
+      }
+    }
   }
 
   // LateUpdate is called at the end of a frame update, after all Update operations are done
@@ -261,7 +261,7 @@ public class Diagram : MonoBehaviour
     if (UseWebcore)
     {
       string _id = node.GetComponent<CompartmentedRectangle>().ID;
-      string clsName = header.GetComponent<TextBox>().GetText();
+      string clsName = header.GetComponent<InputField>().text;
       Vector3 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
       //JSON body param to be set
       var jsonData = $@"{{
@@ -281,8 +281,7 @@ public class Diagram : MonoBehaviour
   {
     foreach (var nameRectPair in _namesToRects)
     {
-      nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
-          .SetText(nameRectPair.Key);
+      nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = nameRectPair.Key;
     }
     _namesUpToDate = true;
   }
@@ -304,7 +303,7 @@ public class Diagram : MonoBehaviour
     var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
     compRect.GetComponent<CompartmentedRectangle>().ID = _id;
-    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
+    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
     AddNode(compRect);
     return compRect;
   }
@@ -474,8 +473,8 @@ public class Diagram : MonoBehaviour
   {
     Debug.Log("Debug button clicked!");
     //LoadData();
-    GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
-        .SetText("Rabbit");
+    GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
+      .text = "Rabbit";
   }
 
 }
