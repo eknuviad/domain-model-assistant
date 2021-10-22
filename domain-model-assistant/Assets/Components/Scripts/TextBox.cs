@@ -10,10 +10,12 @@ public class TextBox : MonoBehaviour
     public string ID
     { get; set; }
 
-    // void Start()
-    // {
-    //     this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-    // }
+    void Start()
+    {
+        // this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+        // this.gameObject.transform.SetParent(this.sect.transform);
+
+    }
 
     public string GetText()
     {
