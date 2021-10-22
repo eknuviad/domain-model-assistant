@@ -13,7 +13,8 @@ public class Section : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {}
+    {
+    }
 
     // Update is called once per frame
     void Update()
@@ -60,11 +61,19 @@ public class Section : MonoBehaviour
 
     public void AddAttribute()
     {
-
         var TB = GameObject.Instantiate(textB, this.transform);
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, -10, 0)*textBList.Count;
         this.AddTextBox(TB);
     }
+
+//     public void AddAttribute(string _id, string name, string type){
+//         var TB = GameObject.Instantiate(textB, this.transform);
+//         TB.GetComponent<TextBox>().ID = _id;
+//         string s = TB.GetComponent<TextBox>().GetTextWithNameType(name, type);
+//         TB.GetComponent<TextBox>().SetText(s);
+//         TB.transform.position = this.transform.position; 
+//         this.AddTextBox(TB);
+//     }
 
 }

@@ -13,7 +13,6 @@ using UnityEngine.UI;
 
 public class Diagram : MonoBehaviour
 {
-
   public TextAsset jsonFile;
   public float zoomSpeed = 1;
   public CanvasScaler CanvasScaler;
@@ -44,6 +43,8 @@ public class Diagram : MonoBehaviour
   GraphicRaycaster raycaster;
 
   Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
+
+  Dictionary<string, List<Attribute>> idsToClassesAndAttributes = new Dictionary<string, List<Attribute>>();
 
   enum CanvasMode
   {
@@ -100,9 +101,10 @@ public class Diagram : MonoBehaviour
     this.raycaster = GetComponent<GraphicRaycaster>();
     GetRequest(GetCdmEndpoint);
     
-    /* Edem's test section*/
+
+    /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
     // LoadData();
-    //-----------------------------------------//
+    //---------------------------------------//
   }
 
   // Update is called once per frame
@@ -119,14 +121,9 @@ public class Diagram : MonoBehaviour
 
     if (UseWebcore && _updateNeeded)
     {
-      Debug.Log("Status:"+_getRequestAsyncOp.isDone);
       if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
       {
         var req = _getRequestAsyncOp.webRequest;
-        if(req.result == UnityWebRequest.Result.Success)
-          Debug.Log($"Success:{req.downloadHandler.text}");
-        else
-          Debug.Log($"Failed:{req.responseCode}");
         if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
         {
           var newResult = req.downloadHandler.text;
@@ -149,7 +146,10 @@ public class Diagram : MonoBehaviour
       }
       if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
       {
+        var req = _putRequestAsyncOp.webRequest;
         _putRequestAsyncOp.webRequest.Dispose(); 
+        _updateNeeded = false;
+        req.Dispose();
       }
     }
   }
@@ -182,9 +182,11 @@ public class Diagram : MonoBehaviour
     ResetDiagram();
     var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
+    //store attributes to class in a dictionary
+    classDiagram.classes.ForEach (cls => this.idsToClassesAndAttributes[cls._id] = cls.attributes);
     // maps each _id to its (class object, position) pair 
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
-
+    
     classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object>{cls, null});
     classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
     {
@@ -193,7 +195,6 @@ public class Diagram : MonoBehaviour
         idsToClassesAndLayouts[contVal.key][1] = contVal;
       }
     });
-
     _namesToRects.Clear();
 
     foreach (var keyValuePair in idsToClassesAndLayouts)
@@ -205,16 +206,20 @@ public class Diagram : MonoBehaviour
       _namesToRects[cls.name] = CreateCompartmentedRectangle(
           _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
       
-      //get first section of compartmented rectangle
-      GameObject sect = _namesToRects[cls.name].GetComponent<CompartmentedRectangle>().GetSection(0);
-      for (int i = 0; i< cls.attributes.Count ; i++){
-      //create texboxes with respective values for comp rect with id
-        Debug.Log("Attribute "+ cls.attributes[i]._id+":"+"name=" + cls.attributes[i].name +"type="+ cls.attributes[i].type);
-        // sect.GetComponent<Section>.addTextbox(cls.attributes[i]._id, cls.attributes[i].name, cls.attributes[i].type);
+    }
+    _namesUpToDate = false;
+  }
+
+  public void AddAttributes(GameObject sect, int i){
+    int first = 0;
+    if(i == first){
+      var compId = sect.GetComponent<Section>().GetCompartmentedRectangle()
+                      .GetComponent<CompartmentedRectangle>().ID;
+      foreach(var attr in idsToClassesAndAttributes[compId]){
+        Debug.Log("Attribute "+ attr._id+":"+"name=" + attr.name +"type="+ attr.type);
+          sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr.type);
       }
     }
-
-    _namesUpToDate = false;
   }
 
   /// <summary>
@@ -261,16 +266,16 @@ public class Diagram : MonoBehaviour
     if (UseWebcore)
     {
       string _id = node.GetComponent<CompartmentedRectangle>().ID;
-      string clsName = header.GetComponent<InputField>().text;
-      Vector3 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
-      //JSON body param to be set
-      var jsonData = $@"{{
-        ""x"": {newPosition.x},
-        ""y"": {newPosition.y},
-      }}";
-      // PutRequest(UpdateClassEndpoint, jsonData,_id);
-      // GetRequest(GetCdmEndpoint);
-      Debug.Log("Updated position for"+ _id +":"+"x=" + newPosition.x +"y="+ newPosition.y);
+      string clsName = header.GetComponent<TextBox>().GetText();
+      Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
+      //JSON body. Create new serializable JSON object.
+      PositionInfo pInfo= new PositionInfo();
+      pInfo.xPosition = newPosition.x;
+      pInfo.yPosition = newPosition.y;
+      string jsonData = JsonUtility.ToJson(pInfo);
+      //send updated position via PUT request
+      PutRequest(UpdateClassEndpoint, jsonData, _id);
+      GetRequest(GetCdmEndpoint);
     }
   }
 
@@ -351,7 +356,7 @@ public class Diagram : MonoBehaviour
   public void PutRequest(string uri, string data, string _id)
   {
     var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
-    Debug.Log("Test:" + webRequest);
+    Debug.Log("PutURI:" + uri + "/" + _id + "/" + "position");
     webRequest.method = "PUT";
     webRequest.disposeDownloadHandlerOnDispose = false;
     webRequest.SetRequestHeader("Content-Type", "application/json");

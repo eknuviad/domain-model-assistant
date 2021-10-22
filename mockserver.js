@@ -144,14 +144,16 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
 
 //Update class position
 app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res)=>{
-  console.log("here");
+  
   const classId = req.params.classId;
   var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
   const allLayoutIds = values.map(c => c.key);
   var index = allLayoutIds.indexOf(classId);
   classDiagram.layout.containers[0].value[index].value.x = req.body.xPosition;
   classDiagram.layout.containers[0].value[index].value.y = req.body.yPosition;
-  res.json(classDiagram);
+  console.log(">>> Updated classDiagram position = x: " + classDiagram.layout.containers[0].value[index].value.x
+               +"y:"+ classDiagram.layout.containers[0].value[index].value.y);
+  res.sendStatus(SUCCESS);
 });
 // Delete class
 app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
