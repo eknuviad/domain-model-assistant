@@ -47,20 +47,19 @@ public class CompartmentedRectangle : Node
     {
         var header = GameObject.Instantiate(textbox, this.transform);
         //vector position will need to be obtained from transform of gameobject in the future
-        header.transform.position = this.transform.position + new Vector3(0, 45, 0);
+        header.transform.position = this.transform.position + new Vector3(0, 70, 0);
         AddHeader(header);
     }
     
     public void CreateSection()
     {
-        Vector3 oldPosition = this.transform.position;
+        Vector3 oldPosition = this.transform.position +new Vector3(0, 18, 0);
         for (int i = 0; i < 2; i++)/*this loop assumes that class always has 2 sections*/
         {
             var sect = GameObject.Instantiate(section, this.transform);
-            sect.transform.position = oldPosition;
+            sect.transform.position = oldPosition + new Vector3(0, -71, 0)*sections.Count;
             // At the moment vector positions are hardcoded but will need to be obtained
             // from the transform of the gameobject
-            oldPosition += new Vector3(0, -46, 0);
             AddSection(sect);
             _diagram.AddAttributes(GetSection(i), i);//add atrributes to section
         }

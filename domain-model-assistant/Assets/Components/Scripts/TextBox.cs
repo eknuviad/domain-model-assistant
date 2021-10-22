@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,36 +10,9 @@ public class TextBox : MonoBehaviour
     public string ID
     { get; set; }
 
-     void Start()
+    void Start()
     {
-        this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-    }
 
-
-    public string GetTextWithNameType(string name, string type){
-        string s;
-        if(type.Equals("7")){
-            s = "int" + " " + name;
-        }else{
-            s = name;
-        }
-        return s;
-    }
-    
-    public string GetText()
-    {
-        return GetComponent<InputField>().text;
-    }
-
-    public bool SetText(string text)
-    {   
-        var inputField = GetComponent<InputField>();
-        if (inputField == null)
-        {
-            inputField = gameObject.AddComponent<InputField>();
-        }
-        inputField.text = text;
-        return true;
     }
 
     public bool SetSection(GameObject sSection)
@@ -59,3 +32,4 @@ public class TextBox : MonoBehaviour
 
 
 }
+

@@ -101,6 +101,7 @@ public class Diagram : MonoBehaviour
     this.raycaster = GetComponent<GraphicRaycaster>();
     GetRequest(GetCdmEndpoint);
     
+
     /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
     // LoadData();
     //---------------------------------------//
@@ -285,8 +286,7 @@ public class Diagram : MonoBehaviour
   {
     foreach (var nameRectPair in _namesToRects)
     {
-      nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
-          .SetText(nameRectPair.Key);
+      nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = nameRectPair.Key;
     }
     _namesUpToDate = true;
   }
@@ -308,7 +308,7 @@ public class Diagram : MonoBehaviour
     var compRect = Instantiate(compartmentedRectangle, this.transform);
     compRect.transform.position = position;
     compRect.GetComponent<CompartmentedRectangle>().ID = _id;
-    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>().SetText(name);
+    compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
     AddNode(compRect);
     return compRect;
   }
@@ -478,8 +478,8 @@ public class Diagram : MonoBehaviour
   {
     Debug.Log("Debug button clicked!");
     //LoadData();
-    GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<TextBox>()
-        .SetText("Rabbit");
+    GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
+      .text = "Rabbit";
   }
 
 }
