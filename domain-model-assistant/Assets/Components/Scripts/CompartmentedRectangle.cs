@@ -116,7 +116,6 @@ public class CompartmentedRectangle : Node
     // ************ BEGIN UI model Methods for Compartmented Rectangle ****************//
     public bool AddSection(GameObject aSection)
     {
-        Debug.Log("addsec");
         if (sections.Contains(aSection))
         {
             return false;
