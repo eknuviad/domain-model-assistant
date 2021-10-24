@@ -46,6 +46,8 @@ public class Diagram : MonoBehaviour
 
   Dictionary<string, List<Attribute>> idsToClassesAndAttributes = new Dictionary<string, List<Attribute>>();
 
+  Dictionary<string, string> idsToTypes = new Dictionary<string, string>();
+
   enum CanvasMode
   {
     Default,
@@ -184,6 +186,14 @@ public class Diagram : MonoBehaviour
 
     //store attributes to class in a dictionary
     classDiagram.classes.ForEach (cls => this.idsToClassesAndAttributes[cls._id] = cls.attributes);
+    //store attribute types. Map type id to eclass tye
+    classDiagram.types.ForEach(type => {
+      //get appropriate substring to match
+      string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1);
+      if(!idsToTypes.ContainsKey(type._id)){
+        this.idsToTypes[type._id] = res;
+      }
+    });
     // maps each _id to its (class object, position) pair 
     var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
     
@@ -209,7 +219,9 @@ public class Diagram : MonoBehaviour
     }
     _namesUpToDate = false;
   }
-
+//get textbox id
+//find textbox using id
+//set resective texbox color 
   public void AddAttributes(GameObject sect, int i){
     int first = 0;
     if(i == first){
@@ -217,9 +229,50 @@ public class Diagram : MonoBehaviour
                       .GetComponent<CompartmentedRectangle>().ID;
       foreach(var attr in idsToClassesAndAttributes[compId]){
         Debug.Log("Attribute "+ attr._id+":"+"name=" + attr.name +"type="+ attr.type);
-          // sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr.type);
+        string type = GetAttributeType(idsToTypes[attr.type]);
+        sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, type);
       }
     }
+  }
+
+  public string GetAttributeType(string substring){
+    string res;
+    switch (substring){
+      case "CDVoid":
+        res = "void";
+        break;
+      case "CDAny":
+        res = "any";
+        break;
+      case "CDBoolean":
+        res = "boolean";
+        break;
+      case "CDDouble":
+        res = "double";
+        break;
+      case "CDInt":
+        res = "int";
+        break;
+      case "CDLong":
+        res = "long";
+        break;
+      case "CDString":
+        res = "string";
+        break;
+      case "CDByte":
+        res = "byte";
+        break;
+      case "CDFloat":
+        res = "float";
+        break;
+      case "CDChar":
+        res = "char";
+        break;
+      default:
+        res = "";
+        break;
+    }
+    return res;
   }
 
   /// <summary>
