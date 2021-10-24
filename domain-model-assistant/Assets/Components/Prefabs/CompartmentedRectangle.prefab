@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.827451, g: 0.827451, b: 0.827451, a: 1}
+  m_Color: {r: 0.6886792, g: 0.13968495, b: 0.13968495, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -113,8 +113,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -33.81578, y: -76.59143}
-  m_SizeDelta: {x: 180, y: 180}
+  m_AnchoredPosition: {x: 177.44083, y: -35.784065}
+  m_SizeDelta: {x: 245.0817, y: 207.7682}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4578845948308175789
 CanvasRenderer:
@@ -171,6 +171,8 @@ MonoBehaviour:
   textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
   section: {fileID: 8699455690723162231, guid: 1396b8a5385e3cd4ca1b245b6b8891d1, type: 3}
   sections: []
+  text: {fileID: 0}
+  isHighlighted: 1
   popupMenu: {fileID: 8564540208968287839, guid: 9913a5b3d214e7642a24bee2f858e6e7,
     type: 3}
 --- !u!114 &2934163152826966153

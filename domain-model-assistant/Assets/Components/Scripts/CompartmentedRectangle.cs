@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CompartmentedRectangle : Node
 {
     
+
     public GameObject textbox;
     public GameObject section;
     public List<GameObject> sections = new List<GameObject>();
+
+    public TextBox text;
+
+    public bool isHighlighted = true;
     
     // popup menu variables
     public GameObject popupMenu;
@@ -37,6 +43,15 @@ public class CompartmentedRectangle : Node
         if (this.hold)
         {
             OnBeginHold();
+        }
+        
+        if (isHighlighted == true)
+        {
+            
+            //this.GetHeader().GetComponent<Text>().color = Color.red;
+            GameObject child = this.transform.GetChild(1).gameObject;
+            child.GetComponent<Image>().color = Color.blue;
+            
         }
         
     }
@@ -134,6 +149,8 @@ public class CompartmentedRectangle : Node
     public Vector2 GetPosition(){
         return this.transform.position;
     }
+
+
 
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
