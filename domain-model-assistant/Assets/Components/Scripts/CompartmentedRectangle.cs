@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class CompartmentedRectangle : Node
 {
     
-    public GameObject textbox;
+    public GameObject textbox; //this allows to instantiate textbox prefabs
     public GameObject section;
     public List<GameObject> sections = new List<GameObject>();
 

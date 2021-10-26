@@ -46,7 +46,16 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "1",
-      "name": "ClassOne"
+      "name": "ClassOne",
+      "attributes" : [ {
+        "_id" : "2",
+        "name" : "year",
+        "type" : "6"
+      },{
+        "_id" : "5",
+        "name" : "month",
+        "type" : "8"
+      } ]
     },
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",

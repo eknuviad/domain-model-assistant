@@ -10,6 +10,10 @@
       "_id" : "2",
       "name" : "year",
       "type" : "7"
+    },{
+      "_id" : "5",
+      "name" : "month",
+      "type" : "9"
     } ]
   } ],
   "types" : [ {
