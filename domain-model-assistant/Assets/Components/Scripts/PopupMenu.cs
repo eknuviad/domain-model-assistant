@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PopupMenu : MonoBehaviour
 {
-    
+
     GameObject compRect;
 
     // Start is called before the first frame update
@@ -15,9 +15,10 @@ public class PopupMenu : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {}
+    { }
 
-    public void setCompartmentedRectangle(CompartmentedRectangle aCompRect){
+    public void setCompartmentedRectangle(CompartmentedRectangle aCompRect)
+    {
         this.compRect = aCompRect.gameObject;
         // NB: we'll need to properly implement these two methods based on UI model diagram
         this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.GetSection(0).GetComponent<Section>().AddAttribute);
@@ -25,7 +26,8 @@ public class PopupMenu : MonoBehaviour
         this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.Destroy);
     }
 
-    public GameObject getCompartmentedRectangle(){
+    public GameObject getCompartmentedRectangle()
+    {
         return this.compRect;
     }
 

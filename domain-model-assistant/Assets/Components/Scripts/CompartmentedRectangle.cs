@@ -6,15 +6,16 @@ using UnityEngine.UI;
 
 public class CompartmentedRectangle : Node
 {
-    
+
     public GameObject textbox; //this allows to instantiate textbox prefabs
     public GameObject section;
     public List<GameObject> sections = new List<GameObject>();
 
     public TextBox text;
 
-    public bool isHighlighted = true;
-    
+    public bool isHighlighted
+    { get; set; }
+
     // popup menu variables
     public GameObject popupMenu;
     float holdTimer = 0;
@@ -28,7 +29,7 @@ public class CompartmentedRectangle : Node
     {
         _diagram = GetComponentInParent<Diagram>();
     }
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -43,15 +44,13 @@ public class CompartmentedRectangle : Node
         {
             OnBeginHold();
         }
-        if (isHighlighted == true)
+        if (this.isHighlighted)
         {
-
-            //this.GetHeader().GetComponent<Text>().color = Color.red;
             GameObject child = this.transform.GetChild(1).gameObject;
             child.GetComponent<Image>().color = Color.blue;
 
         }
-        
+
     }
 
     // ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
@@ -63,16 +62,14 @@ public class CompartmentedRectangle : Node
         header.transform.position = this.transform.position + new Vector3(0, 70, 0);
         AddHeader(header);
     }
-    
+
     public void CreateSection()
     {
-        Vector3 oldPosition = this.transform.position +new Vector3(0, 18, 0);
+        Vector3 oldPosition = this.transform.position + new Vector3(0, 18, 0);
         for (int i = 0; i < 2; i++)/*this loop assumes that class always has 2 sections*/
         {
             var sect = GameObject.Instantiate(section, this.transform);
-            sect.transform.position = oldPosition + new Vector3(0, -71, 0)*sections.Count;
-            // At the moment vector positions are hardcoded but will need to be obtained
-            // from the transform of the gameobject
+            sect.transform.position = oldPosition + new Vector3(0, -71, 0) * sections.Count;
             AddSection(sect);
             _diagram.AddAttributes(GetSection(i), i);//add atrributes to section
         }
@@ -88,16 +85,16 @@ public class CompartmentedRectangle : Node
     public void OnEndHold()
     {
         // TODO Don't spawn popup if class is being dragged
-        if(holdTimer > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/)
+        if (holdTimer > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/)
         {
             SpawnPopupMenu();
         }
         holdTimer = 0;
         this.hold = false;
-        
+
         //update class position
-         _diagram.UpdateClass(this.textbox, this.gameObject);
-        
+        _diagram.UpdateClass(this.textbox, this.gameObject);
+
     }
 
     void SpawnPopupMenu()
@@ -110,8 +107,8 @@ public class CompartmentedRectangle : Node
         }
         else
         {
-            this.popupMenu.GetComponent<PopupMenu>().Open(); 
-        } 
+            this.popupMenu.GetComponent<PopupMenu>().Open();
+        }
     }
 
     /// <summary>
@@ -120,7 +117,7 @@ public class CompartmentedRectangle : Node
     public void Destroy()
     {
         _diagram.DeleteClass(this.gameObject);
-        this.popupMenu.GetComponent<PopupMenu>().Destroy(); 
+        this.popupMenu.GetComponent<PopupMenu>().Destroy();
     }
 
     // ************ END Controller Methods for Compartmented Rectangle ****************//
@@ -137,14 +134,19 @@ public class CompartmentedRectangle : Node
         return true;
     }
 
-    public GameObject GetSection(int index){
-        if(index >= 0 && index < sections.Count){
+    public GameObject GetSection(int index)
+    {
+        if (index >= 0 && index < sections.Count)
+        {
             return this.sections[index];
-        }else{
+        }
+        else
+        {
             return null;
         }
     }
-    public Vector2 GetPosition(){
+    public Vector2 GetPosition()
+    {
         return this.transform.position;
     }
 

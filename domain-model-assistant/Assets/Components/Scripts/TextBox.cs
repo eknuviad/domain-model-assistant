@@ -28,7 +28,7 @@ public class TextBox : MonoBehaviour
 
     public bool SetSection(GameObject sSection)
     {
-        if(sSection == null)
+        if (sSection == null)
         {
             return false;
         }

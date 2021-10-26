@@ -15,25 +15,15 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const cors=require("cors");
-const corsOptions ={
-   origin: ['http://localhost:8080','http://127.0.0.1'],
-   methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],
-   credentials:true,            //access-control-allow-credentials:true
-   optionSuccessStatus:200,
+const cors = require("cors");
+const corsOptions = {
+  origin: ['http://localhost:8080', 'http://127.0.0.1'],
+  methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
 }
 
 app.use(cors(corsOptions)) // Use this after the variable declaration
-
-// app.use(function (req, res, next) {
-
-//   res.header('Access-Control-Allow-Origin', 'http://127.0.0.1');
-//   res.header('Access-Control-Allow-Headers', true);
-//   res.header('Access-Control-Allow-Credentials', true);
-//   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   next();
-// });
-
 
 const SUCCESS = 200;
 const PORT = 8080;
@@ -47,15 +37,15 @@ var classDiagram = {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "1",
       "name": "ClassOne",
-      "attributes" : [ {
-        "_id" : "2",
-        "name" : "year",
-        "type" : "6"
-      },{
-        "_id" : "5",
-        "name" : "month",
-        "type" : "8"
-      } ]
+      "attributes": [{
+        "_id": "2",
+        "name": "year",
+        "type": "6"
+      }, {
+        "_id": "5",
+        "name": "month",
+        "type": "8"
+      }]
     },
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
@@ -152,8 +142,7 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
 });
 
 //Update class position
-app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res)=>{
-  
+app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res) => {
   const classId = req.params.classId;
   var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
   const allLayoutIds = values.map(c => c.key);
@@ -161,7 +150,7 @@ app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res)=>{
   classDiagram.layout.containers[0].value[index].value.x = req.body.xPosition;
   classDiagram.layout.containers[0].value[index].value.y = req.body.yPosition;
   console.log(">>> Updated classDiagram position = x: " + classDiagram.layout.containers[0].value[index].value.x
-               +"y:"+ classDiagram.layout.containers[0].value[index].value.y);
+    + "y:" + classDiagram.layout.containers[0].value[index].value.y);
   res.sendStatus(SUCCESS);
 });
 // Delete class
