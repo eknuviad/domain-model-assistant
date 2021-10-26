@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class TextBox : MonoBehaviour
 {
-
+    public Text text;
     public GameObject sect;
     public GameObject attribcross;
     public string ID
+    { get; set; }
+    public bool isHighlightedtext
     { get; set; }
 
 
@@ -26,12 +28,16 @@ public class TextBox : MonoBehaviour
         {
             OnBeginHold2();
         }
-        //this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(SpawnAttributeCross());
+        text = this.GetComponent<Text>();
+        if (isHighlightedtext == true)
+        {
+            text.color = Color.red;
+        }
     }
 
     public bool SetSection(GameObject sSection)
     {
-        if(sSection == null)
+        if (sSection == null)
         {
             return false;
         }

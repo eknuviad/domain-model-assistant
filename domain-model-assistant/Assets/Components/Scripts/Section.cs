@@ -7,7 +7,7 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
-    
+
     public GameObject textB;
     public List<GameObject> textBList = new List<GameObject>();
 
@@ -26,7 +26,7 @@ public class Section : MonoBehaviour
 
     public bool SetCompartmentedRectangle(GameObject aCompRect)
     {
-        if(aCompRect == null)
+        if (aCompRect == null)
         {
             return false;
         }
@@ -51,10 +51,14 @@ public class Section : MonoBehaviour
         return true;
     }
 
-    public GameObject GetTextBox(int index){
-        if(index >= 0 && index < textBList.Capacity -1){
+    public GameObject GetTextBox(int index)
+    {
+        if (index >= 0 && index < textBList.Capacity - 1)
+        {
             return this.textBList[index];
-        }else{
+        }
+        else
+        {
             return null;
         }
     }
@@ -63,17 +67,17 @@ public class Section : MonoBehaviour
     {
         var TB = GameObject.Instantiate(textB, this.transform);
         TB.GetComponent<InputField>().text = "Enter Text ...";
-        TB.transform.position = this.transform.position + new Vector3(0, -10, 0)*textBList.Count;
+        TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
         this.AddTextBox(TB);
     }
 
-//     public void AddAttribute(string _id, string name, string type){
-//         var TB = GameObject.Instantiate(textB, this.transform);
-//         TB.GetComponent<TextBox>().ID = _id;
-//         string s = TB.GetComponent<TextBox>().GetTextWithNameType(name, type);
-//         TB.GetComponent<TextBox>().SetText(s);
-//         TB.transform.position = this.transform.position; 
-//         this.AddTextBox(TB);
-//     }
+    public void AddAttribute(string _id, string name, string type)
+    {
+        var TB = GameObject.Instantiate(textB, this.transform);
+        TB.GetComponent<TextBox>().ID = _id;
+        TB.GetComponent<InputField>().text = type + " " + name;
+        TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
+        this.AddTextBox(TB);
+    }
 
 }

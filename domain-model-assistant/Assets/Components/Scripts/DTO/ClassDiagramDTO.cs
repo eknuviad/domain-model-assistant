@@ -20,7 +20,7 @@ public class Class
     public string eClass;
     public string _id;
     public string name;
-     public List<Attribute> attributes;
+    public List<Attribute> attributes;
 }
 
 [System.Serializable]
@@ -38,7 +38,7 @@ public class Layout
 }
 
 [System.Serializable]
-public class Attribute 
+public class Attribute
 {
     public string _id;
     public string name;
