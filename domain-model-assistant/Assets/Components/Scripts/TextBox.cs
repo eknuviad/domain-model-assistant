@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class TextBox : MonoBehaviour
 {
     public Text text;
@@ -88,7 +87,6 @@ public class TextBox : MonoBehaviour
         this.attribcross.GetComponent<AttributeCross>().Close();
         Destroy(this.gameObject);
     }
-
 
 }
 

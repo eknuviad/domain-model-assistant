@@ -13,6 +13,7 @@ using UnityEngine.UI;
 
 public class Diagram : MonoBehaviour
 {
+
     public TextAsset jsonFile;
     public float zoomSpeed = 1;
     public CanvasScaler CanvasScaler;
@@ -220,6 +221,7 @@ public class Diagram : MonoBehaviour
         }
         _namesUpToDate = false;
     }
+
     public void AddAttributes(GameObject sect, int i)
     {
         int first = 0;

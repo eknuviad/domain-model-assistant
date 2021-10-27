@@ -19,7 +19,9 @@ public class Section : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //TODO Update size of class depending on number of textboxes(attributes)
+        // Update size of class depending on number of textboxes(attributes)
+        // enlarge the section by 0.1*number of textboxes
+        this.transform.localScale += new Vector3(0.1F*textBList.Count, 0, 0);
     }
 
     // ************ UI model Methods for Section ****************//
