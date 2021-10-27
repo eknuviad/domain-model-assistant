@@ -539,10 +539,10 @@ public class Diagram : MonoBehaviour
           .text = "Rabbit";
     }
 
-  //When pressing on canvas close popumenu and attributeclosebuttons
-  public void CloseMenus()
-  {
-    
-  }
+    //When pressing on canvas close popumenu and attributeclosebuttons
+    public void CloseMenus()
+    {
+
+    }
 
 }

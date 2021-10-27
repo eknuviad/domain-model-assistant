@@ -16,7 +16,7 @@ public class TextBox : MonoBehaviour
 
 
     float holdTimer2 = 0;
-    bool hold2 = false;    
+    bool hold2 = false;
     void Start()
     {
 
@@ -54,19 +54,18 @@ public class TextBox : MonoBehaviour
     {
         this.hold2 = true;
         holdTimer2 += Time.deltaTime;
-       // _prevPosition = this.transform.position;
     }
 
     public void OnEndHold2()
     {
         // TODO Don't spawn popup if class is being dragged
-        if(holdTimer2 > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
+        if (holdTimer2 > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
         {
-            if(this.GetSection() != null)
+            if (this.GetSection() != null)
             {
                 SpawnAttributeCross();
             }
-            
+
         }
     }
 
@@ -80,15 +79,14 @@ public class TextBox : MonoBehaviour
         }
         else
         {
-            this.attribcross.GetComponent<AttributeCross>().Open(); 
-        } 
+            this.attribcross.GetComponent<AttributeCross>().Open();
+        }
     }
 
     public void Destroy()
     {
-        //_diagram.DeleteAttribute(this.gameObject); //add delete attribute to Diagram
         this.attribcross.GetComponent<AttributeCross>().Close();
-        Destroy(this.gameObject); 
+        Destroy(this.gameObject);
     }
 
 
