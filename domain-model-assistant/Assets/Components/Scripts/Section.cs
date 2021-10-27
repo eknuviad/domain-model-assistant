@@ -19,9 +19,7 @@ public class Section : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Update size of class depending on number of textboxes(attributes)
-        // enlarge the section by 0.1*number of textboxes
-        this.transform.localScale += new Vector3(0.1F*textBList.Count, 0, 0);
+    
     }
 
     // ************ UI model Methods for Section ****************//
@@ -70,6 +68,9 @@ public class Section : MonoBehaviour
         var TB = GameObject.Instantiate(textB, this.transform);
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
+        // Update size of class depending on number of textboxes(attributes)
+        // enlarge the section by 0.1*number of textboxes
+        TB.transform.localScale += new Vector3(0, 0.1F*textBList.Count, 0);
         this.AddTextBox(TB);
     }
 
