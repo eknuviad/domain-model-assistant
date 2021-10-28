@@ -11,6 +11,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+
 public class Diagram : MonoBehaviour
 {
     public TextAsset jsonFile;
@@ -115,7 +116,7 @@ public class Diagram : MonoBehaviour
         if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
-            AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+            AddClass("Class" + (compartmentedRectangles.Count+1), Input.mousePosition);
             ActivateDefaultMode();
         }
 
@@ -286,13 +287,11 @@ public class Diagram : MonoBehaviour
         if (UseWebcore)
         {
             // TODO Replace this ugly string once Unity moves to .NET 6
-            var jsonData = $@"{{
-        ""className"": ""{name}"",
-        ""dataType"": false,
-        ""isInterface"": false,
-        ""x"": {position.x},
-        ""y"": {position.y},
-      }}";
+            AddJsonClass info = new AddJsonClass();
+            info.x = position.x;
+            info.y = position.y;
+            info.className = name;
+            string jsonData = JsonUtility.ToJson(info);
             PostRequest(AddClassEndpoint, jsonData);
             GetRequest(GetCdmEndpoint);
         }
