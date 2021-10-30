@@ -37,8 +37,10 @@ void Update(){
             mousePos.z = 0;
             if(IsCompRectExist(mousePos)){
                 line.GetComponent<LineRenderer>().SetPosition(1, mousePos); 
-                obj1.AddEdge(line); //not sure if this references actual comprect in diagram. needs testing
-                obj2.AddEdge(line);
+                if(obj1 != null && obj2 !=null){
+                    obj1.AddEdge(line); //not sure if this references actual comprect in diagram. needs testing
+                    obj2.AddEdge(line);
+                }
             }else{
                 Destroy(line);
             }
@@ -68,6 +70,7 @@ public bool IsCompRectExist(Vector3 aMousePos){
         res = false;
     }else{
         foreach(var obj in nodes){
+            Debug.Log("here1:"+ obj.GetComponent<CompartmentedRectangle>().ID);
             var distance = Vector3.Distance(mousePos, obj.transform.position);
             if(distance < 0.1f /*threshold btw lineend and comprect*/){
                 var ob = obj.GetComponent<CompartmentedRectangle>();

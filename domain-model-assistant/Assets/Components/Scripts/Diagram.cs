@@ -106,7 +106,7 @@ public class Diagram : MonoBehaviour
         // this.raycaster = GetComponent<GraphicRaycaster>();
         // GetRequest(GetCdmEndpoint);
         /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
-        // LoadData();
+        LoadData();
         //---------------------------------------//
     }
 
