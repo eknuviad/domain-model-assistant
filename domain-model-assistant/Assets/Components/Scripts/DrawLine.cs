@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 
@@ -9,14 +10,14 @@ public class DrawLine: MonoBehaviour{
 
 private List<GameObject> nodes;
 
-private GameObject line;
+public GameObject line;
 
 private Vector3 mousePos;
 
 private CompartmentedRectangle obj1;
 private CompartmentedRectangle obj2;
 void Start(){
-
+    
 }
 
 
@@ -24,7 +25,7 @@ void Update(){
     if (Input.GetMouseButtonDown(0))
         {
             mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);//mouse postiion is Vecot3, mouse cordinates are 2d so convert
-            mousePos.z = 0; //so lines are drawn on xy plan
+            mousePos.z = 0; //so lines are drawn on xy plane
             if(IsCompRectExist(mousePos) && line == null){
                createLine();
             }
@@ -35,11 +36,11 @@ void Update(){
             mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
             if(IsCompRectExist(mousePos)){
-                line.SetPosition(1, mousePos); 
+                line.GetComponent<LineRenderer>().SetPosition(1, mousePos); 
                 obj1.AddEdge(line); //not sure if this references actual comprect in diagram. needs testing
                 obj2.AddEdge(line);
             }else{
-                line.GetComponent<Edge>().Destroy();
+                Destroy(line);
             }
             // line = null; //if line is not drawn
             // currLines++;
@@ -54,26 +55,27 @@ void Update(){
 
 
 public void createLine(){
-    GameObject.Instantiate(line, this.transform);
+    this.line = new GameObject("Line",typeof(Edge));
+    this.line.AddComponent<LineRenderer>();
 }
 
 public bool IsCompRectExist(Vector3 aMousePos){
-    bool res = false;
+    bool res = true; //false;
     if(nodes == null){
         nodes = this.gameObject.GetComponent<Diagram>().GetCompartmentedRectangles();
     }
-    if(!nodes.Any()){
+    if(nodes.Count == 0){
         res = false;
     }else{
         foreach(var obj in nodes){
             var distance = Vector3.Distance(mousePos, obj.transform.position);
             if(distance < 0.1f /*threshold btw lineend and comprect*/){
-                ob = obj.GetComponent<CompartmentedRectangle>();
+                var ob = obj.GetComponent<CompartmentedRectangle>();
                 if(obj1 == null){
-                    obj1 == ob;
+                    obj1 = ob;
                 }
-                else if(Vector3.Distance(obj1,ob) > 0.1f /*threshold between comprects*/){
-                    obj2 == ob;
+                else if(Vector3.Distance(obj1.transform.position,ob.transform.position) > 0.1f /*threshold between comprects*/){
+                    obj2 = ob;
                 }
                 res = true;
                 break;

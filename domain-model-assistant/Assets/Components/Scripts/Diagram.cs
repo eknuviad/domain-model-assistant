@@ -105,16 +105,6 @@ public class Diagram : MonoBehaviour
         // targetOrtho = CanvasScaler.scaleFactor;
         // this.raycaster = GetComponent<GraphicRaycaster>();
         // GetRequest(GetCdmEndpoint);
-        // testPoints = new Transform[2];
-        // Transform temp1 = this.transform;
-        // Transform temp2 = this.transform;
-        // temp2.position += Vector3.up * 10.0f;
-        // testPoints[0] = temp1;
-        // testPoints[1] = temp2;
-        // var tL = GameObject.Instantiate(testLine, this.transform);
-        // tL.GetComponent<Edge>().SetUpLine(testPoints);
-
-
         /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
         // LoadData();
         //---------------------------------------//
@@ -123,57 +113,57 @@ public class Diagram : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-    //     if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
-    //         (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
-    //     {
-    //         AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
-    //         ActivateDefaultMode();
-    //     }
+        // if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
+        //     (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
+        // {
+        //     AddClass("Class" + compartmentedRectangles.Count, Input.mousePosition);
+        //     ActivateDefaultMode();
+        // }
 
-    //     Zoom();
+        // // Zoom();
 
-    //     if (UseWebcore && _updateNeeded)
-    //     {
-    //         if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
-    //         {
-    //             var req = _getRequestAsyncOp.webRequest;
-    //             if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-    //             {
-    //                 var newResult = req.downloadHandler.text;
-    //                 if (newResult != _getResult)
-    //                 {
-    //                     LoadJson(newResult);
-    //                     _getResult = newResult;
-    //                 }
-    //             }
-    //             _updateNeeded = false;
-    //             req.Dispose();
-    //         }
-    //         if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-    //         {
-    //             _postRequestAsyncOp.webRequest.Dispose();
-    //         }
-    //         if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-    //         {
-    //             _deleteRequestAsyncOp.webRequest.Dispose();
-    //         }
-    //         if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-    //         {
-    //             var req = _putRequestAsyncOp.webRequest;
-    //             _putRequestAsyncOp.webRequest.Dispose();
-    //             _updateNeeded = false;
-    //             req.Dispose();
-    //         }
-    //     }
-    // }
+        // if (UseWebcore && _updateNeeded)
+        // {
+        //     if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+        //     {
+        //         var req = _getRequestAsyncOp.webRequest;
+        //         if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
+        //         {
+        //             var newResult = req.downloadHandler.text;
+        //             if (newResult != _getResult)
+        //             {
+        //                 LoadJson(newResult);
+        //                 _getResult = newResult;
+        //             }
+        //         }
+        //         _updateNeeded = false;
+        //         req.Dispose();
+        //     }
+        //     if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+        //     {
+        //         _postRequestAsyncOp.webRequest.Dispose();
+        //     }
+        //     if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+        //     {
+        //         _deleteRequestAsyncOp.webRequest.Dispose();
+        //     }
+        //     if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+        //     {
+        //         var req = _putRequestAsyncOp.webRequest;
+        //         _putRequestAsyncOp.webRequest.Dispose();
+        //         _updateNeeded = false;
+        //         req.Dispose();
+        //     }
+        // }
+    }
 
-    // // LateUpdate is called at the end of a frame update, after all Update operations are done
-    // public void LateUpdate()
-    // {
-    //     if (!_namesUpToDate)
-    //     {
-    //         UpdateNames();
-    //     }
+    // LateUpdate is called at the end of a frame update, after all Update operations are done
+    public void LateUpdate()
+    {
+        if (!_namesUpToDate)
+        {
+            UpdateNames();
+        }
     }
 
     // ************ Controller Methods for Canvas/Diagram ****************//
