@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class Section : MonoBehaviour
 {
-
+    public string ID
+    {get;set;}
     public GameObject compRect;
 
     public GameObject textB;
