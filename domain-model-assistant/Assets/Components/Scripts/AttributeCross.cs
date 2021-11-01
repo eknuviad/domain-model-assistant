@@ -18,6 +18,7 @@ public class AttributeCross : MonoBehaviour
          this.gameObject.transform.position = textb.transform.position + new Vector3(-100, 0, 0);
         }
     }
+
     public void setTextBox(TextBox AttriBute){
         this.textb = AttriBute.gameObject;
         this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(AttriBute.Destroy);

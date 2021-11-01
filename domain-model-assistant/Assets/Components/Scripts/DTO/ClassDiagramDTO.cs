@@ -11,7 +11,7 @@ public class ClassDiagramDTO
     public List<Class> classes;
     public List<CDType> types;
     public Layout layout;
-    // TODO add feedback(s) here?
+    // TODO add feedback here
 }
 
 [System.Serializable]
