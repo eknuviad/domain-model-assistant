@@ -36,7 +36,7 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "1",
-      "name": "ClassOne",
+      "name": "Class1",
       "attributes": [{
         "_id": "2",
         "name": "year",
@@ -49,8 +49,8 @@ var classDiagram = {
     },
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
-      "_id": "102",
-      "name": "ClassTwo"
+      "_id": "2",
+      "name": "Class2"
     }
   ],
   "types": [
@@ -112,8 +112,8 @@ var classDiagram = {
             }
           },
           {
-            "_id": "103",
-            "key": "102",
+            "_id": "15",
+            "key": "2",
             "value": {
               "_id": "105",
               "x": 565.5,
@@ -135,8 +135,42 @@ app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
 
 // Add class
 app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
+  const className = req.body.className;
+  const xPos = req.body.x;
+  const yPos = req.body.y;
+  
+  //TODO: unsure what these ids are for, hard coded for now
+  var valueId = 16;
+  var valueValueId = 106;
+
+
+  const allClassIds = classDiagram.classes.map(c => c._id);
+  const newClassId = (parseInt(allClassIds[allClassIds.length-1])+1).toString();
+
+
+  classDiagram.classes.push({
+    "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
+    "_id": newClassId,
+    "name": className
+  })
+
+  classDiagram.layout.containers[0].value.push({
+    "_id": valueId,
+    "key": newClassId,
+    "value": {
+      "_id": valueValueId,
+      "x": xPos,
+      "y": yPos
+    }
+  })
+
+  valueId += 1;
+  valueValueId += 1;
+  
+
+ 
+
   console.log(">>> Adding class given req.body: " + JSON.stringify(req.body));
-  // TODO
 
   res.sendStatus(SUCCESS);
 });
