@@ -6,6 +6,8 @@ Project repository: https://bitbucket.org/mcgillram/touchcore-web/src/master/
 
 Setup guide: See relevant links in [TouchCORE Wiki](https://bitbucket.org/mcgillram/touchram/wiki/Home).
 
+Official RestAPI [documentation](https://bitbucket.org/mcgillram/touchcore-web/src/rest/RestAPIDoc/)
+
 ## Running WebCORE
 
 Modify the `run_webcore.sh` script according to your local installation. The final command **must** be on one line.
@@ -52,6 +54,12 @@ Undo most recent change in class diagram
 
 ```bash
 curl --location --request PUT 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/undo' --header 'Content-Type: application/json'
+```
+
+Add/Create an attribute
+
+```bash
+curl --location --request POST 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/class/{classId}/attribute' --header 'Content-Type: application/json' --data '{"rankIndex": Integer, "typeId": Integer, "attributeName": String}'
 ```
 
 See the WebCORE documentation for more commands.

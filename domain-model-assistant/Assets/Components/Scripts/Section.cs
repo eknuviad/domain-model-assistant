@@ -7,9 +7,15 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
-
     public GameObject textB;
     public List<GameObject> textBList = new List<GameObject>();
+
+    public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
+    public const string WebcoreEndpoint = "http://localhost:8080/";
+    public const string cdmName = "MULTIPLE_CLASSES";
+
+    public const string classAPIEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName + "/class/";
+    public const string AddAttributeEndpoint = classAPIEndpoint; // + /{classId}/attribute
 
     // Start is called before the first frame update
     void Start()
