@@ -126,6 +126,10 @@ var classDiagram = {
   }
 };
 
+//TODO: unsure what these ids are for, hard coded for now
+var valueId = 16;
+var valueValueId = 106;
+
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
   console.log(classDiagram);
@@ -138,15 +142,9 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   const className = req.body.className;
   const xPos = req.body.x;
   const yPos = req.body.y;
-  
-  //TODO: unsure what these ids are for, hard coded for now
-  var valueId = 16;
-  var valueValueId = 106;
-
 
   const allClassIds = classDiagram.classes.map(c => c._id);
   const newClassId = (parseInt(allClassIds[allClassIds.length-1])+1).toString();
-
 
   classDiagram.classes.push({
     "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
@@ -166,9 +164,6 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
 
   valueId += 1;
   valueValueId += 1;
-  
-
- 
 
   console.log(">>> Adding class given req.body: " + JSON.stringify(req.body));
 

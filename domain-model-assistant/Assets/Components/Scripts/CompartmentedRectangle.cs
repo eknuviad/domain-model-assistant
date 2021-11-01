@@ -49,7 +49,7 @@ public class CompartmentedRectangle : Node
         {
             OnBeginHold();
         }
-        if (true)
+        if (isHighlighted)
         {
             GameObject child = this.transform.GetChild(1).gameObject;
             child.GetComponent<Image>().color = Color.blue;
