@@ -15,6 +15,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+        this.gameObject.GetComponent<CompartmentedRectangle>().state = CompartmentedRectangle.State.DraggingClass;
         Vector2 currentMousePosition = eventData.position;
         Vector2 diff = currentMousePosition - lastMousePosition;
         RectTransform rect = GetComponent<RectTransform>();
@@ -32,6 +33,9 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
     public void OnEndDrag(PointerEventData eventData)
     {
         // Implement your functionality here
+        this.gameObject.GetComponent<CompartmentedRectangle>().state = CompartmentedRectangle.State.Default;
+        
+        
     }
 
 

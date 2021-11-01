@@ -51,6 +51,10 @@ public class Section : MonoBehaviour
         return true;
     }
 
+    public List<GameObject> GetTextBoxList(){
+        return textBList;
+    }
+
     public GameObject GetTextBox(int index)
     {
         if (index >= 0 && index < textBList.Capacity - 1)

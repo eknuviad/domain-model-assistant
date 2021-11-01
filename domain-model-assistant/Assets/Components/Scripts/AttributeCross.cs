@@ -14,7 +14,9 @@ public class AttributeCross : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(textb !=null){
+         this.gameObject.transform.position = textb.transform.position + new Vector3(-100, 0, 0);
+        }
     }
     public void setTextBox(TextBox AttriBute){
         this.textb = AttriBute.gameObject;

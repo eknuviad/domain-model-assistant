@@ -89,6 +89,9 @@ public class TextBox : MonoBehaviour
         Destroy(this.gameObject);
     }
 
+    public GameObject GetAttributeCross(){
+        return this.attribcross;
+    }
 
 }
 

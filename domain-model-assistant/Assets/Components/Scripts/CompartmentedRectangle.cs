@@ -20,7 +20,12 @@ public class CompartmentedRectangle : Node
     public GameObject popupMenu;
     float holdTimer = 0;
     bool hold = false;
+    public enum State{
+        Default,
+        DraggingClass,
+    }
 
+    public State state = State.Default;
     private Diagram _diagram;
 
     private Vector2 _prevPosition;
@@ -84,8 +89,7 @@ public class CompartmentedRectangle : Node
 
     public void OnEndHold()
     {
-        // TODO Don't spawn popup if class is being dragged
-        if (holdTimer > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/)
+        if (holdTimer > 1f-5 && state == State.Default)
         {
             SpawnPopupMenu();
         }
@@ -96,10 +100,9 @@ public class CompartmentedRectangle : Node
         _diagram.UpdateClass(this.textbox, this.gameObject);
 
     }
-
     void SpawnPopupMenu()
     {
-        if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null)
+        if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle()== null)
         {
             this.popupMenu = GameObject.Instantiate(this.popupMenu);
             this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
@@ -150,6 +153,9 @@ public class CompartmentedRectangle : Node
         return this.transform.position;
     }
 
+    public GameObject GetPopUpMenu(){
+        return this.popupMenu;
+    }
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }
