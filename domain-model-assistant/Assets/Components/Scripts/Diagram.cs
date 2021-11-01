@@ -149,10 +149,7 @@ public class Diagram : MonoBehaviour
             }
             if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
             {
-                var req = _putRequestAsyncOp.webRequest;
                 _putRequestAsyncOp.webRequest.Dispose();
-                _updateNeeded = false;
-                req.Dispose();
             }
         }
     }
@@ -231,7 +228,6 @@ public class Diagram : MonoBehaviour
                             .GetComponent<CompartmentedRectangle>().ID;
             foreach (var attr in idsToClassesAndAttributes[compId])
             {
-                Debug.Log("Attribute " + attr._id + ":" + "name=" + attr.name + "type=" + attr.type);
                 string type = GetAttributeType(idsToTypes[attr.type]);
                 sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, type);
             }
@@ -334,7 +330,6 @@ public class Diagram : MonoBehaviour
             string jsonData = JsonUtility.ToJson(pInfo);
             //send updated position via PUT request
             PutRequest(UpdateClassEndpoint, jsonData, _id);
-            GetRequest(GetCdmEndpoint);
         }
     }
 
@@ -355,6 +350,23 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void ResetDiagram()
     {
+        foreach(var comp in compartmentedRectangles){
+            //destroy any exisiting popup menu objects
+            GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
+            if(popupMenu !=null){   
+                //TODO: Destroy instance instead 
+                // Destroying gameobject might destoy the asset. Closing the menu for now.
+                popupMenu.GetComponent<PopupMenu>().Close();
+            }
+            //get first section, loop through all attributes, destroy any attribute cross objects
+            GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
+            foreach(var attr in section.GetComponent<Section>().GetTextBoxList()){
+                if(attr.GetComponent<TextBox>().GetAttributeCross() !=null){
+                    //TODO: Destroy instance instead
+                    attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+                }
+            }
+        }
         compartmentedRectangles.ForEach(Destroy);
         compartmentedRectangles.Clear();
     }
@@ -379,7 +391,6 @@ public class Diagram : MonoBehaviour
     {
         // TODO Check if a `using` block can be used here, to auto-dispose the web request
         var webRequest = UnityWebRequest.Get(uri);
-        Debug.Log(uri);
         webRequest.method = "GET";
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.disposeDownloadHandlerOnDispose = false;
@@ -415,7 +426,6 @@ public class Diagram : MonoBehaviour
     public void PutRequest(string uri, string data, string _id)
     {
         var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
-        Debug.Log("PutURI:" + uri + "/" + _id + "/" + "position");
         webRequest.method = "PUT";
         webRequest.disposeDownloadHandlerOnDispose = false;
         webRequest.SetRequestHeader("Content-Type", "application/json");
