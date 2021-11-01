@@ -15,7 +15,11 @@ public class PopupMenu : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    { }
+    { 
+        if(compRect != null){
+            this.gameObject.transform.position = compRect.transform.position + new Vector3(100, 0, 0);
+        }
+    }
 
     public void setCompartmentedRectangle(CompartmentedRectangle aCompRect)
     {

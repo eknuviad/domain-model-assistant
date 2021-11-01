@@ -353,6 +353,22 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void ResetDiagram()
     {
+        // foreach(var comp in compartmentedRectangles){
+        //     //destroy any exisiting popup menu objects
+        //     GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
+        //     if(popupMenu !=null){       
+        //         // DestroyImmediate(popupMenu.GetComponent<PopupMenu>(), true);
+        //         Destroy(popupMenu);
+        //     }
+        //     //get first section, loop through all attributes, destroy any attribute cross objects
+        //     // GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
+        //     // foreach(var attr in section.GetComponent<Section>().GetTextBoxList()){
+        //     //     if(attr.GetComponent<TextBox>().GetAttributeCross() !=null){
+                    
+        //     //         DestroyImmediate(attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>(), true);
+        //     //     }
+        //     // }
+        // }
         compartmentedRectangles.ForEach(Destroy);
         compartmentedRectangles.Clear();
     }
