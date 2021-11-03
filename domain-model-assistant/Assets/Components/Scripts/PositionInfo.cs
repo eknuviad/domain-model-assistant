@@ -19,6 +19,5 @@ public class AddJsonClass
 
     public float x;
 
-    public float y;
-    
+    public float y; 
 }
