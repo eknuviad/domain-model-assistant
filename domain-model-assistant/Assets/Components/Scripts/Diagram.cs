@@ -140,18 +140,18 @@ public class Diagram : MonoBehaviour
                 _updateNeeded = false;
                 req.Dispose();
             }
-            if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-            {
-                _postRequestAsyncOp.webRequest.Dispose();
-            }
-            if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-            {
-                _deleteRequestAsyncOp.webRequest.Dispose();
-            }
-            if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-            {
-                _putRequestAsyncOp.webRequest.Dispose();
-            }
+        }
+        if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
+        {
+            _postRequestAsyncOp.webRequest.Dispose();
+        }
+        if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
+        {
+            _deleteRequestAsyncOp.webRequest.Dispose();
+        }
+        if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
+        {
+            _putRequestAsyncOp.webRequest.Dispose();
         }
     }
 
@@ -359,10 +359,17 @@ public class Diagram : MonoBehaviour
             }
             //get first section, loop through all attributes, destroy any attribute cross objects
             GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
-            foreach(var attr in section.GetComponent<Section>().GetTextBoxList()){
-                if(attr.GetComponent<TextBox>().GetAttributeCross() !=null){
-                    //TODO: Destroy instance instead
-                    attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+            foreach(var attr in section.GetComponent<Section>().GetTextBoxList())
+            {
+                if (attr)
+                {
+                    if (attr.GetComponent<TextBox>())
+                    {
+                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null) {
+                            //TODO: Destroy instance instead
+                            attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+                        }
+                    }
                 }
             }
         }
