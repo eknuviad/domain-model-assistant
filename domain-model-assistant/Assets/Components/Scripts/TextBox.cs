@@ -70,7 +70,7 @@ public class TextBox : MonoBehaviour
 
     void SpawnAttributeCross()
     {
-        if (this.attribcross.GetComponent<AttributeCross>().getTextBox() == null)
+        if (this.attribcross.GetComponent<AttributeCross>().GetTextBox() == null)
         {
             this.attribcross = GameObject.Instantiate(this.attribcross);
             this.attribcross.transform.position = this.transform.position + new Vector3(-100, 0, 0);

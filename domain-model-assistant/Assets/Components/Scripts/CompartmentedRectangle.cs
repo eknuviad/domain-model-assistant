@@ -20,7 +20,9 @@ public class CompartmentedRectangle : Node
     public GameObject popupMenu;
     float holdTimer = 0;
     bool hold = false;
-    public enum State{
+
+    public enum State
+    {
         Default,
         DraggingClass,
     }
@@ -52,10 +54,8 @@ public class CompartmentedRectangle : Node
         if (isHighlighted)
         {
             GameObject child = this.transform.GetChild(1).gameObject;
-            child.GetComponent<Image>().color = Color.blue;
-
+            child.GetComponent<Image>().color = Color.yellow; // or change to light blue
         }
-
     }
 
     // ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
@@ -102,11 +102,11 @@ public class CompartmentedRectangle : Node
     }
     void SpawnPopupMenu()
     {
-        if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle()== null)
+        if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null)
         {
             this.popupMenu = GameObject.Instantiate(this.popupMenu);
             this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
-            this.popupMenu.GetComponent<PopupMenu>().setCompartmentedRectangle(this);
+            this.popupMenu.GetComponent<PopupMenu>().SetCompartmentedRectangle(this);
         }
         else
         {

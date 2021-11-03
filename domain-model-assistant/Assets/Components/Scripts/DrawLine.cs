@@ -41,5 +41,4 @@
 //             rectTransform.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
 //         }
 //     }
-
 // }

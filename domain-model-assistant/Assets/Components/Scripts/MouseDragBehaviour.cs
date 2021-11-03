@@ -32,12 +32,8 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Implement your functionality here
         this.gameObject.GetComponent<CompartmentedRectangle>().state = CompartmentedRectangle.State.Default;
-        
-        
     }
-
 
     private bool IsRectTransformInsideSreen(RectTransform rectTransform)
     {
