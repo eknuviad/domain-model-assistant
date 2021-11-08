@@ -8,7 +8,8 @@ public class Position
     public float xPosition;
     public float yPosition;
 
-    public Position(float positionX, float positionY){
+    public Position(float positionX, float positionY)
+    {
         this.xPosition = positionX;
         this.yPosition = positionY;
     }
