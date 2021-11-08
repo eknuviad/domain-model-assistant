@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System;
 
 public class Section : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class Section : MonoBehaviour
 
     // true if app is run in browser, false if run in Unity editor
     private bool _isWebGl = false;
+    private bool _updateNeeded = false;
 
     private UnityWebRequestAsyncOperation _getRequestAsyncOp;
 
@@ -22,12 +24,13 @@ public class Section : MonoBehaviour
 
     private UnityWebRequestAsyncOperation _putRequestAsyncOp;
 
-    public const bool UseWebcore = false; // Change to false to use the wrapper page JSON instead of WebCore
+    public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
     public const string WebcoreEndpoint = "http://localhost:8080/";
     public const string cdmName = "MULTIPLE_CLASSES";
 
-    public const string classAPIEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName + "/class/";
-    public const string AddAttributeEndpoint = classAPIEndpoint; // + /{classId}/attribute
+    private const string classAPIEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName + "/class/";
+    private string class_id;
+    private string AddAttributeEndpoint;
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +42,12 @@ public class Section : MonoBehaviour
     void Update()
     {
     
+    }
+
+    public Section (GameObject compRect) {
+        this.compRect = compRect;
+        class_id = compRect.GetComponent<CompartmentedRectangle>().ID;
+        AddAttributeEndpoint = classAPIEndpoint + "/" + class_id + "/attribute"; // + /{classId}/attribute
     }
 
     // ************ UI model Methods for Section ****************//
@@ -111,17 +120,21 @@ public class Section : MonoBehaviour
         {
             // TODO Replace this ugly string once Unity moves to .NET 6
             AddAttributeJsonClass info = new AddAttributeJsonClass();
-            info.typeId = type;
+            // AddAttribute(attr._id, attr.name, type)
+            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+            info.rankIndex = 0;
+            info.typeId = Int16.Parse(_id);
             info.attributeName = name;
             string jsonData = JsonUtility.ToJson(info);
             PostRequest(AddAttributeEndpoint, jsonData);
             GetRequest(classAPIEndpoint);
+        } else {
+            var TB = GameObject.Instantiate(textB, this.transform);
+            TB.GetComponent<TextBox>().ID = _id;
+            TB.GetComponent<InputField>().text = type + " " + name;
+            TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
+            this.AddTextBox(TB);
         }
-        var TB = GameObject.Instantiate(textB, this.transform);
-        TB.GetComponent<TextBox>().ID = _id;
-        TB.GetComponent<InputField>().text = type + " " + name;
-        TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
-        this.AddTextBox(TB);
     }
 
     /// <summary>

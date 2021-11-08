@@ -516,7 +516,7 @@ public class Diagram : MonoBehaviour
     //When pressing on canvas close popumenu and attributeclosebuttons
     public void CloseMenus()
     {
-
+        // TODO
     }
 
 }

@@ -206,6 +206,19 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   res.sendStatus(SUCCESS);
 });
 
+// Add attribute
+app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {
+  const attributeName = req.body.attributeName;
+  const rankIndex = req.body.rankIndex;
+  const typeId = req.body.typeId;
+  // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+
+  console.log(">>> Adding attribute given req.body: " + JSON.stringify(req.body));
+  // console.log(JSON.stringify(myObject, null, 4));
+
+  res.sendStatus(SUCCESS);
+});
+
 var server = app.listen(PORT, () => {
   var host = server.address().address
   var port = server.address().port
