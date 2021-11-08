@@ -46,9 +46,9 @@ public class Diagram : MonoBehaviour
 
     Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
 
-    Dictionary<string, List<Attribute>> idsToClassesAndAttributes = new Dictionary<string, List<Attribute>>();
+    Dictionary<string, List<Attribute>> classIdToAttributes = new Dictionary<string, List<Attribute>>();
 
-    Dictionary<string, string> idsToTypes = new Dictionary<string, string>();
+    Dictionary<string, string> AttrIdsToTypes = new Dictionary<string, string>(); //attribute ids to their types
 
     enum CanvasMode
     {
@@ -117,7 +117,7 @@ public class Diagram : MonoBehaviour
         if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
-            AddClass("Class" + (compartmentedRectangles.Count+1), Input.mousePosition);
+            AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
             ActivateDefaultMode();
         }
 
@@ -182,16 +182,17 @@ public class Diagram : MonoBehaviour
         ResetDiagram();
         var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
-        //store attributes to class in a dictionary
-        classDiagram.classes.ForEach(cls => this.idsToClassesAndAttributes[cls._id] = cls.attributes);
+        //store attributes of class in a dictionary
+        classDiagram.classes.ForEach(cls => this.classIdToAttributes[cls._id] = cls.attributes);
         //store attribute types. Map type id to eclass tye
         classDiagram.types.ForEach(type =>
         {
-            //get appropriate substring to match
-            string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1);
-            if (!idsToTypes.ContainsKey(type._id))
+            //cache eClass attr with shortened substring
+            //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
+            string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1).Replace("CD", "").ToLower();
+            if (!AttrIdsToTypes.ContainsKey(type._id))
             {
-                this.idsToTypes[type._id] = res;
+                this.AttrIdsToTypes[type._id] = res;
             }
         });
         // maps each _id to its (class object, position) pair 
@@ -220,61 +221,15 @@ public class Diagram : MonoBehaviour
         _namesUpToDate = false;
     }
 
-    public void AddAttributes(GameObject sect, int i)
+    public void AddAttributesToSection(GameObject section)
     {
-        int first = 0;
-        if (i == first)
+        var compId = section.GetComponent<Section>().GetCompartmentedRectangle()
+                        .GetComponent<CompartmentedRectangle>().ID;
+        foreach (var attr in classIdToAttributes[compId])
         {
-            var compId = sect.GetComponent<Section>().GetCompartmentedRectangle()
-                            .GetComponent<CompartmentedRectangle>().ID;
-            foreach (var attr in idsToClassesAndAttributes[compId])
-            {
-                string type = GetAttributeType(idsToTypes[attr.type]);
-                sect.GetComponent<Section>().AddAttribute(attr._id, attr.name, type);
-            }
+            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, AttrIdsToTypes[attr.type]);
         }
-    }
 
-    public string GetAttributeType(string substring)
-    {
-        string res;
-        switch (substring)
-        {
-            case "CDVoid":
-                res = "void";
-                break;
-            case "CDAny":
-                res = "any";
-                break;
-            case "CDBoolean":
-                res = "boolean";
-                break;
-            case "CDDouble":
-                res = "double";
-                break;
-            case "CDInt":
-                res = "int";
-                break;
-            case "CDLong":
-                res = "long";
-                break;
-            case "CDString":
-                res = "string";
-                break;
-            case "CDByte":
-                res = "byte";
-                break;
-            case "CDFloat":
-                res = "float";
-                break;
-            case "CDChar":
-                res = "char";
-                break;
-            default:
-                res = "";
-                break;
-        }
-        return res;
     }
 
     /// <summary>
@@ -323,9 +278,7 @@ public class Diagram : MonoBehaviour
             string clsName = header.GetComponent<InputField>().text;
             Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
             //JSON body. Create new serializable JSON object.
-            PositionInfo pInfo = new PositionInfo();
-            pInfo.xPosition = newPosition.x;
-            pInfo.yPosition = newPosition.y;
+            Position pInfo = new Position(newPosition.x, newPosition.y);
             string jsonData = JsonUtility.ToJson(pInfo);
             //send updated position via PUT request
             PutRequest(UpdateClassEndpoint, jsonData, _id);
@@ -349,12 +302,12 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void ResetDiagram()
     {
-        foreach (var comp in compartmentedRectangles) 
+        foreach (var comp in compartmentedRectangles)
         {
             //destroy any exisiting popup menu objects
             GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
-            if (popupMenu !=null) 
-            {   
+            if (popupMenu != null)
+            {
                 //TODO: Destroy instance instead 
                 // Destroying gameobject might destoy the asset. Closing the menu for now.
                 popupMenu.GetComponent<PopupMenu>().Close();
@@ -367,7 +320,7 @@ public class Diagram : MonoBehaviour
                 {
                     if (attr.GetComponent<TextBox>())
                     {
-                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null) 
+                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
                         {
                             //TODO: Destroy instance instead
                             attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();

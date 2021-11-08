@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class PositionInfo
+public class Position
 {
     public float xPosition;
     public float yPosition;
+
+    public Position(float positionX, float positionY){
+        this.xPosition = positionX;
+        this.yPosition = positionY;
+    }
 }
 
 public class AddJsonClass

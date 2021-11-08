@@ -5,7 +5,7 @@ using UnityEngine;
 public class AttributeCross : MonoBehaviour
 {
     GameObject textbox; 
-    public const int UpdatePositionConst = -100;
+    public const int UpdatePositionConst = -12;
 
     // Start is called before the first frame update
     void Start()

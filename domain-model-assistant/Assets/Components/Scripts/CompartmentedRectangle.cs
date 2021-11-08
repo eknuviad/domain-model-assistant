@@ -6,31 +6,28 @@ using UnityEngine.UI;
 
 public class CompartmentedRectangle : Node
 {
-
     public GameObject textbox; //this allows to instantiate textbox prefabs
     public GameObject section;
     public List<GameObject> sections = new List<GameObject>();
-
     public TextBox text;
-
-    public bool isHighlighted
-    { get; set; }
-
     // popup menu variables
     public GameObject popupMenu;
     float holdTimer = 0;
     bool hold = false;
-
+    public State state = State.Default;
+    private Diagram _diagram;
+    private Vector2 _prevPosition;
+    private int headerOffsetX = -31;
+    private int headerOffsetY = 70;
+    private int sectionOffsetY = -71;
+    private int popupMenuOffsetX = 100;
+    public bool isHighlighted
+    { get; set; }
     public enum State
     {
         Default,
         DraggingClass,
     }
-
-    public State state = State.Default;
-    private Diagram _diagram;
-
-    private Vector2 _prevPosition;
 
     void Awake()
     {
@@ -64,20 +61,20 @@ public class CompartmentedRectangle : Node
     {
         var header = GameObject.Instantiate(textbox, this.transform);
         //vector position will need to be obtained from transform of gameobject in the future
-        header.transform.position = this.transform.position + new Vector3(0, 70, 0);
+        header.transform.position = this.transform.position + new Vector3(headerOffsetX, headerOffsetY, 0);
         AddHeader(header);
     }
 
     public void CreateSection()
     {
         Vector3 oldPosition = this.transform.position + new Vector3(0, 18, 0);
-        for (int i = 0; i < 2; i++)/*this loop assumes that class always has 2 sections*/
+        for (int i = 0; i < 2; i++)/*loop for a class with 2 sections*/
         {
             var sect = GameObject.Instantiate(section, this.transform);
-            sect.transform.position = oldPosition + new Vector3(0, -71, 0) * sections.Count;
+            sect.transform.position = oldPosition + new Vector3(0, sectionOffsetY, 0) * sections.Count;
             AddSection(sect);
-            _diagram.AddAttributes(GetSection(i), i);//add atrributes to section
         }
+        _diagram.AddAttributesToSection(GetSection(0));//add atrributes to first section
     }
 
     public void OnBeginHold()
@@ -89,7 +86,7 @@ public class CompartmentedRectangle : Node
 
     public void OnEndHold()
     {
-        if (holdTimer > 1f-5 && state == State.Default)
+        if (holdTimer > 1f - 5 && state == State.Default)
         {
             SpawnPopupMenu();
         }
@@ -105,7 +102,7 @@ public class CompartmentedRectangle : Node
         if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null)
         {
             this.popupMenu = GameObject.Instantiate(this.popupMenu);
-            this.popupMenu.transform.position = this.transform.position + new Vector3(100, 0, 0);
+            this.popupMenu.transform.position = this.transform.position + new Vector3(popupMenuOffsetX, 0, 0);
             this.popupMenu.GetComponent<PopupMenu>().SetCompartmentedRectangle(this);
         }
         else
@@ -153,8 +150,19 @@ public class CompartmentedRectangle : Node
         return this.transform.position;
     }
 
-    public GameObject GetPopUpMenu(){
+    public GameObject GetPopUpMenu()
+    {
         return this.popupMenu;
+    }
+
+    public void SetState(State aState)
+    {
+        this.state = aState;
+    }
+
+    public State GetState()
+    {
+        return state;
     }
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
