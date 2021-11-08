@@ -48,7 +48,7 @@ public class Diagram : MonoBehaviour
 
     Dictionary<string, List<Attribute>> classIdToAttributes = new Dictionary<string, List<Attribute>>();
 
-    Dictionary<string, string> AttrIdsToTypes = new Dictionary<string, string>(); //attribute ids to their types
+    Dictionary<string, string> attrIdsToTypes = new Dictionary<string, string>(); //attribute ids to their types
 
     enum CanvasMode
     {
@@ -190,9 +190,9 @@ public class Diagram : MonoBehaviour
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
             string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1).Replace("CD", "").ToLower();
-            if (!AttrIdsToTypes.ContainsKey(type._id))
+            if (!attrIdsToTypes.ContainsKey(type._id))
             {
-                this.AttrIdsToTypes[type._id] = res;
+                this.attrIdsToTypes[type._id] = res;
             }
         });
         // maps each _id to its (class object, position) pair 
@@ -227,7 +227,7 @@ public class Diagram : MonoBehaviour
                         .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
-            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, AttrIdsToTypes[attr.type]);
+            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrIdsToTypes[attr.type]);
         }
 
     }
