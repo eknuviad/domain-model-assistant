@@ -38,6 +38,7 @@ public class Diagram : MonoBehaviour
     public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
 
     public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
+    public const string DeleteAttributeEndpoint = "/classdiagram/MULTIPLE_CLASSES/class/attributes";
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
@@ -349,6 +350,26 @@ public class Diagram : MonoBehaviour
     }
 
     /// <summary>
+    /// Deletes Attribute
+    /// </summary> 
+    public void DeleteAttribute(GameObject textBox)
+    {
+        // Debug.Log("We entered into delete attr:" + textBox.GetComponent<TextBox>().text);
+        if (UseWebcore)
+        {
+            string _id = textBox.GetComponent<TextBox>().ID;
+            DeleteRequest(DeleteAttributeEndpoint, _id);
+            GetRequest(GetCdmEndpoint);
+            // No need to remove or destroy the node here since entire class diagram is recreated
+        }
+        else
+        {
+            //RemoveNode(section);
+            //Destroy(node);
+        }
+    }
+
+    /// <summary>
     /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
     /// </summary>
     public void ResetDiagram()
@@ -403,11 +424,14 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void DeleteRequest(string uri, string _id)
     {
+        Debug.Log(uri + "/" + _id); // check if reaching
         var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
         webRequest.method = "DELETE";
         webRequest.disposeDownloadHandlerOnDispose = false;
         webRequest.SetRequestHeader("Content-Type", "application/json");
         _deleteRequestAsyncOp = webRequest.SendWebRequest();
+        Debug.Log("Deleting done"); // check if reaching
+
     }
 
     public void PutRequest(string uri, string data, string _id)

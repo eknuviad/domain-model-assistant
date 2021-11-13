@@ -128,7 +128,8 @@ var classDiagram = {
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
-  console.log(classDiagram);
+  // console.log(classDiagram);
+  console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
   // res.sendStatus(SUCCESS);
 });
@@ -170,6 +171,26 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   }
   res.sendStatus(SUCCESS);
 });
+// Delete Attribute
+app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,res) => {
+// app.delete('/classdiagram/MULTIPLE_CLASSES/class/MULTIPLE_ATTRIBUTES/attribute/:attributeId', (req,res) => {
+  console.log(">>> Deleting Attributes step one ");
+  const AttributeId = req.params.attributeId;
+  console.log(">>> Id of TextBox " + req.params.attributeId);
+  for(cl in classDiagram) {
+      const allAttributeIds = cl.attributes.map(a => a._id);
+      var indexToRemove = allAttributeIds.indexOf(AttributeId);
+      if (indexToRemove > -1) {
+        cl.attributes.splice(indexToRemove, 1)
+        break;
+      }
+  }
+  console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
+  // util.inspect()
+  res.sendStatus(SUCCESS);
+
+
+})
 
 var server = app.listen(PORT, () => {
   var host = server.address().address
