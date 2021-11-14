@@ -40,6 +40,8 @@ public class Diagram : MonoBehaviour
     public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
 
     public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
+
+    public const string AddAttributeEndpoint = AddClassEndpoint; // +/{classId}/attribute
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
@@ -298,6 +300,27 @@ public class Diagram : MonoBehaviour
     }
 
     /// <summary>
+    /// Add Attribute
+    /// </summary> 
+    public void AddAttribute(GameObject textBox, string name)
+    {
+        if (UseWebcore)
+        {
+            // TODO Replace this ugly string once Unity moves to .NET 6
+            AddAttributeJsonClass info = new AddAttributeJsonClass();
+            // AddAttribute(attr._id, attr.name, type)
+            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+            info.rankIndex = 0;
+            string _id = textBox.GetComponent<TextBox>().ID;
+            info.typeId = Int16.Parse(_id);
+            info.attributeName = name;
+            string jsonData = JsonUtility.ToJson(info);
+            PostRequest(AddAttributeEndpoint, jsonData);
+            GetRequest(GetCdmEndpoint);
+        }
+    }
+
+    /// <summary>
     /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
     /// </summary>
     public void ResetDiagram()
@@ -444,6 +467,16 @@ public class Diagram : MonoBehaviour
         compartmentedRectangles.Add(node);
         node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
         return true;
+    }
+
+    public class AddAttributeJsonClass
+    {
+        public int rankIndex;
+
+        public int typeId;
+
+        public string attributeName;
+
     }
 
     public bool RemoveNode(GameObject node)

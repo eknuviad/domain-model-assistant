@@ -149,7 +149,8 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   classDiagram.classes.push({
     "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
     "_id": newClassId,
-    "name": className
+    "name": className,
+    "attributes": []
   })
 
   classDiagram.layout.containers[0].value.push({
@@ -208,10 +209,23 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
 
 // Add attribute
 app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {
+  const classId = req.params.classId;
+  console.log(">>> Add Attributes")
   const attributeName = req.body.attributeName;
   const rankIndex = req.body.rankIndex;
   const typeId = req.body.typeId;
   // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+  
+  classesArr = classDiagram.classes;
+  for (var i = 0; i < classesArr.length; i++) {
+    if (classesArr[i] == classId) {
+      classDiagram.classes[i].attributes.push({
+        "_id": rankIndex,
+        "name": attributeName,
+        "type": typeId
+      })
+    }
+  }
 
   console.log(">>> Adding attribute given req.body: " + JSON.stringify(req.body));
   // console.log(JSON.stringify(myObject, null, 4));
