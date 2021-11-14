@@ -22,7 +22,7 @@ public class TextBox : MonoBehaviour
     {
         _diagram = GetComponentInParent<Diagram>();
     }
-    
+
     void Start()
     {
 
