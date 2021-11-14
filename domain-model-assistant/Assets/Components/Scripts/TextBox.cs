@@ -76,21 +76,27 @@ public class TextBox : MonoBehaviour
         //check that inputfield is of a particular format (int year true)
         string[] values = text.Split(' ');
         Debug.Log(values.Length);
-        if(values.Length == 2 && !String.IsNullOrWhiteSpace(values[1])){
+        if (values.Length == 2 && !String.IsNullOrWhiteSpace(values[1]))
+        {
             // if(!values[1].Equals(' ')
             Debug.Log("second element is: " + values[1]);
             this.SetTypeId(values[0]);
             this.SetName(values[1]);
             return res = true;
-        }else{
+        } 
+        else 
+        {
             return res = false;
         }
     }
 
-    public void SetName(string aName){
+    public void SetName(string aName)
+    {
         this.name = aName;
     }
-    public string GetName(){
+
+    public string GetName()
+    {
         return this.name;
     }
 

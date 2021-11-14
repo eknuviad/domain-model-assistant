@@ -52,7 +52,8 @@ public class Section : MonoBehaviour
         }
     }
 
-    public Section (GameObject compRect) {
+    public Section (GameObject compRect) 
+    {
         this.compRect = compRect;
         class_id = compRect.GetComponent<CompartmentedRectangle>().ID;
         AddAttributeEndpoint = classAPIEndpoint + "/" + class_id + "/attribute"; // + /{classId}/attribute
@@ -128,12 +129,11 @@ public class Section : MonoBehaviour
     public void AddAttribute(string _id, string name, string type)
     {
         
-            var TB = GameObject.Instantiate(textB, this.transform);
-            TB.GetComponent<TextBox>().ID = _id;
-            TB.GetComponent<InputField>().text = type + " " + name;
-            TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
-            this.AddTextBox(TB);
-        
+        var TB = GameObject.Instantiate(textB, this.transform);
+        TB.GetComponent<TextBox>().ID = _id;
+        TB.GetComponent<InputField>().text = type + " " + name;
+        TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
+        this.AddTextBox(TB); 
     }
 
     /// <summary>
