@@ -50,7 +50,8 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "102",
-      "name": "ClassTwo"
+      "name": "ClassTwo",
+      "attributes": []
     }
   ],
   "types": [
@@ -174,18 +175,18 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
 // Delete Attribute
 app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,res) => {
 // app.delete('/classdiagram/MULTIPLE_CLASSES/class/MULTIPLE_ATTRIBUTES/attribute/:attributeId', (req,res) => {
-  console.log(">>> Deleting Attributes step one ");
   const AttributeId = req.params.attributeId;
-  console.log(">>> Id of TextBox " + req.params.attributeId);
-  for(cl in classDiagram) {
-      const allAttributeIds = cl.attributes.map(a => a._id);
-      var indexToRemove = allAttributeIds.indexOf(AttributeId);
-      if (indexToRemove > -1) {
-        cl.attributes.splice(indexToRemove, 1)
-        break;
-      }
+
+  attributesArr = classDiagram.classes[0].attributes;
+  
+  for (var i = 0; i < attributesArr.length; i++) {
+    if (attributesArr[i]._id == AttributeId) {
+      classDiagram.classes[0].attributes.splice(i, 1)
+    }
   }
-  console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
+
+  
+  //console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
   // util.inspect()
   res.sendStatus(SUCCESS);
 

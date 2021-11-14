@@ -38,7 +38,7 @@ public class Diagram : MonoBehaviour
     public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
 
     public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
-    public const string DeleteAttributeEndpoint = "/classdiagram/MULTIPLE_CLASSES/class/attributes";
+    public const string DeleteAttributeEndpoint = GetCdmEndpoint + "/class/attributes";
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
