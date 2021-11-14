@@ -52,7 +52,7 @@ public class Diagram : MonoBehaviour
 
     Dictionary<string, string> attrTypeIdsToTypes = new Dictionary<string, string>(); 
 
-    List<Integer> createdAttributeIds = new List<Integer>(); 
+    List<string> createdAttributeIds = new List<string>(); 
 
 
     enum CanvasMode
@@ -305,21 +305,33 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Add Attribute
     /// </summary> 
-    public void AddAttribute(GameObject textBox, string name)
+    public void AddAttribute(GameObject textbox)
     {
         if (UseWebcore)
         {
-            // TODO Replace this ugly string once Unity moves to .NET 6
-            AddAttributeJsonClass info = new AddAttributeJsonClass();
-            // AddAttribute(attr._id, attr.name, type)
-            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            info.rankIndex = 0;
-            string _id = textBox.GetComponent<TextBox>().ID;
-            info.typeId = Int16.Parse(_id);
-            info.attributeName = name;
+            Section section = textbox.GetComponent<TextBox>().GetSection().GetComponent<Section>();
+            CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
+                                .GetComponent<CompartmentedRectangle>();
+            List<GameObject> attributes = section.GetTextBoxList(); 
+            string _id = compRect.ID;
+            int rankIndex = -1;
+            string name = null;
+            int typeId = -1;
+            for(int i = 0; i<attributes.Count; i++){
+                if(attributes[i] == textbox){
+                    rankIndex = i;
+                    name = textbox.GetComponent<TextBox>().GetName();
+                    typeId = textbox.GetComponent<TextBox>().GetTypeId();
+                    break;
+                }
+            } 
+            AddAttributeInfo info = new AddAttributeInfo(rankIndex,typeId,name);
             string jsonData = JsonUtility.ToJson(info);
-            PostRequest(AddAttributeEndpoint, jsonData);
-            GetRequest(GetCdmEndpoint);
+            Debug.Log(jsonData);
+            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+            PostRequest(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute", jsonData);
+            Debug.Log(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute");
+            // GetRequest(GetCdmEndpoint);
         }
     }
 
@@ -472,16 +484,6 @@ public class Diagram : MonoBehaviour
         return true;
     }
 
-    public class AddAttributeJsonClass
-    {
-        public int rankIndex;
-
-        public int typeId;
-
-        public string attributeName;
-
-    }
-
     public bool RemoveNode(GameObject node)
     {
         if (compartmentedRectangles.Contains(node))
@@ -548,6 +550,21 @@ public class Diagram : MonoBehaviour
         GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
           .text = "Rabbit";
     }
+
+    // public void addToCreatedAttributes(string newAttributeId){
+    //     if(!createdAttributeIds.Contains(newAttributeId)){
+    //         createdAttributeIds.Add(newAttributeId);
+    //         Debug.Log("newly added attribute:" + newAttributeId);
+    //     }
+    // }
+
+    // public List<string> getCreatedAttributes(){
+    //     return createdAttributeIds;
+    // }
+
+    public Dictionary<string, string> getAttrTypeIdsToTypes(){
+        return attrTypeIdsToTypes;
+    } 
 
     //When pressing on canvas close popumenu and attributeclosebuttons
     public void CloseMenus()

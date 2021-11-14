@@ -16,6 +16,7 @@ public class Section : MonoBehaviour
     private bool _isWebGl = false;
     private bool _updateNeeded = false;
 
+    private Diagram _diagram;
     private UnityWebRequestAsyncOperation _getRequestAsyncOp;
 
     private UnityWebRequestAsyncOperation _postRequestAsyncOp;
@@ -32,6 +33,11 @@ public class Section : MonoBehaviour
     private string class_id;
     private string AddAttributeEndpoint;
 
+     void Awake()
+    {
+        _diagram = GetComponentInParent<Diagram>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +47,9 @@ public class Section : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-    
+        foreach(var textbox in GetTextBoxList()){
+            textbox.GetComponent<TextBox>().CheckKeyEnter();
+        }
     }
 
     public Section (GameObject compRect) {
@@ -68,14 +76,15 @@ public class Section : MonoBehaviour
     }
 
     // Get, Set for TextBox
-    public bool AddTextBox(GameObject TB)
+    public bool AddTextBox(GameObject aTextBox)
     {
-        if (textBList.Contains(TB))
+        if (textBList.Contains(aTextBox))
         {
             return false;
         }
-        textBList.Add(TB);
-        TB.GetComponent<TextBox>().SetSection(this.gameObject);
+        textBList.Add(aTextBox);
+        aTextBox.GetComponent<TextBox>().SetSection(this.gameObject);
+        // _diagram.addToCreatedAttributes(aTextBox.GetComponent<TextBox>().ID);
         return true;
     }
 
@@ -102,6 +111,7 @@ public class Section : MonoBehaviour
             return;
         }
         var TB = GameObject.Instantiate(textB, this.transform);
+        TB.GetComponent<TextBox>().ID = "1";
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
         // Update size of class depending on number of textboxes(attributes)
@@ -112,6 +122,7 @@ public class Section : MonoBehaviour
         //this.GetCompartmentedRectangle().transform.localScale += new Vector3((float)0.2,(float)0.5, 0);
         //this.GetComponent<Section>().GetCompartmentedRectangle().transform.localScale +=  new Vector3(0,(float)0.5,0);
         this.AddTextBox(TB);
+    
     }
 
     public void AddAttribute(string _id, string name, string type)
