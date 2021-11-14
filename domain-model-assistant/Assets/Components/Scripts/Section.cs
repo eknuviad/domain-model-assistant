@@ -116,25 +116,13 @@ public class Section : MonoBehaviour
 
     public void AddAttribute(string _id, string name, string type)
     {
-        if (UseWebcore)
-        {
-            // TODO Replace this ugly string once Unity moves to .NET 6
-            AddAttributeJsonClass info = new AddAttributeJsonClass();
-            // AddAttribute(attr._id, attr.name, type)
-            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            info.rankIndex = 0;
-            info.typeId = Int16.Parse(_id);
-            info.attributeName = name;
-            string jsonData = JsonUtility.ToJson(info);
-            PostRequest(AddAttributeEndpoint, jsonData);
-            GetRequest(classAPIEndpoint);
-        } else {
+        
             var TB = GameObject.Instantiate(textB, this.transform);
             TB.GetComponent<TextBox>().ID = _id;
             TB.GetComponent<InputField>().text = type + " " + name;
             TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
             this.AddTextBox(TB);
-        }
+        
     }
 
     /// <summary>

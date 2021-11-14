@@ -41,7 +41,7 @@ public class Diagram : MonoBehaviour
 
     public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
 
-    public const string AddAttributeEndpoint = AddClassEndpoint; // +/{classId}/attribute
+    public const string AddAttributeEndpoint = GetCdmEndpoint; // +/{classId}/attribute
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
@@ -50,7 +50,10 @@ public class Diagram : MonoBehaviour
 
     Dictionary<string, List<Attribute>> classIdToAttributes = new Dictionary<string, List<Attribute>>();
 
-    Dictionary<string, string> attrIdsToTypes = new Dictionary<string, string>(); //attribute ids to their types
+    Dictionary<string, string> attrTypeIdsToTypes = new Dictionary<string, string>(); 
+
+    List<Integer> createdAttributeIds = new List<Integer>(); 
+
 
     enum CanvasMode
     {
@@ -192,9 +195,9 @@ public class Diagram : MonoBehaviour
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
             string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1).Replace("CD", "").ToLower();
-            if (!attrIdsToTypes.ContainsKey(type._id))
+            if (!attrTypeIdsToTypes.ContainsKey(type._id))
             {
-                this.attrIdsToTypes[type._id] = res;
+                this.attrTypeIdsToTypes[type._id] = res;
             }
         });
         // maps each _id to its (class object, position) pair 
@@ -229,7 +232,7 @@ public class Diagram : MonoBehaviour
                         .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
-            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrIdsToTypes[attr.type]);
+            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
         }
 
     }
