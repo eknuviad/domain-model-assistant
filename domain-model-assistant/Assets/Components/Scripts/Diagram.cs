@@ -331,7 +331,7 @@ public class Diagram : MonoBehaviour
             // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
             PostRequest(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute", jsonData);
             Debug.Log(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute");
-            // GetRequest(GetCdmEndpoint);
+            GetRequest(GetCdmEndpoint);
         }
     }
 
