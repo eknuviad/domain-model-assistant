@@ -216,12 +216,10 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) =
   const attributeName = req.body.attributeName;
   const rankIndex = req.body.rankIndex;
   const typeId = req.body.typeId;
-  // // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+  // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
   
-  //x = 0
   for (var i = 0; i < classDiagram.classes.length; i++) {
     if (classDiagram.classes[i]._id == classId) {
-      //x = i
       classDiagram.classes[i].attributes.push({
         "_id": rankIndex,
          "name": attributeName,
