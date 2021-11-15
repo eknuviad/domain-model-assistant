@@ -50,7 +50,8 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "2",
-      "name": "Class2"
+      "name": "Class2",
+      "attributes": []
     }
   ],
   "types": [
@@ -132,7 +133,8 @@ var valueValueId = 106;
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
-  console.log(classDiagram);
+  //console.log(classDiagram);
+  console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
   // res.sendStatus(SUCCESS);
 });
@@ -209,23 +211,26 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
 
 // Add attribute
 app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {
+  //console.log("HEHFJHFJEHFKJEHFKEJKFJEKFJEKFJEKFJEKFJJKFEJF");
   const classId = req.params.classId;
-  console.log(">>> Add Attributes");
   const attributeName = req.body.attributeName;
   const rankIndex = req.body.rankIndex;
   const typeId = req.body.typeId;
   // // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
   
-  classesArr = classDiagram.classes;
-  for (var i = 0; i < classesArr.length; i++) {
-    if (classesArr[i] == classId) {
+  //x = 0
+  for (var i = 0; i < classDiagram.classes.length; i++) {
+    if (classDiagram.classes[i]._id == classId) {
+      //x = i
       classDiagram.classes[i].attributes.push({
         "_id": rankIndex,
          "name": attributeName,
-         "type": typeId
+         "type": typeId,
       })
     }
   }
+
+  //console.log(classDiagram.classes[x].attributes[0])
 
   console.log(">>> Adding attribute given req.body: " + JSON.stringify(req.body));
   // // console.log(JSON.stringify(myObject, null, 4));
