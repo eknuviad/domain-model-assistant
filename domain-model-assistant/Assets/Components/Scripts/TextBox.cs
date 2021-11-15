@@ -35,8 +35,6 @@ public class TextBox : MonoBehaviour
 
     void Update()
     {
-      
-       
         if (this.hold2)
         {
             OnBeginHold2();
@@ -48,21 +46,26 @@ public class TextBox : MonoBehaviour
         }
     }
 
-    public void CheckKeyEnter(){
-          if(Input.GetKeyDown(KeyCode.Return)){
+    public void CheckKeyEnter()
+    {
+          if (Input.GetKeyDown(KeyCode.Return)) 
+          {
             Debug.Log("Enter");
-             if(isValid()){
-            // _diagram.AddAttribute via post request
+            if (isValid())
+            {
+                // _diagram.AddAttribute via post request
                 Debug.Log(this.GetSection().GetComponent<Section>()
-            .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
-            .ID);
-            // GameObject compRect = this.GetSection().GetComponent<Section>()
-            // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
-            _diagram.AddAttribute(this.gameObject);
-             }
+                .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
+                .ID);
+                // GameObject compRect = this.GetSection().GetComponent<Section>()
+                // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
+                _diagram.AddAttribute(this.gameObject);
+            }
         }
     }
-    public bool isValid(){
+
+    public bool isValid()
+    {
         bool res = false;
         string text = this.GetComponent<InputField>().text;
         //check that id is not in diagram.getcreatedattributes
@@ -100,21 +103,26 @@ public class TextBox : MonoBehaviour
         return this.name;
     }
 
-    public void SetTypeId (string value){
+    public void SetTypeId (string value)
+    {
         Dictionary<string, string> tmpDict = _diagram.getAttrTypeIdsToTypes();
         string tmpTypeId = null;
-        foreach(var item in tmpDict){
-            if(item.Value.Equals(value)){
+        foreach(var item in tmpDict)
+        {
+            if (item.Value.Equals(value))
+            {
                 tmpTypeId = item.Key;
                 break;
             }
         }
-        if (!String.IsNullOrEmpty(tmpTypeId)){
+        if (!String.IsNullOrEmpty(tmpTypeId))
+        {
             this.typeId = Int16.Parse(tmpTypeId);
         } 
     }
 
-    public int GetTypeId(){
+    public int GetTypeId()
+    {
         return this.typeId;
     }
         
@@ -177,4 +185,3 @@ public class TextBox : MonoBehaviour
     }
 
 }
-
