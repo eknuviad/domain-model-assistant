@@ -41,12 +41,12 @@ public class TextBox : MonoBehaviour
              if(isValid() && _id.Equals("-1")){
             // _diagram.AddAttribute via post request
                 Debug.Log(this.GetSection().GetComponent<Section>()
-            .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
-            .ID);
-            // GameObject compRect = this.GetSection().GetComponent<Section>()
-            // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
-            _diagram.AddAttribute(this.gameObject);
-             }
+                .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
+                .ID);
+                // GameObject compRect = this.GetSection().GetComponent<Section>()
+                // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
+                _diagram.AddAttribute(this.gameObject);
+            }
         }
         
         if (this.hold2)
@@ -98,21 +98,26 @@ public class TextBox : MonoBehaviour
         return this.name;
     }
 
-    public void SetTypeId (string value){
+    public void SetTypeId (string value)
+    {
         Dictionary<string, string> tmpDict = _diagram.getAttrTypeIdsToTypes();
         string tmpTypeId = null;
-        foreach(var item in tmpDict){
-            if(item.Value.Equals(value)){
+        foreach(var item in tmpDict)
+        {
+            if (item.Value.Equals(value))
+            {
                 tmpTypeId = item.Key;
                 break;
             }
         }
-        if (!String.IsNullOrEmpty(tmpTypeId)){
+        if (!String.IsNullOrEmpty(tmpTypeId))
+        {
             this.typeId = Int16.Parse(tmpTypeId);
         } 
     }
 
-    public int GetTypeId(){
+    public int GetTypeId()
+    {
         return this.typeId;
     }
         
@@ -175,4 +180,3 @@ public class TextBox : MonoBehaviour
     }
 
 }
-
