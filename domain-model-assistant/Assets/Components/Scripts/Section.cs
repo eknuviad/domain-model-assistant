@@ -47,9 +47,7 @@ public class Section : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach(var textbox in GetTextBoxList()){
-            textbox.GetComponent<TextBox>().CheckKeyEnter();
-        }
+    
     }
 
     public Section (GameObject compRect) 
@@ -112,7 +110,7 @@ public class Section : MonoBehaviour
             return;
         }
         var TB = GameObject.Instantiate(textB, this.transform);
-        TB.GetComponent<TextBox>().ID = "1";
+        TB.GetComponent<TextBox>().ID = "-1";
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
         // Update size of class depending on number of textboxes(attributes)

@@ -35,8 +35,20 @@ public class TextBox : MonoBehaviour
 
     void Update()
     {
-      
-       
+        if(Input.GetKeyDown(KeyCode.Return)){
+            Debug.Log("Enter");
+            string _id = this.ID;
+             if(isValid() && _id.Equals("-1")){
+            // _diagram.AddAttribute via post request
+                Debug.Log(this.GetSection().GetComponent<Section>()
+            .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
+            .ID);
+            // GameObject compRect = this.GetSection().GetComponent<Section>()
+            // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
+            _diagram.AddAttribute(this.gameObject);
+             }
+        }
+        
         if (this.hold2)
         {
             OnBeginHold2();
@@ -48,20 +60,6 @@ public class TextBox : MonoBehaviour
         }
     }
 
-    public void CheckKeyEnter(){
-          if(Input.GetKeyDown(KeyCode.Return)){
-            Debug.Log("Enter");
-             if(isValid()){
-            // _diagram.AddAttribute via post request
-                Debug.Log(this.GetSection().GetComponent<Section>()
-            .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
-            .ID);
-            // GameObject compRect = this.GetSection().GetComponent<Section>()
-            // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
-            _diagram.AddAttribute(this.gameObject);
-             }
-        }
-    }
     public bool isValid(){
         bool res = false;
         string text = this.GetComponent<InputField>().text;

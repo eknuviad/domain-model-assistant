@@ -38,11 +38,11 @@ var classDiagram = {
       "_id": "1",
       "name": "Class1",
       "attributes": [{
-        "_id": "2",
+        "_id": "1",   // id = "1" as first ID, part of counterAttributeID implementation
         "name": "year",
         "type": "6"
       }, {
-        "_id": "5",
+        "_id": "2",   // id = "2" as second ID, part of counterAttributeID implementation
         "name": "month",
         "type": "8"
       }]
@@ -130,6 +130,7 @@ var classDiagram = {
 //TODO: unsure what these ids are for, hard coded for now
 var valueId = 16;
 var valueValueId = 106;
+var counterAttributeId = 3; // counter for ading attributes, for having unique IDs for each attribute
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
@@ -223,11 +224,13 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) =
     if (classDiagram.classes[i]._id == classId) {
       //x = i
       classDiagram.classes[i].attributes.push({
-        "_id": rankIndex,
+        "_id": counterAttributeId.toString(),
          "name": attributeName,
          "type": typeId,
       })
+      counterAttributeId += 1;
     }
+    
   }
 
   //console.log(classDiagram.classes[x].attributes[0])
