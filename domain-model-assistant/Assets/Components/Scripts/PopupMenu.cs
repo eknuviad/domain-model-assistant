@@ -6,7 +6,7 @@ public class PopupMenu : MonoBehaviour
 {
 
     GameObject compRect;
-    public const int UpdatePositionConst = 100;
+    public const int UpdatePositionConst = 138;
 
     // Start is called before the first frame update
     void Start()

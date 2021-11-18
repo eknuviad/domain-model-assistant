@@ -20,7 +20,7 @@ public class CompartmentedRectangle : Node
     private int headerOffsetX = -31;
     private int headerOffsetY = 70;
     private int sectionOffsetY = -71;
-    private int popupMenuOffsetX = 100;
+    private int popupMenuOffsetX = 138;
     public bool isHighlighted
     { get; set; }
     public enum State
@@ -104,6 +104,7 @@ public class CompartmentedRectangle : Node
             this.popupMenu = GameObject.Instantiate(this.popupMenu);
             this.popupMenu.transform.position = this.transform.position + new Vector3(popupMenuOffsetX, 0, 0);
             this.popupMenu.GetComponent<PopupMenu>().SetCompartmentedRectangle(this);
+            this.popupMenu.GetComponent<PopupMenu>().Open();
         }
         else
         {
