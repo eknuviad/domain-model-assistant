@@ -88,6 +88,10 @@ public class Diagram : MonoBehaviour
     public string ID
     { get; set; }
 
+    float timer = 0;
+    bool timerReached = false;
+    bool reRequest = false;
+
     // Awake is called once to initialize this game object
     void Awake()
     {
@@ -114,10 +118,15 @@ public class Diagram : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // if (!timerReached)
+        // timer += Time.deltaTime;
+
         if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
+            _updateNeeded = true;
             AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
+            Debug.Log("update needed: "+ _updateNeeded);
             ActivateDefaultMode();
         }
 
@@ -125,21 +134,33 @@ public class Diagram : MonoBehaviour
 
         if (UseWebcore && _updateNeeded)
         {
+            Debug.Log("Outer if statement");
             if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
             {
+                Debug.Log("Inner if statement");
                 var req = _getRequestAsyncOp.webRequest;
                 if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
                 {
-                    var newResult = req.downloadHandler.text;
-                    if (newResult != _getResult)
-                    {
-                        LoadJson(newResult);
-                        _getResult = newResult;
+                    var tmp = req.downloadHandler.text;
+                    if(tmp != null && tmp != ""){
+                        var newResult = tmp;
+                        Debug.Log("New result: " + newResult);
+                        if(reRequest){
+                            reRequest = false;
+                            Debug.Log("Rerequest" + reRequest);
+                            GetRequest(GetCdmEndpoint);
+                        }else if (newResult != _getResult)
+                        {
+                            LoadJson(newResult);
+                            _getResult = newResult;
+                        }
                     }
+                    // var newResult = req.downloadHandler.text;
                 }
-                _updateNeeded = false;
+                // _updateNeeded = false;
                 req.Dispose();
             }
+            // timer = 0;
         }
         if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
         {
@@ -179,6 +200,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void LoadJson(string cdmJson)
     {
+        Debug.Log("LoadJson heard");
         ResetDiagram();
         var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
@@ -219,6 +241,7 @@ public class Diagram : MonoBehaviour
 
         }
         _namesUpToDate = false;
+        _updateNeeded = false;
     }
 
     public void AddAttributesToSection(GameObject section)
@@ -246,12 +269,15 @@ public class Diagram : MonoBehaviour
             info.className = name;
             string jsonData = JsonUtility.ToJson(info);
             PostRequest(AddClassEndpoint, jsonData);
+            Debug.Log("Post request done");
+            reRequest = true;
             GetRequest(GetCdmEndpoint);
         }
         else
         {
             CreateCompartmentedRectangle((compartmentedRectangles.Capacity + 1).ToString(), name, position);
         }
+        Debug.Log("Add class finished");
     }
 
     public void DeleteClass(GameObject node)
@@ -302,33 +328,33 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void ResetDiagram()
     {
-        foreach (var comp in compartmentedRectangles)
-        {
-            //destroy any exisiting popup menu objects
-            GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
-            if (popupMenu != null)
-            {
-                //TODO: Destroy instance instead 
-                // Destroying gameobject might destoy the asset. Closing the menu for now.
-                popupMenu.GetComponent<PopupMenu>().Close();
-            }
-            //get first section, loop through all attributes, destroy any attribute cross objects
-            GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
-            foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
-            {
-                if (attr)
-                {
-                    if (attr.GetComponent<TextBox>())
-                    {
-                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
-                        {
-                            //TODO: Destroy instance instead
-                            attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
-                        }
-                    }
-                }
-            }
-        }
+        // foreach (var comp in compartmentedRectangles)
+        // {
+        //     //destroy any exisiting popup menu objects
+        //     GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
+        //     if (popupMenu != null)
+        //     {
+        //         //TODO: Destroy instance instead 
+        //         // Destroying gameobject might destoy the asset. Closing the menu for now.
+        //         popupMenu.GetComponent<PopupMenu>().Close();
+        //     }
+        //     //get first section, loop through all attributes, destroy any attribute cross objects
+        //     GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
+        //     foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
+        //     {
+        //         if (attr)
+        //         {
+        //             if (attr.GetComponent<TextBox>())
+        //             {
+        //                 if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
+        //                 {
+        //                     //TODO: Destroy instance instead
+        //                     attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         compartmentedRectangles.ForEach(Destroy);
         compartmentedRectangles.Clear();
     }
@@ -356,8 +382,11 @@ public class Diagram : MonoBehaviour
         webRequest.method = "GET";
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.disposeDownloadHandlerOnDispose = false;
+        webRequest.timeout = 1;
+        Debug.Log("Get Request heard line 364");
         _getRequestAsyncOp = webRequest.SendWebRequest();
         _updateNeeded = true;
+        Debug.Log("Get request heard line 367");
     }
 
     /// <summary>
