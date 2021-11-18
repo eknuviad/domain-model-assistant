@@ -75,6 +75,7 @@ public class TextBox : MonoBehaviour
             this.attribcross = GameObject.Instantiate(this.attribcross);
             this.attribcross.transform.position = this.transform.position + new Vector3(-100, 0, 0);
             this.attribcross.GetComponent<AttributeCross>().setTextBox(this);
+            this.attribcross.GetComponent<AttributeCross>().Open();
         }
         else
         {

@@ -329,33 +329,27 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void ResetDiagram()
     {
-        // foreach (var comp in compartmentedRectangles)
-        // {
-        //     //destroy any exisiting popup menu objects
-        //     GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
-        //     if (popupMenu != null)
-        //     {
-        //         //TODO: Destroy instance instead 
-        //         // Destroying gameobject might destoy the asset. Closing the menu for now.
-        //         popupMenu.GetComponent<PopupMenu>().Close();
-        //     }
-        //     //get first section, loop through all attributes, destroy any attribute cross objects
-        //     GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
-        //     foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
-        //     {
-        //         if (attr)
-        //         {
-        //             if (attr.GetComponent<TextBox>())
-        //             {
-        //                 if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
-        //                 {
-        //                     //TODO: Destroy instance instead
-        //                     attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        foreach (var comp in compartmentedRectangles)
+        { 
+        //popuup menu is destroyed in comp rect class whenn delete is called
+        //we only need to destroy the  atriibutes.
+        //get first section, loop through all attributes, destroy any attribute cross objects
+            GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
+            foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
+            {
+                if (attr)
+                {
+                    if (attr.GetComponent<TextBox>())
+                    {
+                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
+                        {
+                            //TODO: Destroy instance instead
+                            attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+                        }
+                    }
+                }
+            }
+        }
         compartmentedRectangles.ForEach(Destroy);
         compartmentedRectangles.Clear();
     }
