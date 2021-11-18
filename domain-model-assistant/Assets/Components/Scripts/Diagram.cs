@@ -88,9 +88,7 @@ public class Diagram : MonoBehaviour
     public string ID
     { get; set; }
 
-    float timer = 0;
-    bool timerReached = false;
-    bool reRequest = false;
+    bool reGetRequest = false;
 
     // Awake is called once to initialize this game object
     void Awake()
@@ -118,15 +116,11 @@ public class Diagram : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if (!timerReached)
-        // timer += Time.deltaTime;
-
         if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
             _updateNeeded = true;
             AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
-            Debug.Log("update needed: "+ _updateNeeded);
             ActivateDefaultMode();
         }
 
@@ -134,33 +128,30 @@ public class Diagram : MonoBehaviour
 
         if (UseWebcore && _updateNeeded)
         {
-            Debug.Log("Outer if statement");
             if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
             {
-                Debug.Log("Inner if statement");
                 var req = _getRequestAsyncOp.webRequest;
                 if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
                 {
                     var tmp = req.downloadHandler.text;
-                    if(tmp != null && tmp != ""){
+                    if (tmp != null && tmp != "")
+                    {
                         var newResult = tmp;
-                        Debug.Log("New result: " + newResult);
-                        if(reRequest){
-                            reRequest = false;
-                            Debug.Log("Rerequest" + reRequest);
+                        //resend get request for frames where json data is not updated in time
+                        if (reGetRequest)
+                        {
+                            reGetRequest = false;
                             GetRequest(GetCdmEndpoint);
-                        }else if (newResult != _getResult)
+                        }
+                        else if (newResult != _getResult)
                         {
                             LoadJson(newResult);
                             _getResult = newResult;
                         }
                     }
-                    // var newResult = req.downloadHandler.text;
                 }
-                // _updateNeeded = false;
                 req.Dispose();
             }
-            // timer = 0;
         }
         if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
         {
@@ -200,7 +191,6 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void LoadJson(string cdmJson)
     {
-        Debug.Log("LoadJson heard");
         ResetDiagram();
         var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
@@ -269,15 +259,13 @@ public class Diagram : MonoBehaviour
             info.className = name;
             string jsonData = JsonUtility.ToJson(info);
             PostRequest(AddClassEndpoint, jsonData);
-            Debug.Log("Post request done");
-            reRequest = true;
+            reGetRequest = true;
             GetRequest(GetCdmEndpoint);
         }
         else
         {
             CreateCompartmentedRectangle((compartmentedRectangles.Capacity + 1).ToString(), name, position);
         }
-        Debug.Log("Add class finished");
     }
 
     public void DeleteClass(GameObject node)
@@ -286,7 +274,7 @@ public class Diagram : MonoBehaviour
         {
             string _id = node.GetComponent<CompartmentedRectangle>().ID;
             DeleteRequest(DeleteClassEndpoint, _id);
-            reRequest = true;
+            reGetRequest = true;
             GetRequest(GetCdmEndpoint);
             // No need to remove or destroy the node here since entire class diagram is recreated
         }
@@ -330,10 +318,10 @@ public class Diagram : MonoBehaviour
     public void ResetDiagram()
     {
         foreach (var comp in compartmentedRectangles)
-        { 
-        //popuup menu is destroyed in comp rect class whenn delete is called
-        //we only need to destroy the  atriibutes.
-        //get first section, loop through all attributes, destroy any attribute cross objects
+        {
+            //popuup menu is destroyed in comp rect class whenn delete is called
+            //we only need to destroy the  atriibutes.
+            //get first section, loop through all attributes, destroy any attribute cross objects
             GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
             foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
             {
@@ -378,10 +366,8 @@ public class Diagram : MonoBehaviour
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.disposeDownloadHandlerOnDispose = false;
         webRequest.timeout = 1;
-        Debug.Log("Get Request heard line 364");
         _getRequestAsyncOp = webRequest.SendWebRequest();
         _updateNeeded = true;
-        Debug.Log("Get request heard line 367");
     }
 
     /// <summary>
@@ -497,7 +483,6 @@ public class Diagram : MonoBehaviour
         {
             ResetCursor();
         }
-        Debug.Log("Activating default mode");
         _currentMode = CanvasMode.Default;
     }
 
