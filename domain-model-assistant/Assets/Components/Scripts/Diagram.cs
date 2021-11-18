@@ -286,6 +286,7 @@ public class Diagram : MonoBehaviour
         {
             string _id = node.GetComponent<CompartmentedRectangle>().ID;
             DeleteRequest(DeleteClassEndpoint, _id);
+            reRequest = true;
             GetRequest(GetCdmEndpoint);
             // No need to remove or destroy the node here since entire class diagram is recreated
         }
