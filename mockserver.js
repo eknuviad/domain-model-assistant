@@ -165,8 +165,8 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   valueId += 1;
   valueValueId += 1;
 
-  console.log(">>> Adding class given req.body: " + JSON.stringify(req.body));
-
+  console.log(classDiagram);
+  console.log(">>> Added class given req.body: " + JSON.stringify(req.body));
   res.sendStatus(SUCCESS);
 });
 
@@ -203,6 +203,8 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   if (indexToRemove2 > -1) {
     values.splice(indexToRemove2, 1);
   }
+  console.log(classDiagram);
+  console.log(`>>>>> Deleted class with id: ${classId}`);
   res.sendStatus(SUCCESS);
 });
 
