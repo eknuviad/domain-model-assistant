@@ -50,7 +50,12 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "2",
-      "name": "Class2"
+      "name": "Class2",
+      "attributes": [{
+        "_id": "4",
+        "name": "year",
+        "type": "6"
+      }]
     }
   ],
   "types": [
@@ -132,7 +137,8 @@ var valueValueId = 106;
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
-  console.log(classDiagram);
+  // console.log(classDiagram);
+  console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
   // res.sendStatus(SUCCESS);
 });
@@ -207,6 +213,26 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   console.log(`>>>>> Deleted class with id: ${classId}`);
   res.sendStatus(SUCCESS);
 });
+// Delete Attribute
+app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,res) => {
+// app.delete('/classdiagram/MULTIPLE_CLASSES/class/MULTIPLE_ATTRIBUTES/attribute/:attributeId', (req,res) => {
+  const AttributeId = req.params.attributeId;
+  
+  for (var i = 0; i < classDiagram.classes.length; i++) {
+    for (var j = 0; j < classDiagram.classes[i].attributes.length; j++) {
+      if (classDiagram.classes[i].attributes[j]._id == AttributeId) {
+        classDiagram.classes[i].attributes.splice(j, 1)
+      }
+    }
+  }
+    
+
+
+  //console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
+  // util.inspect()
+  res.sendStatus(SUCCESS);
+
+})
 
 var server = app.listen(PORT, () => {
   var host = server.address().address

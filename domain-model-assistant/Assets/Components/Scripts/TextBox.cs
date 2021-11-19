@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class TextBox : MonoBehaviour
 {
+    private Diagram _diagram;
     public Text text;
     public GameObject sect;
     public GameObject attribcross;
@@ -15,7 +16,13 @@ public class TextBox : MonoBehaviour
 
 
     float holdTimer2 = 0;
-    bool hold2 = false;
+    bool hold2 = false;    
+   
+    void Awake()
+    {
+        _diagram = GetComponentInParent<Diagram>();
+    }
+   
     void Start()
     {
 
@@ -85,6 +92,7 @@ public class TextBox : MonoBehaviour
 
     public void Destroy()
     {
+        _diagram.DeleteAttribute(this.gameObject); //delete attribute from Diagram
         this.attribcross.GetComponent<AttributeCross>().Close();
         Destroy(this.gameObject);
     }
