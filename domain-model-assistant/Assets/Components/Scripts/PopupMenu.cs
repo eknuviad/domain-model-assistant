@@ -31,7 +31,7 @@ public class PopupMenu : MonoBehaviour
         // this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.AddSubclass);
         
         // Adding line
-        this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.SetLine);
+        this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.SetLine);
         this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.Destroy);
     }
 
