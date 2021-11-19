@@ -162,6 +162,7 @@ public class TextBox : MonoBehaviour
             this.attribcross = GameObject.Instantiate(this.attribcross);
             this.attribcross.transform.position = this.transform.position + new Vector3(-100, 0, 0);
             this.attribcross.GetComponent<AttributeCross>().setTextBox(this);
+            this.attribcross.GetComponent<AttributeCross>().Open();
         }
         else
         {
@@ -171,6 +172,7 @@ public class TextBox : MonoBehaviour
 
     public void Destroy()
     {
+        _diagram.DeleteAttribute(this.gameObject); //delete attribute from Diagram
         this.attribcross.GetComponent<AttributeCross>().Close();
         Destroy(this.gameObject);
     }

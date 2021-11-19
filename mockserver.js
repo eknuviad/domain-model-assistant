@@ -169,8 +169,8 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   valueId += 1;
   valueValueId += 1;
 
-  console.log(">>> Adding class given req.body: " + JSON.stringify(req.body));
-
+  console.log(classDiagram);
+  console.log(">>> Added class given req.body: " + JSON.stringify(req.body));
   res.sendStatus(SUCCESS);
 });
 
@@ -207,8 +207,30 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   if (indexToRemove2 > -1) {
     values.splice(indexToRemove2, 1);
   }
+  console.log(classDiagram);
+  console.log(`>>>>> Deleted class with id: ${classId}`);
   res.sendStatus(SUCCESS);
 });
+// Delete Attribute
+app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,res) => {
+// app.delete('/classdiagram/MULTIPLE_CLASSES/class/MULTIPLE_ATTRIBUTES/attribute/:attributeId', (req,res) => {
+  const AttributeId = req.params.attributeId;
+  
+  for (var i = 0; i < classDiagram.classes.length; i++) {
+    for (var j = 0; j < classDiagram.classes[i].attributes.length; j++) {
+      if (classDiagram.classes[i].attributes[j]._id == AttributeId) {
+        classDiagram.classes[i].attributes.splice(j, 1)
+      }
+    }
+  }
+    
+
+
+  //console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
+  // util.inspect()
+  res.sendStatus(SUCCESS);
+
+})
 
 // Add attribute
 app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {

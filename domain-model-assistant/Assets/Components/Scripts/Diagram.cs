@@ -42,6 +42,9 @@ public class Diagram : MonoBehaviour
     public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
 
     public const string AddAttributeEndpoint = GetCdmEndpoint; // +/{classId}/attribute
+
+    public const string DeleteAttributeEndpoint = GetCdmEndpoint + "/class/attributes";
+
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
@@ -93,6 +96,8 @@ public class Diagram : MonoBehaviour
     public string ID
     { get; set; }
 
+    bool reGetRequest = false;
+
     // Awake is called once to initialize this game object
     void Awake()
     {
@@ -122,6 +127,7 @@ public class Diagram : MonoBehaviour
         if ((_currentMode == CanvasMode.Default && InputExtender.MouseExtender.IsDoubleClick()) ||
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
+            _updateNeeded = true;
             AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
             ActivateDefaultMode();
         }
@@ -135,14 +141,23 @@ public class Diagram : MonoBehaviour
                 var req = _getRequestAsyncOp.webRequest;
                 if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
                 {
-                    var newResult = req.downloadHandler.text;
-                    if (newResult != _getResult)
+                    var tmp = req.downloadHandler.text;
+                    if (tmp != null && tmp != "")
                     {
-                        LoadJson(newResult);
-                        _getResult = newResult;
+                        var newResult = tmp;
+                        //resend get request for frames where json data is not updated in time
+                        if (reGetRequest)
+                        {
+                            reGetRequest = false;
+                            GetRequest(GetCdmEndpoint);
+                        }
+                        else if (newResult != _getResult)
+                        {
+                            LoadJson(newResult);
+                            _getResult = newResult;
+                        }
                     }
                 }
-                _updateNeeded = false;
                 req.Dispose();
             }
         }
@@ -224,6 +239,7 @@ public class Diagram : MonoBehaviour
 
         }
         _namesUpToDate = false;
+        _updateNeeded = false;
     }
 
     public void AddAttributesToSection(GameObject section)
@@ -251,6 +267,7 @@ public class Diagram : MonoBehaviour
             info.className = name;
             string jsonData = JsonUtility.ToJson(info);
             PostRequest(AddClassEndpoint, jsonData);
+            reGetRequest = true;
             GetRequest(GetCdmEndpoint);
         }
         else
@@ -265,6 +282,7 @@ public class Diagram : MonoBehaviour
         {
             string _id = node.GetComponent<CompartmentedRectangle>().ID;
             DeleteRequest(DeleteClassEndpoint, _id);
+            reGetRequest = true;
             GetRequest(GetCdmEndpoint);
             // No need to remove or destroy the node here since entire class diagram is recreated
         }
@@ -332,6 +350,24 @@ public class Diagram : MonoBehaviour
             PostRequest(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute", jsonData);
             Debug.Log(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute");
             GetRequest(GetCdmEndpoint);
+
+    /// Deletes Attribute
+    /// </summary> 
+    public void DeleteAttribute(GameObject textBox)
+    {
+        // Debug.Log("We entered into delete attr:" + textBox.GetComponent<TextBox>().text);
+        if (UseWebcore)
+        {
+            string _id = textBox.GetComponent<TextBox>().ID;
+            DeleteRequest(DeleteAttributeEndpoint, _id);
+            reGetRequest = true;
+            GetRequest(GetCdmEndpoint);
+            // No need to remove or destroy the node here since entire class diagram is recreated
+        }
+        else
+        {
+            //RemoveNode(section);
+            //Destroy(node);
         }
     }
 
@@ -342,14 +378,8 @@ public class Diagram : MonoBehaviour
     {
         foreach (var comp in compartmentedRectangles)
         {
-            //destroy any exisiting popup menu objects
-            GameObject popupMenu = comp.GetComponent<CompartmentedRectangle>().GetPopUpMenu();
-            if (popupMenu != null)
-            {
-                //TODO: Destroy instance instead 
-                // Destroying gameobject might destoy the asset. Closing the menu for now.
-                popupMenu.GetComponent<PopupMenu>().Close();
-            }
+            //popuup menu is destroyed in comp rect class whenn delete is called
+            //we only need to destroy the  atriibutes.
             //get first section, loop through all attributes, destroy any attribute cross objects
             GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
             foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
@@ -394,6 +424,7 @@ public class Diagram : MonoBehaviour
         webRequest.method = "GET";
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.disposeDownloadHandlerOnDispose = false;
+        webRequest.timeout = 1;
         _getRequestAsyncOp = webRequest.SendWebRequest();
         _updateNeeded = true;
     }
@@ -416,11 +447,14 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void DeleteRequest(string uri, string _id)
     {
+        Debug.Log(uri + "/" + _id); // check if reaching
         var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
         webRequest.method = "DELETE";
         webRequest.disposeDownloadHandlerOnDispose = false;
         webRequest.SetRequestHeader("Content-Type", "application/json");
         _deleteRequestAsyncOp = webRequest.SendWebRequest();
+        Debug.Log("Deleting done"); // check if reaching
+
     }
 
     public void PutRequest(string uri, string data, string _id)
@@ -511,7 +545,6 @@ public class Diagram : MonoBehaviour
         {
             ResetCursor();
         }
-        Debug.Log("Activating default mode");
         _currentMode = CanvasMode.Default;
     }
 
