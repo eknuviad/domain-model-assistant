@@ -165,6 +165,11 @@ public class CompartmentedRectangle : Node
     {
         return state;
     }
+    public void SetLine()
+    {
+        _diagram.GetComponent<DrawLine>().AddCompartmentedRectangle(this.gameObject);
+    }
+
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }
