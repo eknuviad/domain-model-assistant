@@ -253,10 +253,7 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) =
     
   }
 
-  //console.log(classDiagram.classes[x].attributes[0])
-
-  console.log(">>> Adding attribute given req.body: " + JSON.stringify(req.body));
-  // // console.log(JSON.stringify(myObject, null, 4));
+  console.log(">>> Added attribute given req.body: " + JSON.stringify(req.body));
 
   res.sendStatus(SUCCESS);
 });
