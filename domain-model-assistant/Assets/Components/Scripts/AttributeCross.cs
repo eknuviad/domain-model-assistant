@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class AttributeCross : MonoBehaviour
 {
-    GameObject textb; //textbox
+    GameObject textbox; 
+    public const int UpdatePositionConst = -12;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,17 +16,21 @@ public class AttributeCross : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
-    public void setTextBox(TextBox AttriBute){
-        this.textb = AttriBute.gameObject;
-        this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(AttriBute.Destroy);
-        //this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(AttriBute.Destroy);
-
+        if (textbox !=null)
+        {
+         this.gameObject.transform.position = textbox.transform.position + new Vector3(UpdatePositionConst, 0, 0);
+        }
     }
 
-    public GameObject getTextBox(){
-        return this.textb;
+    public void setTextBox(TextBox attribute)
+    {
+        this.textbox = attribute.gameObject;
+        this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(attribute.Destroy);
+    }
+
+    public GameObject GetTextBox()
+    {
+        return this.textbox;
     }
 
     public void Close()

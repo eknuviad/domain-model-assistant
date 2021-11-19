@@ -14,12 +14,13 @@ public class Section : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        //TODO Update size of class depending on number of textboxes(attributes)
+    
     }
 
     // ************ UI model Methods for Section ****************//
@@ -51,6 +52,10 @@ public class Section : MonoBehaviour
         return true;
     }
 
+    public List<GameObject> GetTextBoxList(){
+        return textBList;
+    }
+
     public GameObject GetTextBox(int index)
     {
         if (index >= 0 && index < textBList.Capacity - 1)
@@ -65,9 +70,20 @@ public class Section : MonoBehaviour
 
     public void AddAttribute()
     {
+        // cap (hardcode) the number of attributes that can be added to a class to be 4
+        if (textBList.Count == 4) {
+            return;
+        }
         var TB = GameObject.Instantiate(textB, this.transform);
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textBList.Count;
+        // Update size of class depending on number of textboxes(attributes)
+        // enlarge the section by 0.1*number of textboxes
+        TB.transform.localScale += new Vector3(0, 0.1F*textBList.Count, 0);
+        // the code commented below can automatically enlarge the section as we create more attributes, 
+        // but it would cause the new textboxes created become blured/disappeared as more than 4 attribute are created
+        //this.GetCompartmentedRectangle().transform.localScale += new Vector3((float)0.2,(float)0.5, 0);
+        //this.GetComponent<Section>().GetCompartmentedRectangle().transform.localScale +=  new Vector3(0,(float)0.5,0);
         this.AddTextBox(TB);
     }
 

@@ -15,14 +15,15 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+        GetComponent<CompartmentedRectangle>().SetState(CompartmentedRectangle.State.DraggingClass);
         Vector2 currentMousePosition = eventData.position;
         Vector2 diff = currentMousePosition - lastMousePosition;
         RectTransform rect = GetComponent<RectTransform>();
 
-        Vector3 newPosition = rect.position +  new Vector3(diff.x, diff.y, transform.position.z);
+        Vector3 newPosition = rect.position + new Vector3(diff.x, diff.y, transform.position.z);
         Vector3 oldPos = rect.position;
         rect.position = newPosition;
-        if(!IsRectTransformInsideSreen(rect))
+        if (!IsRectTransformInsideSreen(rect))
         {
             rect.position = oldPos;
         }
@@ -31,9 +32,8 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Implement your functionality here
+        GetComponent<CompartmentedRectangle>().SetState(CompartmentedRectangle.State.Default);
     }
-
 
     private bool IsRectTransformInsideSreen(RectTransform rectTransform)
     {
@@ -41,10 +41,10 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
         Vector3[] corners = new Vector3[4];
         rectTransform.GetWorldCorners(corners);
         int visibleCorners = 0;
-        Rect rect = new Rect(0,0,Screen.width, Screen.height);
+        Rect rect = new Rect(0, 0, Screen.width, Screen.height);
         foreach (Vector3 corner in corners)
         {
-            if(rect.Contains(corner))
+            if (rect.Contains(corner))
             {
                 visibleCorners++;
             }
@@ -55,5 +55,4 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
         }
         return isInside;
     }
-
 }

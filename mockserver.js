@@ -36,7 +36,7 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "1",
-      "name": "ClassOne",
+      "name": "Class1",
       "attributes": [{
         "_id": "2",
         "name": "year",
@@ -49,8 +49,8 @@ var classDiagram = {
     },
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
-      "_id": "102",
-      "name": "ClassTwo",
+      "_id": "2",
+      "name": "Class2",
       "attributes": [{
         "_id": "4",
         "name": "year",
@@ -113,12 +113,12 @@ var classDiagram = {
             "value": {
               "_id": "15",
               "x": 365.5,
-              "y": 80.0
+              "y": 300.0
             }
           },
           {
-            "_id": "103",
-            "key": "102",
+            "_id": "15",
+            "key": "2",
             "value": {
               "_id": "105",
               "x": 565.5,
@@ -131,6 +131,10 @@ var classDiagram = {
   }
 };
 
+//TODO: unsure what these ids are for, hard coded for now
+var valueId = 16;
+var valueValueId = 106;
+
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
   // console.log(classDiagram);
@@ -141,9 +145,34 @@ app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
 
 // Add class
 app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
-  console.log(">>> Adding class given req.body: " + JSON.stringify(req.body));
-  // TODO
+  const className = req.body.className;
+  const xPos = req.body.x;
+  const yPos = req.body.y;
 
+  const allClassIds = classDiagram.classes.map(c => c._id);
+  const newClassId = (parseInt(allClassIds[allClassIds.length - 1]) + 1).toString();
+
+  classDiagram.classes.push({
+    "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
+    "_id": newClassId,
+    "name": className
+  })
+
+  classDiagram.layout.containers[0].value.push({
+    "_id": valueId,
+    "key": newClassId,
+    "value": {
+      "_id": valueValueId,
+      "x": xPos,
+      "y": yPos
+    }
+  })
+
+  valueId += 1;
+  valueValueId += 1;
+
+  console.log(classDiagram);
+  console.log(">>> Added class given req.body: " + JSON.stringify(req.body));
   res.sendStatus(SUCCESS);
 });
 
@@ -151,14 +180,20 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
 app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res) => {
   const classId = req.params.classId;
   var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
+  // retrieve name of class with updated position
+  const allClassIds = classDiagram.classes.map(c => c._id);
+  var classIndex = allClassIds.indexOf(classId);
+  var className = classDiagram.classes[classIndex].name;
+  //update position details
   const allLayoutIds = values.map(c => c.key);
   var index = allLayoutIds.indexOf(classId);
-  classDiagram.layout.containers[0].value[index].value.x = req.body.xPosition;
-  classDiagram.layout.containers[0].value[index].value.y = req.body.yPosition;
-  console.log(">>> Updated classDiagram position = x: " + classDiagram.layout.containers[0].value[index].value.x
-    + "y:" + classDiagram.layout.containers[0].value[index].value.y);
+  var value = classDiagram.layout.containers[0].value[index].value;
+  value.x = req.body.xPosition;
+  value.y = req.body.yPosition;
+  console.log(`>>> Updated ${className} position = x: ${value.x}, y: ${value.y}`);
   res.sendStatus(SUCCESS);
 });
+
 // Delete class
 app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   const classId = req.params.class_id;
@@ -174,6 +209,8 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   if (indexToRemove2 > -1) {
     values.splice(indexToRemove2, 1);
   }
+  console.log(classDiagram);
+  console.log(`>>>>> Deleted class with id: ${classId}`);
   res.sendStatus(SUCCESS);
 });
 // Delete Attribute
