@@ -38,11 +38,11 @@ var classDiagram = {
       "_id": "1",
       "name": "Class1",
       "attributes": [{
-        "_id": "2",
+        "_id": "1",   // id = "1" as first ID, part of counterAttributeID implementation
         "name": "year",
         "type": "6"
       }, {
-        "_id": "5",
+        "_id": "2",   // id = "2" as second ID, part of counterAttributeID implementation
         "name": "month",
         "type": "8"
       }]
@@ -51,11 +51,7 @@ var classDiagram = {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "2",
       "name": "Class2",
-      "attributes": [{
-        "_id": "4",
-        "name": "year",
-        "type": "6"
-      }]
+      "attributes": []
     }
   ],
   "types": [
@@ -134,10 +130,11 @@ var classDiagram = {
 //TODO: unsure what these ids are for, hard coded for now
 var valueId = 16;
 var valueValueId = 106;
+var counterAttributeId = 3; // counter for ading attributes, for having unique IDs for each attribute
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
-  // console.log(classDiagram);
+  //console.log(classDiagram);
   console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
   // res.sendStatus(SUCCESS);
@@ -155,7 +152,8 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   classDiagram.classes.push({
     "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
     "_id": newClassId,
-    "name": className
+    "name": className,
+    "attributes": []
   })
 
   classDiagram.layout.containers[0].value.push({
@@ -233,6 +231,35 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,
   res.sendStatus(SUCCESS);
 
 })
+
+// Add attribute
+app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {
+  //console.log("HEHFJHFJEHFKJEHFKEJKFJEKFJEKFJEKFJEKFJJKFEJF");
+  const classId = req.params.classId;
+  const attributeName = req.body.attributeName;
+  const rankIndex = req.body.rankIndex;
+  const typeId = req.body.typeId;
+  // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+  
+  for (var i = 0; i < classDiagram.classes.length; i++) {
+    if (classDiagram.classes[i]._id == classId) {
+      classDiagram.classes[i].attributes.push({
+        "_id": counterAttributeId.toString(),
+         "name": attributeName,
+         "type": typeId,
+      })
+      counterAttributeId += 1;
+    }
+    
+  }
+
+  //console.log(classDiagram.classes[x].attributes[0])
+
+  console.log(">>> Adding attribute given req.body: " + JSON.stringify(req.body));
+  // // console.log(JSON.stringify(myObject, null, 4));
+
+  res.sendStatus(SUCCESS);
+});
 
 var server = app.listen(PORT, () => {
   var host = server.address().address
