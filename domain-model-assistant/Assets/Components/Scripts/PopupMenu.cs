@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PopupMenu : MonoBehaviour
 {
-    
+
     GameObject compRect;
+    public const int UpdatePositionConst = 138;
 
     // Start is called before the first frame update
     void Start()
@@ -15,17 +16,24 @@ public class PopupMenu : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {}
-
-    public void setCompartmentedRectangle(CompartmentedRectangle aCompRect){
-        this.compRect = aCompRect.gameObject;
-        // NB: we'll need to properly implement these two methods based on UI model diagram
-        // this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.AddAttribute);
-        // this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.AddSubclass);
-        this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(aCompRect.Destroy);
+    { 
+        if (compRect != null)
+        {
+            this.gameObject.transform.position = compRect.transform.position + new Vector3(UpdatePositionConst, 0, 0);
+        }
     }
 
-    public GameObject getCompartmentedRectangle(){
+    public void SetCompartmentedRectangle(CompartmentedRectangle compRect)
+    {
+        this.compRect = compRect.gameObject;
+        // NB: we'll need to properly implement these two methods based on UI model diagram
+        this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.GetSection(0).GetComponent<Section>().AddAttribute);
+        // this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.AddSubclass);
+        this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.Destroy);
+    }
+
+    public GameObject GetCompartmentedRectangle()
+    {
         return this.compRect;
     }
 

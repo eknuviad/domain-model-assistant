@@ -11,7 +11,7 @@ public class ClassDiagramDTO
     public List<Class> classes;
     public List<CDType> types;
     public Layout layout;
-    // TODO add feedback(s) here?
+    // TODO add feedback(s) here
 }
 
 [System.Serializable]
@@ -20,6 +20,7 @@ public class Class
     public string eClass;
     public string _id;
     public string name;
+    public List<Attribute> attributes;
 }
 
 [System.Serializable]
@@ -34,6 +35,14 @@ public class Layout
 {
     public string _id;
     public List<ContainerMap> containers;
+}
+
+[System.Serializable]
+public class Attribute
+{
+    public string _id;
+    public string name;
+    public string type;
 }
 
 [System.Serializable]
