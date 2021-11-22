@@ -253,7 +253,7 @@ public class Diagram : MonoBehaviour
         if (UseWebcore)
         {
             // TODO Replace this ugly string once Unity moves to .NET 6
-            AddJsonClass info = new AddJsonClass();
+            CreateJson info = new CreateJson();
             info.x = position.x;
             info.y = position.y;
             info.className = name;
@@ -525,7 +525,7 @@ public class Diagram : MonoBehaviour
     //When pressing on canvas close popumenu and attributeclosebuttons
     public void CloseMenus()
     {
-
+        // TODO
     }
 
 }
