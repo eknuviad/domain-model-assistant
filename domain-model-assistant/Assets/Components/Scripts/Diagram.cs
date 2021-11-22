@@ -317,9 +317,9 @@ public class Diagram : MonoBehaviour
     {
         foreach (var comp in compartmentedRectangles)
         {
-            //popuup menu is destroyed in comp rect class whenn delete is called
-            //we only need to destroy the  atriibutes.
-            //get first section, loop through all attributes, destroy any attribute cross objects
+            // popup menu is destroyed in comp rect class when delete is called
+            // we only need to destroy the attributes.
+            // get first section, loop through all attributes, destroy any attribute cross objects
             GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
             foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
             {

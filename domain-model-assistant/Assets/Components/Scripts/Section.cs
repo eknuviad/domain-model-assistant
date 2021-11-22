@@ -68,6 +68,7 @@ public class Section : MonoBehaviour
         }
     }
 
+    // Used when creating attributes from popup menu
     public void AddAttribute()
     {
         // cap (hardcode) the number of attributes that can be added to a class to be 4
@@ -87,6 +88,7 @@ public class Section : MonoBehaviour
         this.AddTextBox(TB);
     }
 
+    // Used when creating attribute after reading JSON from the WebCORE server
     public void AddAttribute(string _id, string name, string type)
     {
         var TB = GameObject.Instantiate(textbox, this.transform);
