@@ -252,7 +252,6 @@ public class Diagram : MonoBehaviour
     {
         if (UseWebcore)
         {
-            // TODO Replace this ugly string once Unity moves to .NET 6
             CreateJson info = new CreateJson();
             info.x = position.x;
             info.y = position.y;

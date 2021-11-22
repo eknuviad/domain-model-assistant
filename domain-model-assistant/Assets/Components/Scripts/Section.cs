@@ -7,7 +7,7 @@ public class Section : MonoBehaviour
 {
 
     public GameObject compRect;
-
+    public const int UpdatePositionConst = -10;
     public GameObject textbox;
     public List<GameObject> textboxes = new List<GameObject>();
 
@@ -41,14 +41,14 @@ public class Section : MonoBehaviour
     }
 
     // Get, Set for TextBox
-    public bool AddTextBox(GameObject TB)
+    public bool AddTextBox(GameObject textbox)
     {
-        if (textboxes.Contains(TB))
+        if (textboxes.Contains(textbox))
         {
             return false;
         }
-        textboxes.Add(TB);
-        TB.GetComponent<TextBox>().SetSection(this.gameObject);
+        textboxes.Add(textbox);
+        textbox.GetComponent<TextBox>().SetSection(this.gameObject);
         return true;
     }
 
@@ -71,12 +71,12 @@ public class Section : MonoBehaviour
     public void AddAttribute()
     {
         // cap (hardcode) the number of attributes that can be added to a class to be 4
-        if (textboxes.Count == 4) {
+        if (textboxes.Count >= 4) {
             return;
         }
         var TB = GameObject.Instantiate(textbox, this.transform);
         TB.GetComponent<InputField>().text = "Enter Text ...";
-        TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textboxes.Count;
+        TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
         // Update size of class depending on number of textboxes(attributes)
         // enlarge the section by 0.1*number of textboxes
         TB.transform.localScale += new Vector3(0, 0.1F*textboxes.Count, 0);
@@ -92,7 +92,7 @@ public class Section : MonoBehaviour
         var TB = GameObject.Instantiate(textbox, this.transform);
         TB.GetComponent<TextBox>().ID = _id;
         TB.GetComponent<InputField>().text = type + " " + name;
-        TB.transform.position = this.transform.position + new Vector3(0, -10, 0) * textboxes.Count;
+        TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
         this.AddTextBox(TB);
     }
 
