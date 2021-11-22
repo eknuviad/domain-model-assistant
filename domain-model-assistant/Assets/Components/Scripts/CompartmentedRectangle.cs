@@ -99,6 +99,7 @@ public class CompartmentedRectangle : Node
         _diagram.UpdateClass(this.textbox, this.gameObject);
 
     }
+
     void SpawnPopupMenu()
     {
         if (this.popupMenu.GetComponent<PopupMenu>().GetCompartmentedRectangle() == null)
@@ -148,6 +149,7 @@ public class CompartmentedRectangle : Node
             return null;
         }
     }
+
     public Vector2 GetPosition()
     {
         return this.transform.position;

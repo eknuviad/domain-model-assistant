@@ -242,7 +242,6 @@ public class Diagram : MonoBehaviour
         {
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrIdsToTypes[attr.type]);
         }
-
     }
 
     /// <summary>
