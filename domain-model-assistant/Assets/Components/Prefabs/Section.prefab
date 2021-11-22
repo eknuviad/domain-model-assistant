@@ -154,5 +154,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   compRect: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
     type: 3}
-  textB: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
-  textBList: []
+  textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
+  textboxes: []
