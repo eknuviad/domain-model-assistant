@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking;
-using System;
 
 public class Section : MonoBehaviour
 {
@@ -12,32 +10,6 @@ public class Section : MonoBehaviour
     public const int UpdatePositionConst = -10;
     public GameObject textbox;
     public List<GameObject> textboxes = new List<GameObject>();
-
-    // true if app is run in browser, false if run in Unity editor
-    private bool _isWebGl = false;
-    private bool _updateNeeded = false;
-
-    private Diagram _diagram;
-    private UnityWebRequestAsyncOperation _getRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _postRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _putRequestAsyncOp;
-
-    public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
-    public const string WebcoreEndpoint = "http://localhost:8080/";
-    public const string cdmName = "MULTIPLE_CLASSES";
-
-    private const string classAPIEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName + "/class/";
-    private string class_id;
-    private string AddAttributeEndpoint;
-
-     void Awake()
-    {
-        _diagram = GetComponentInParent<Diagram>();
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -49,13 +21,6 @@ public class Section : MonoBehaviour
     void Update()
     {
     
-    }
-
-    public Section (GameObject compRect) 
-    {
-        this.compRect = compRect;
-        class_id = compRect.GetComponent<CompartmentedRectangle>().ID;
-        AddAttributeEndpoint = classAPIEndpoint + "/" + class_id + "/attribute"; // + /{classId}/attribute
     }
 
     // ************ UI model Methods for Section ****************//
@@ -110,7 +75,7 @@ public class Section : MonoBehaviour
         if (textboxes.Count >= 4) {
             return;
         }
-        var TB = GameObject.Instantiate(textB, this.transform);
+        var TB = GameObject.Instantiate(textbox, this.transform);
         TB.GetComponent<TextBox>().ID = "-1";
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
@@ -122,7 +87,6 @@ public class Section : MonoBehaviour
         //this.GetCompartmentedRectangle().transform.localScale += new Vector3((float)0.2,(float)0.5, 0);
         //this.GetComponent<Section>().GetCompartmentedRectangle().transform.localScale +=  new Vector3(0,(float)0.5,0);
         this.AddTextBox(TB);
-    
     }
 
     // Used when creating attribute after reading JSON from the WebCORE server

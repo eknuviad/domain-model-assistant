@@ -40,12 +40,9 @@ public class TextBox : MonoBehaviour
             Debug.Log("Enter");
             string _id = this.ID;
              if(isValid() && _id.Equals("-1")){
-            // _diagram.AddAttribute via post request
                 Debug.Log(this.GetSection().GetComponent<Section>()
                 .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
                 .ID);
-                // GameObject compRect = this.GetSection().GetComponent<Section>()
-                // .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>();
                 _diagram.AddAttribute(this.gameObject);
             }
         }
@@ -64,15 +61,7 @@ public class TextBox : MonoBehaviour
     public bool isValid(){
         bool res = false;
         string text = this.GetComponent<InputField>().text;
-        //check that id is not in diagram.getcreatedattributes
-        // if(_diagram.getCreatedAttributes().Contains(this.ID)){
-        //     return res = false;
-        // }
-        //check that inputfield in not null
-        // if( text == null ){
-        //     return res = false;
-        // }
-        //check that inputfield is of a particular format (int year true)
+        //check that inputfield is of a particular format (Eg. int year)
         string[] values = text.Split(' ');
         Debug.Log(values.Length);
         if (values.Length == 2 && !String.IsNullOrWhiteSpace(values[1]))
@@ -124,17 +113,17 @@ public class TextBox : MonoBehaviour
         
     public bool SetSection(GameObject sSection)
     {
-        if (section == null)
+        if (sSection == null)
         {
             return false;
         }
-        this.section = section;
+        this.section = sSection;
         return true;
     }
 
     public GameObject GetSection()
     {
-        return section;
+        return this.section;
     }
 
     public void OnBeginHold2()
@@ -157,6 +146,7 @@ public class TextBox : MonoBehaviour
 
     void SpawnAttributeCross()
     {
+        Debug.Log("here");
         if (this.attributeCross.GetComponent<AttributeCross>().GetTextBox() == null)
         {
             this.attributeCross = GameObject.Instantiate(this.attributeCross);
@@ -173,7 +163,7 @@ public class TextBox : MonoBehaviour
     public void Destroy()
     {
         _diagram.DeleteAttribute(this.gameObject); //delete attribute from Diagram
-        this.attribcross.GetComponent<AttributeCross>().Close();
+        this.attributeCross.GetComponent<AttributeCross>().Close();
         Destroy(this.gameObject);
     }
 

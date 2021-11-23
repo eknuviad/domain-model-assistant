@@ -353,258 +353,259 @@ public class Diagram : MonoBehaviour
             GetRequest(GetCdmEndpoint);
         }
     }
-            /// Deletes Attribute
-            /// </summary> 
-            public void DeleteAttribute(GameObject textBox)
-            {
-                // Debug.Log("We entered into delete attr:" + textBox.GetComponent<TextBox>().text);
-                if (UseWebcore)
-                {
-                    string _id = textBox.GetComponent<TextBox>().ID;
-                    DeleteRequest(DeleteAttributeEndpoint, _id);
-                    reGetRequest = true;
-                    GetRequest(GetCdmEndpoint);
-                    // No need to remove or destroy the node here since entire class diagram is recreated
-                }
-                else
-                {
-                    //RemoveNode(section);
-                    //Destroy(node);
-                }
-            }
-
-            /// <summary>
-            /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
-            /// </summary>
-            public void ResetDiagram()
-                foreach (var comp in compartmentedRectangles)
-                {
-                    //popuup menu is destroyed in comp rect class whenn delete is called
-                    //we only need to destroy the  atriibutes.
-                    //get first section, loop through all attributes, destroy any attribute cross objects
-                    GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
-                    foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
-                    {
-                        if (attr)
-                        {
-                            if (attr.GetComponent<TextBox>())
-                            {
-                                if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
-                                {
-                                    //TODO: Destroy instance instead
-                                    attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
-                                }
-                            }
-                        }
-                    }
-                }
-                compartmentedRectangles.ForEach(Destroy);
-                compartmentedRectangles.Clear();
-            }
-
-            /// <summary>
-            /// Creates a compartmented rectangle with the given name and position.
-            /// </summary>
-            public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
-            {
-                var compRect = Instantiate(compartmentedRectangle, this.transform);
-                compRect.transform.position = position;
-                compRect.GetComponent<CompartmentedRectangle>().ID = _id;
-                compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
-                AddNode(compRect);
-                return compRect;
-            }
-
-            /// <summary>
-            /// Sends a GET request to the server. The response is the class diagram JSON and is stored in _getResult.
-            /// </summary>
-            public void GetRequest(string uri)
-            {
-                // TODO Check if a `using` block can be used here, to auto-dispose the web request
-                var webRequest = UnityWebRequest.Get(uri);
-                webRequest.method = "GET";
-                webRequest.SetRequestHeader("Content-Type", "application/json");
-                webRequest.disposeDownloadHandlerOnDispose = false;
-                webRequest.timeout = 1;
-                _getRequestAsyncOp = webRequest.SendWebRequest();
-                _updateNeeded = true;
-            }
-
-            /// <summary>
-            /// Sends a POST request to the server to modify the class diagram.
-            /// </summary>
-            public void PostRequest(string uri, string data)
-            {
-                var webRequest = UnityWebRequest.Put(uri, data);
-                webRequest.method = "POST";
-                webRequest.disposeDownloadHandlerOnDispose = false;
-                webRequest.SetRequestHeader("Content-Type", "application/json");
-                _postRequestAsyncOp = webRequest.SendWebRequest();
-            }
-
-
-            /// <summary>
-            /// Sends a DELETE request to the server to remove an item from the class diagram.
-            /// </summary>
-            public void DeleteRequest(string uri, string _id)
-            {
-                Debug.Log(uri + "/" + _id); // check if reaching
-                var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
-                webRequest.method = "DELETE";
-                webRequest.disposeDownloadHandlerOnDispose = false;
-                webRequest.SetRequestHeader("Content-Type", "application/json");
-                _deleteRequestAsyncOp = webRequest.SendWebRequest();
-                Debug.Log("Deleting done"); // check if reaching
-
-            }
-
-            public void PutRequest(string uri, string data, string _id)
-            {
-                var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
-                webRequest.method = "PUT";
-                webRequest.disposeDownloadHandlerOnDispose = false;
-                webRequest.SetRequestHeader("Content-Type", "application/json");
-                _putRequestAsyncOp = webRequest.SendWebRequest();
-            }
-
-            /// <summary>
-            /// Zooms the user interface.
-            /// </summary>
-            void Zoom()
-            {
-                if (Input.touchSupported)
-                {
-                    if (Input.touchCount == 2)
-                    {
-                        // get current touch positions
-                        Touch tZero = Input.GetTouch(0);
-                        Touch tOne = Input.GetTouch(1);
-                        // get touch position from the previous frame
-                        Vector2 tZeroPrevious = tZero.position - tZero.deltaPosition;
-                        Vector2 tOnePrevious = tOne.position - tOne.deltaPosition;
-                        float oldTouchDistance = Vector2.Distance(tZeroPrevious, tOnePrevious);
-                        float currentTouchDistance = Vector2.Distance(tZero.position, tOne.position);
-                        if ((oldTouchDistance - currentTouchDistance) != 0.0f)
-                        {
-                            targetOrtho += Mathf.Clamp((oldTouchDistance - currentTouchDistance), -1, 1) * zoomSpeed * 0.03f;
-                            targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
-                        }
-                    }
-                }
-                else
-                {
-                    float scroll = Input.GetAxis("Mouse ScrollWheel");
-                    if (scroll != 0.0f)
-                    {
-                        targetOrtho += scroll * zoomSpeed * 0.3f;
-                        targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
-                    }
-                }
-                CanvasScaler.scaleFactor = Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
-            }
-
-            // ************ UI model Methods for Canvas/Diagram ****************//
-
-            /// <summary>
-            /// Adds a node to the diagram.
-            /// </summary>
-            public bool AddNode(GameObject node)
-            {
-                if (compartmentedRectangles.Contains(node))
-                {
-                    return false;
-                }
-                compartmentedRectangles.Add(node);
-                node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
-                return true;
-            }
-
-            public bool RemoveNode(GameObject node)
-            {
-                if (compartmentedRectangles.Contains(node))
-                {
-                    compartmentedRectangles.Remove(node);
-                    return true;
-                }
-                return false;
-            }
-
-            /// <summary>
-            /// Returns the list of compartmented rectangles.
-            /// </summary>
-            public List<GameObject> GetCompartmentedRectangles()
-            {
-                return compartmentedRectangles;
-            }
-
-            /// <summary>
-            /// Activates the default mode.
-            /// </summary>
-            public void ActivateDefaultMode()
-            {
-                if (_isWebGl)
-                {
-                    ResetCursor();
-                }
-                _currentMode = CanvasMode.Default;
-            }
-
-            public void EnterAddClassMode()
-            {
-                if (_isWebGl)
-                {
-                    SetCursorToAddMode();
-                }
-                Debug.Log("Entering Add class mode");
-                _currentMode = CanvasMode.AddingClass;
-            }
-
-            /// <summary>
-            /// Called by AddClassAction when the AddClass button is pressed.
-            /// </summary>
-            public void AddClassButtonPressed()
-            {
-                if (_currentMode == CanvasMode.AddingClass)
-                {
-                    ActivateDefaultMode();
-                }
-                else
-                {
-                    EnterAddClassMode();
-                }
-            }
-
-            /// <summary>
-            /// Perform the debug action specified in the body upon the Debug button getting clicked.
-            /// </summary>
-            public void DebugAction()
-            {
-                Debug.Log("Debug button clicked!");
-                //LoadData();
-                GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
-                  .text = "Rabbit";
-            }
-
-            // public void addToCreatedAttributes(string newAttributeId){
-            //     if(!createdAttributeIds.Contains(newAttributeId)){
-            //         createdAttributeIds.Add(newAttributeId);
-            //         Debug.Log("newly added attribute:" + newAttributeId);
-            //     }
-            // }
-
-            // public List<string> getCreatedAttributes(){
-            //     return createdAttributeIds;
-            // }
-
-            public Dictionary<string, string> getAttrTypeIdsToTypes()
-            {
-                return attrTypeIdsToTypes;
-            }
-
-            //When pressing on canvas close popumenu and attributeclosebuttons
-            public void CloseMenus()
-            {
-                // TODO
-            }
-
+    /// Deletes Attribute
+    /// </summary> 
+    public void DeleteAttribute(GameObject textBox)
+    {
+        // Debug.Log("We entered into delete attr:" + textBox.GetComponent<TextBox>().text);
+        if (UseWebcore)
+        {
+            string _id = textBox.GetComponent<TextBox>().ID;
+            DeleteRequest(DeleteAttributeEndpoint, _id);
+            reGetRequest = true;
+            GetRequest(GetCdmEndpoint);
+            // No need to remove or destroy the node here since entire class diagram is recreated
         }
+        else
+        {
+            //RemoveNode(section);
+            //Destroy(node);
+        }
+    }
+
+    /// <summary>
+    /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
+    /// </summary>
+    public void ResetDiagram()
+    {
+        foreach (var comp in compartmentedRectangles)
+        {
+            //popuup menu is destroyed in comp rect class whenn delete is called
+            //we only need to destroy the  atriibutes.
+            //get first section, loop through all attributes, destroy any attribute cross objects
+            GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
+            foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
+            {
+                if (attr)
+                {
+                    if (attr.GetComponent<TextBox>())
+                    {
+                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
+                        {
+                            //TODO: Destroy instance instead
+                            attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+                        }
+                    }
+                }
+            }
+        }
+        compartmentedRectangles.ForEach(Destroy);
+        compartmentedRectangles.Clear();
+    }
+
+    /// <summary>
+    /// Creates a compartmented rectangle with the given name and position.
+    /// </summary>
+    public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
+    {
+        var compRect = Instantiate(compartmentedRectangle, this.transform);
+        compRect.transform.position = position;
+        compRect.GetComponent<CompartmentedRectangle>().ID = _id;
+        compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
+        AddNode(compRect);
+        return compRect;
+    }
+
+    /// <summary>
+    /// Sends a GET request to the server. The response is the class diagram JSON and is stored in _getResult.
+    /// </summary>
+    public void GetRequest(string uri)
+    {
+        // TODO Check if a `using` block can be used here, to auto-dispose the web request
+        var webRequest = UnityWebRequest.Get(uri);
+        webRequest.method = "GET";
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+        webRequest.disposeDownloadHandlerOnDispose = false;
+        webRequest.timeout = 1;
+        _getRequestAsyncOp = webRequest.SendWebRequest();
+        _updateNeeded = true;
+    }
+
+    /// <summary>
+    /// Sends a POST request to the server to modify the class diagram.
+    /// </summary>
+    public void PostRequest(string uri, string data)
+    {
+        var webRequest = UnityWebRequest.Put(uri, data);
+        webRequest.method = "POST";
+        webRequest.disposeDownloadHandlerOnDispose = false;
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+        _postRequestAsyncOp = webRequest.SendWebRequest();
+    }
+
+
+    /// <summary>
+    /// Sends a DELETE request to the server to remove an item from the class diagram.
+    /// </summary>
+    public void DeleteRequest(string uri, string _id)
+    {
+        Debug.Log(uri + "/" + _id); // check if reaching
+        var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
+        webRequest.method = "DELETE";
+        webRequest.disposeDownloadHandlerOnDispose = false;
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+        _deleteRequestAsyncOp = webRequest.SendWebRequest();
+        Debug.Log("Deleting done"); // check if reaching
+
+    }
+
+    public void PutRequest(string uri, string data, string _id)
+    {
+        var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
+        webRequest.method = "PUT";
+        webRequest.disposeDownloadHandlerOnDispose = false;
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+        _putRequestAsyncOp = webRequest.SendWebRequest();
+    }
+
+    /// <summary>
+    /// Zooms the user interface.
+    /// </summary>
+    void Zoom()
+    {
+        if (Input.touchSupported)
+        {
+            if (Input.touchCount == 2)
+            {
+                // get current touch positions
+                Touch tZero = Input.GetTouch(0);
+                Touch tOne = Input.GetTouch(1);
+                // get touch position from the previous frame
+                Vector2 tZeroPrevious = tZero.position - tZero.deltaPosition;
+                Vector2 tOnePrevious = tOne.position - tOne.deltaPosition;
+                float oldTouchDistance = Vector2.Distance(tZeroPrevious, tOnePrevious);
+                float currentTouchDistance = Vector2.Distance(tZero.position, tOne.position);
+                if ((oldTouchDistance - currentTouchDistance) != 0.0f)
+                {
+                    targetOrtho += Mathf.Clamp((oldTouchDistance - currentTouchDistance), -1, 1) * zoomSpeed * 0.03f;
+                    targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
+                }
+            }
+        }
+        else
+        {
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll != 0.0f)
+            {
+                targetOrtho += scroll * zoomSpeed * 0.3f;
+                targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
+            }
+        }
+        CanvasScaler.scaleFactor = Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
+    }
+
+    // ************ UI model Methods for Canvas/Diagram ****************//
+
+    /// <summary>
+    /// Adds a node to the diagram.
+    /// </summary>
+    public bool AddNode(GameObject node)
+    {
+        if (compartmentedRectangles.Contains(node))
+        {
+            return false;
+        }
+        compartmentedRectangles.Add(node);
+        node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
+        return true;
+    }
+
+    public bool RemoveNode(GameObject node)
+    {
+        if (compartmentedRectangles.Contains(node))
+        {
+            compartmentedRectangles.Remove(node);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Returns the list of compartmented rectangles.
+    /// </summary>
+    public List<GameObject> GetCompartmentedRectangles()
+    {
+        return compartmentedRectangles;
+    }
+
+    /// <summary>
+    /// Activates the default mode.
+    /// </summary>
+    public void ActivateDefaultMode()
+    {
+        if (_isWebGl)
+        {
+            ResetCursor();
+        }
+        _currentMode = CanvasMode.Default;
+    }
+
+    public void EnterAddClassMode()
+    {
+        if (_isWebGl)
+        {
+            SetCursorToAddMode();
+        }
+        Debug.Log("Entering Add class mode");
+        _currentMode = CanvasMode.AddingClass;
+    }
+
+    /// <summary>
+    /// Called by AddClassAction when the AddClass button is pressed.
+    /// </summary>
+    public void AddClassButtonPressed()
+    {
+        if (_currentMode == CanvasMode.AddingClass)
+        {
+            ActivateDefaultMode();
+        }
+        else
+        {
+            EnterAddClassMode();
+        }
+    }
+
+    /// <summary>
+    /// Perform the debug action specified in the body upon the Debug button getting clicked.
+    /// </summary>
+    public void DebugAction()
+    {
+        Debug.Log("Debug button clicked!");
+        //LoadData();
+        GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
+          .text = "Rabbit";
+    }
+
+    // public void addToCreatedAttributes(string newAttributeId){
+    //     if(!createdAttributeIds.Contains(newAttributeId)){
+    //         createdAttributeIds.Add(newAttributeId);
+    //         Debug.Log("newly added attribute:" + newAttributeId);
+    //     }
+    // }
+
+    // public List<string> getCreatedAttributes(){
+    //     return createdAttributeIds;
+    // }
+
+    public Dictionary<string, string> getAttrTypeIdsToTypes()
+    {
+        return attrTypeIdsToTypes;
+    }
+
+    //When pressing on canvas close popumenu and attributeclosebuttons
+    public void CloseMenus()
+    {
+        // TODO
+    }
+
+}
