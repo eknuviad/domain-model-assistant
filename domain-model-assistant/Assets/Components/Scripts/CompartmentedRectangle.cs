@@ -159,11 +159,13 @@ public class CompartmentedRectangle : Node
     {
         return this.popupMenu;
     }
-
-    public void SetState(State aState)
+    
+    public void SetLine()
     {
-        this.state = aState;
+        Debug.Log("set line heard");
+        _diagram.gameObject.GetComponent<DrawLine>().AddCompartmentedRectangle(this.gameObject);
     }
+    
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }

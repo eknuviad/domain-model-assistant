@@ -311,7 +311,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Add Subclass
+  m_Text: Draw Line
 --- !u!1 &6751510956862578633
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 5566243237724704120}
   - component: {fileID: 2437077942046767990}
   m_Layer: 5
-  m_Name: Add Subclass
+  m_Name: DrawLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -434,8 +434,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8564540208968287839}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 11500000, guid: 36f2cc376bd7e1e458672fb78844294b, type: 3}
+        m_TargetAssemblyTypeName: CompartmentedRectangle, Assembly-CSharp
         m_MethodName: 
         m_Mode: 1
         m_Arguments:
