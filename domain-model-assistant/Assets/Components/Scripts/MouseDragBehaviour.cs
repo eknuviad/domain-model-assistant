@@ -15,7 +15,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
-        GetComponent<CompartmentedRectangle>().SetState(CompartmentedRectangle.State.DraggingClass);
+        GetComponent<CompartmentedRectangle>().state = CompartmentedRectangle.State.DraggingClass;
         Vector2 currentMousePosition = eventData.position;
         Vector2 diff = currentMousePosition - lastMousePosition;
         RectTransform rect = GetComponent<RectTransform>();
@@ -32,7 +32,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        GetComponent<CompartmentedRectangle>().SetState(CompartmentedRectangle.State.Default);
+        GetComponent<CompartmentedRectangle>().state = CompartmentedRectangle.State.Default;
     }
 
     private bool IsRectTransformInsideSreen(RectTransform rectTransform)
