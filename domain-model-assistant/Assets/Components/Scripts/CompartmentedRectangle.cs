@@ -14,7 +14,8 @@ public class CompartmentedRectangle : Node
     public GameObject popupMenu;
     float holdTimer = 0;
     bool hold = false;
-    public State state = State.Default;
+    public State state
+    { get; set; }
     private Diagram _diagram;
     private Vector2 _prevPosition;
     private int headerOffsetX = -31;
@@ -37,6 +38,7 @@ public class CompartmentedRectangle : Node
     // Start is called before the first frame update
     void Start()
     {
+        state = State.Default;
         CreateHeader();
         CreateSection();
     }
@@ -97,9 +99,10 @@ public class CompartmentedRectangle : Node
         _diagram.UpdateClass(this.textbox, this.gameObject);
 
     }
+
     void SpawnPopupMenu()
     {
-        if (this.popupMenu.GetComponent<PopupMenu>().getCompartmentedRectangle() == null)
+        if (this.popupMenu.GetComponent<PopupMenu>().GetCompartmentedRectangle() == null)
         {
             this.popupMenu = GameObject.Instantiate(this.popupMenu);
             this.popupMenu.transform.position = this.transform.position + new Vector3(popupMenuOffsetX, 0, 0);
@@ -146,6 +149,7 @@ public class CompartmentedRectangle : Node
             return null;
         }
     }
+
     public Vector2 GetPosition()
     {
         return this.transform.position;
@@ -155,22 +159,13 @@ public class CompartmentedRectangle : Node
     {
         return this.popupMenu;
     }
-
-    public void SetState(State aState)
-    {
-        this.state = aState;
-    }
-
-    public State GetState()
-    {
-        return state;
-    }
+    
     public void SetLine()
     {
         Debug.Log("set line heard");
         _diagram.gameObject.GetComponent<DrawLine>().AddCompartmentedRectangle(this.gameObject);
     }
-
+    
     // ************ END UI model Methods for Compartmented Rectangle ****************//
 
 }

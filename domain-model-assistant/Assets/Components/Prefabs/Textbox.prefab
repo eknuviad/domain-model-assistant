@@ -96,8 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 0}
-  sect: {fileID: 0}
-  attribcross: {fileID: 3222643647847603311, guid: 16ef25d540df641169fa84b0e0c0763b,
+  section: {fileID: 0}
+  attributeCross: {fileID: 3222643647847603311, guid: 16ef25d540df641169fa84b0e0c0763b,
     type: 3}
 --- !u!114 &8079727894406178735
 MonoBehaviour:

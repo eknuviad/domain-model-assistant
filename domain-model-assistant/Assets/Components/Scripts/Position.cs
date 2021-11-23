@@ -15,7 +15,7 @@ public class Position
     }
 }
 
-public class AddJsonClass
+public class CreateJson
 {
     public string className;
 
@@ -26,4 +26,23 @@ public class AddJsonClass
     public float x;
 
     public float y; 
+}
+
+
+public class AddAttributeInfo
+{
+    public int rankIndex;
+
+    public int typeId;
+
+    public string attributeName;
+
+    
+    public AddAttributeInfo(int rIndex, int aTypeId, string name)
+    {
+        this.rankIndex = rIndex;
+        this.typeId = aTypeId;
+        this.attributeName = name;
+    }
+
 }

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class is used to create an "X" icon for an attribute. When it is clicked, the attribute is deleted.
+/// </summary>
 public class AttributeCross : MonoBehaviour
 {
     GameObject textbox; 
@@ -18,7 +21,7 @@ public class AttributeCross : MonoBehaviour
     {
         if (textbox !=null)
         {
-         this.gameObject.transform.position = textbox.transform.position + new Vector3(UpdatePositionConst, 0, 0);
+            this.gameObject.transform.position = textbox.transform.position + new Vector3(UpdatePositionConst, 0, 0);
         }
     }
 

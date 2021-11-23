@@ -38,11 +38,11 @@ var classDiagram = {
       "_id": "1",
       "name": "Class1",
       "attributes": [{
-        "_id": "2",
+        "_id": "1",   // id = "1" as first ID, part of counterAttributeID implementation
         "name": "year",
         "type": "6"
       }, {
-        "_id": "5",
+        "_id": "2",   // id = "2" as second ID, part of counterAttributeID implementation
         "name": "month",
         "type": "8"
       }]
@@ -50,7 +50,8 @@ var classDiagram = {
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
       "_id": "2",
-      "name": "Class2"
+      "name": "Class2",
+      "attributes": []
     }
   ],
   "types": [
@@ -129,10 +130,12 @@ var classDiagram = {
 //TODO: unsure what these ids are for, hard coded for now
 var valueId = 16;
 var valueValueId = 106;
+var counterAttributeId = 3; // counter for ading attributes, for having unique IDs for each attribute
 
 // GET class diagram
 app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
-  console.log(classDiagram);
+  //console.log(classDiagram);
+  console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
   // res.sendStatus(SUCCESS);
 });
@@ -149,7 +152,8 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
   classDiagram.classes.push({
     "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
     "_id": newClassId,
-    "name": className
+    "name": className,
+    "attributes": []
   })
 
   classDiagram.layout.containers[0].value.push({
@@ -205,6 +209,52 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   }
   console.log(classDiagram);
   console.log(`>>>>> Deleted class with id: ${classId}`);
+  res.sendStatus(SUCCESS);
+});
+// Delete Attribute
+app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,res) => {
+// app.delete('/classdiagram/MULTIPLE_CLASSES/class/MULTIPLE_ATTRIBUTES/attribute/:attributeId', (req,res) => {
+  const AttributeId = req.params.attributeId;
+  
+  for (var i = 0; i < classDiagram.classes.length; i++) {
+    for (var j = 0; j < classDiagram.classes[i].attributes.length; j++) {
+      if (classDiagram.classes[i].attributes[j]._id == AttributeId) {
+        classDiagram.classes[i].attributes.splice(j, 1)
+      }
+    }
+  }
+    
+
+
+  //console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
+  // util.inspect()
+  res.sendStatus(SUCCESS);
+
+})
+
+// Add attribute
+app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {
+  //console.log("HEHFJHFJEHFKJEHFKEJKFJEKFJEKFJEKFJEKFJJKFEJF");
+  const classId = req.params.classId;
+  const attributeName = req.body.attributeName;
+  const rankIndex = req.body.rankIndex;
+  const typeId = req.body.typeId;
+  // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+  
+  for (var i = 0; i < classDiagram.classes.length; i++) {
+    if (classDiagram.classes[i]._id == classId) {
+      classDiagram.classes[i].attributes.push({
+        "_id": counterAttributeId.toString(),
+         "name": attributeName,
+         "type": typeId,
+      })
+      counterAttributeId += 1;
+    }
+    
+  }
+
+  console.log(">>> Added attribute given req.body: " + JSON.stringify(req.body));
+
   res.sendStatus(SUCCESS);
 });
 
