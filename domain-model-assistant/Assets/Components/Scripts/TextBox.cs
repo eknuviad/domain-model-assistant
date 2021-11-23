@@ -8,8 +8,9 @@ public class TextBox : MonoBehaviour
 {
     private Diagram _diagram;
     public Text text;
-    public GameObject sect;
-    public GameObject attribcross;
+    public GameObject section;
+    public GameObject attributeCross;
+    public const int UpdatePositionConst = -100;
     public string ID
     { get; set; }
     public bool isHighlightedtext
@@ -123,17 +124,17 @@ public class TextBox : MonoBehaviour
         
     public bool SetSection(GameObject sSection)
     {
-        if (sSection == null)
+        if (section == null)
         {
             return false;
         }
-        sect = sSection;
+        this.section = section;
         return true;
     }
 
     public GameObject GetSection()
     {
-        return sect;
+        return section;
     }
 
     public void OnBeginHold2()
@@ -151,22 +152,21 @@ public class TextBox : MonoBehaviour
             {
                 SpawnAttributeCross();
             }
-
         }
     }
 
     void SpawnAttributeCross()
     {
-        if (this.attribcross.GetComponent<AttributeCross>().GetTextBox() == null)
+        if (this.attributeCross.GetComponent<AttributeCross>().GetTextBox() == null)
         {
-            this.attribcross = GameObject.Instantiate(this.attribcross);
-            this.attribcross.transform.position = this.transform.position + new Vector3(-100, 0, 0);
-            this.attribcross.GetComponent<AttributeCross>().setTextBox(this);
-            this.attribcross.GetComponent<AttributeCross>().Open();
+            this.attributeCross = GameObject.Instantiate(this.attributeCross);
+            this.attributeCross.transform.position = this.transform.position + new Vector3(UpdatePositionConst, 0, 0);
+            this.attributeCross.GetComponent<AttributeCross>().setTextBox(this);
+            this.attributeCross.GetComponent<AttributeCross>().Open();
         }
         else
         {
-            this.attribcross.GetComponent<AttributeCross>().Open();
+            this.attributeCross.GetComponent<AttributeCross>().Open();
         }
     }
 
@@ -178,7 +178,7 @@ public class TextBox : MonoBehaviour
     }
 
     public GameObject GetAttributeCross(){
-        return this.attribcross;
+        return this.attributeCross;
     }
 
 }

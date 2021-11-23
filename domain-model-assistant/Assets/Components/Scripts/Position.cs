@@ -15,7 +15,7 @@ public class Position
     }
 }
 
-public class AddJsonClass
+public class CreateJson
 {
     public string className;
 

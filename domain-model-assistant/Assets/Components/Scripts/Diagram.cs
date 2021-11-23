@@ -250,7 +250,6 @@ public class Diagram : MonoBehaviour
         {
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
         }
-
     }
 
     /// <summary>
@@ -260,8 +259,7 @@ public class Diagram : MonoBehaviour
     {
         if (UseWebcore)
         {
-            // TODO Replace this ugly string once Unity moves to .NET 6
-            AddJsonClass info = new AddJsonClass();
+            CreateJson info = new CreateJson();
             info.x = position.x;
             info.y = position.y;
             info.className = name;
@@ -379,7 +377,6 @@ public class Diagram : MonoBehaviour
             /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
             /// </summary>
             public void ResetDiagram()
-            {
                 foreach (var comp in compartmentedRectangles)
                 {
                     //popuup menu is destroyed in comp rect class whenn delete is called
