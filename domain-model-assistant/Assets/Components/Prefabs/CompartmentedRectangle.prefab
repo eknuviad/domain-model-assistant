@@ -168,13 +168,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 0}
   header: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
+  connections: []
   textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
   section: {fileID: 8699455690723162231, guid: 1396b8a5385e3cd4ca1b245b6b8891d1, type: 3}
   sections: []
   text: {fileID: 0}
   popupMenu: {fileID: 8564540208968287839, guid: 9913a5b3d214e7642a24bee2f858e6e7,
     type: 3}
-  state: 0
 --- !u!114 &2934163152826966153
 MonoBehaviour:
   m_ObjectHideFlags: 0

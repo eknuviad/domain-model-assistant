@@ -18,9 +18,9 @@ public class TextBox : MonoBehaviour
     public string name; //second substring of attribute
 
     public int typeId;
-    
+
     // public bool isChecked;
-    
+
     float holdTimer2 = 0;
     bool hold2 = false;
 
@@ -36,17 +36,19 @@ public class TextBox : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Return)){
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
             Debug.Log("Enter");
             string _id = this.ID;
-             if(isValid() && _id.Equals("-1")){
+            if (isValid() && _id.Equals("-1"))
+            {
                 Debug.Log(this.GetSection().GetComponent<Section>()
                 .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
                 .ID);
                 _diagram.AddAttribute(this.gameObject);
             }
         }
-        
+
         if (this.hold2)
         {
             OnBeginHold2();
@@ -58,7 +60,8 @@ public class TextBox : MonoBehaviour
         }
     }
 
-    public bool isValid(){
+    public bool isValid()
+    {
         bool res = false;
         string text = this.GetComponent<InputField>().text;
         //check that inputfield is of a particular format (Eg. int year)
@@ -71,8 +74,8 @@ public class TextBox : MonoBehaviour
             this.SetTypeId(values[0]);
             this.SetName(values[1]);
             return res = true;
-        } 
-        else 
+        }
+        else
         {
             return res = false;
         }
@@ -88,11 +91,11 @@ public class TextBox : MonoBehaviour
         return this.name;
     }
 
-    public void SetTypeId (string value)
+    public void SetTypeId(string value)
     {
         Dictionary<string, string> tmpDict = _diagram.getAttrTypeIdsToTypes();
         string tmpTypeId = null;
-        foreach(var item in tmpDict)
+        foreach (var item in tmpDict)
         {
             if (item.Value.Equals(value))
             {
@@ -103,14 +106,14 @@ public class TextBox : MonoBehaviour
         if (!String.IsNullOrEmpty(tmpTypeId))
         {
             this.typeId = Int16.Parse(tmpTypeId);
-        } 
+        }
     }
 
     public int GetTypeId()
     {
         return this.typeId;
     }
-        
+
     public bool SetSection(GameObject sSection)
     {
         if (sSection == null)
@@ -167,7 +170,8 @@ public class TextBox : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public GameObject GetAttributeCross(){
+    public GameObject GetAttributeCross()
+    {
         return this.attributeCross;
     }
 

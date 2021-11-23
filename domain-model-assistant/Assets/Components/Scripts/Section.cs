@@ -20,7 +20,7 @@ public class Section : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-    
+
     }
 
     // ************ UI model Methods for Section ****************//
@@ -52,7 +52,8 @@ public class Section : MonoBehaviour
         return true;
     }
 
-    public List<GameObject> GetTextBoxList(){
+    public List<GameObject> GetTextBoxList()
+    {
         return textboxes;
     }
 
@@ -72,7 +73,8 @@ public class Section : MonoBehaviour
     public void AddAttribute()
     {
         // cap (hardcode) the number of attributes that can be added to a class to be 4
-        if (textboxes.Count >= 4) {
+        if (textboxes.Count >= 4)
+        {
             return;
         }
         var TB = GameObject.Instantiate(textbox, this.transform);
@@ -81,7 +83,7 @@ public class Section : MonoBehaviour
         TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
         // Update size of class depending on number of textboxes(attributes)
         // enlarge the section by 0.1*number of textboxes
-        TB.transform.localScale += new Vector3(0, 0.1F*textboxes.Count, 0);
+        TB.transform.localScale += new Vector3(0, 0.1F * textboxes.Count, 0);
         // the code commented below can automatically enlarge the section as we create more attributes, 
         // but it would cause the new textboxes created become blured/disappeared as more than 4 attribute are created
         //this.GetCompartmentedRectangle().transform.localScale += new Vector3((float)0.2,(float)0.5, 0);

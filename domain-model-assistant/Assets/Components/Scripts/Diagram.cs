@@ -586,17 +586,6 @@ public class Diagram : MonoBehaviour
           .text = "Rabbit";
     }
 
-    // public void addToCreatedAttributes(string newAttributeId){
-    //     if(!createdAttributeIds.Contains(newAttributeId)){
-    //         createdAttributeIds.Add(newAttributeId);
-    //         Debug.Log("newly added attribute:" + newAttributeId);
-    //     }
-    // }
-
-    // public List<string> getCreatedAttributes(){
-    //     return createdAttributeIds;
-    // }
-
     public Dictionary<string, string> getAttrTypeIdsToTypes()
     {
         return attrTypeIdsToTypes;

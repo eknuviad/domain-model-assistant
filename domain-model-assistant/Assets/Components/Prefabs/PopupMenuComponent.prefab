@@ -311,7 +311,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Draw Line
+  m_Text: 'Add Relation
+
+'
 --- !u!1 &6751510956862578633
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,7 +328,7 @@ GameObject:
   - component: {fileID: 5566243237724704120}
   - component: {fileID: 2437077942046767990}
   m_Layer: 5
-  m_Name: DrawLine
+  m_Name: AddRelationship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
