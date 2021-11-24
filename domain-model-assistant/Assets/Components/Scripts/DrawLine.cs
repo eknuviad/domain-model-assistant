@@ -8,8 +8,8 @@ using UnityEngine.Rendering;
 
 public class DrawLine: MonoBehaviour{
 
-private List<GameObject> nodes;
-// public GameObject edge;
+// private List<GameObject> nodes;
+public GameObject edge;
 
 public GameObject line;
 
@@ -24,42 +24,12 @@ void Start(){
 
 void Update(){
  
-    // if (Input.GetMouseButtonDown(0))
-    //     {
-    //         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);//mouse postiion is Vecot3, mouse cordinates are 2d so convert
-    //         mousePos.z = 0; //so lines are drawn on xy plane
-    //         if(IsCompRectExist(mousePos) && line == null){
-    //            createLine();
-    //         }
-    //         line.GetComponent<LineRenderer>().SetPosition(0, mousePos);
-    //     }
-    //     else if (Input.GetMouseButtonUp(0) && line) //check if mouse has been lifted
-    //     {
-    //         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    //         mousePos.z = 0;
-    //         if(IsCompRectExist(mousePos)){
-    //             line.GetComponent<LineRenderer>().SetPosition(1, mousePos); 
-    //             if(obj1 != null && obj2 !=null){
-    //                 obj1.AddEdge(line); //not sure if this references actual comprect in diagram. needs testing
-    //                 obj2.AddEdge(line);
-    //             }
-    //         }else{
-    //             Destroy(line);
-    //         }
-    //         // line = null; //if line is not drawn
-    //         // currLines++;
-    //     }
-    //     else if (Input.GetMouseButton(0) && line) //if mouse is pressed, conrinuously set position to cur mouse pos
-        // {
-        //     mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //     mousePos.z = 0;
-        //     line.GetComponent<LineRenderer>().SetPosition(1, mousePos);
-        // }
 }
 
 
 public void createLine(){
-    this.line = new GameObject("Line",typeof(Edge));
+    // this.line = new GameObject("Line",typeof(Edge));
+    this.line = GameObject.Instantiate(edge);
     this.line.AddComponent<LineRenderer>();
     if(obj1 != null && obj2 != null)
     {
@@ -71,7 +41,6 @@ public void createLine(){
         pos2.z = 0;
         Debug.Log("position1: "+ pos1);
         Debug.Log("position2: "+ pos2);
-
         this.line.GetComponent<LineRenderer>().SetPosition(0, pos1);
         this.line.GetComponent<LineRenderer>().SetPosition(1, pos2); 
         obj1.GetComponent<CompartmentedRectangle>().AddEdge(line); 
@@ -88,10 +57,12 @@ public void AddCompartmentedRectangle(GameObject compRect)
         obj1 = compRect;
         Debug.Log("obj1 set");
     }
-    else{
+    else if(obj1 != compRect){
         obj2 = compRect;
         Debug.Log("obj2 set");
         createLine();
+    }else{
+        obj2 = null;
     }
     Debug.Log("Comp rect added: " + compRect.GetComponent<CompartmentedRectangle>().ID);
 }

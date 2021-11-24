@@ -7,7 +7,7 @@ public class Edge : MonoBehaviour
 {
     private LineRenderer line;
     // private Vector3 mousePos;
-    public Material material;
+    // public Material material;
     // private int currLines = 0;//ciunter for lines drawn
     public List<GameObject> nodes = new List<GameObject>();
     void Start()
@@ -32,11 +32,13 @@ public class Edge : MonoBehaviour
     {
         this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
         line = this.gameObject.GetComponent<LineRenderer>();
-        line.material = material;
+        // line.material = material;
+        line.material = new Material (Shader.Find ("Sprites/Default"));
+        line.material.color = Color.black; 
         line.positionCount = 2; //straightline with 2 end points
-        line.startWidth = 0.15f; //line width
-        line.endWidth = 0.15f; //line width
-        line.useWorldSpace = false; //set to true so lines defined in world space
+        line.startWidth = 0.1f; //line width
+        line.endWidth = 0.1f; //line width
+        line.useWorldSpace = true; //set to true so lines defined in world space
         line.numCapVertices = 50;
         Debug.Log("line created");
     }
@@ -51,6 +53,7 @@ public class Edge : MonoBehaviour
         }
         nodes.Add(aNode);
         aNode.GetComponent<Node>().AddEdge(this.gameObject);
+        Debug.Log("node added to edge");
         return true;
     }
 }
