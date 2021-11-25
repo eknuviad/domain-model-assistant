@@ -47,10 +47,14 @@ MonoBehaviour:
   nodes: []
   edgeEnds: []
   edgeEnd: {fileID: 5836386575115059614, guid: bbe52601b514c7046b823c31cc6d06f6, type: 3}
-  edgeTitle: {fileID: 0}
-  edgeEndNumber: {fileID: 0}
+  edgeTitleUpper: {fileID: 0}
+  edgeEndNumberUpper: {fileID: 0}
+  edgeTitleLower: {fileID: 0}
+  edgeEndNumberLower: {fileID: 0}
   textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
   popupLineMenu: {fileID: 496572069921609545, guid: a5a99622b2f3847d89111ee3081890f6,
+    type: 3}
+  compositionIcon: {fileID: 7379804065855290417, guid: e74df07acc15e48678f08944db4e60b4,
     type: 3}
 --- !u!114 &-4483242937406530835
 MonoBehaviour:

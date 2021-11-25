@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 3542140884632564417}
   - component: {fileID: 737243506993281584}
   m_Layer: 5
-  m_Name: CompositionButton
+  m_Name: AssociationButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -724,9 +724,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Destroy
+      - m_Target: {fileID: -340251040344802058, guid: 29d3db3d260da4f4e8e81156b5624613,
+          type: 3}
+        m_TargetAssemblyTypeName: Edge, Assembly-CSharp
+        m_MethodName: SetComposition
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

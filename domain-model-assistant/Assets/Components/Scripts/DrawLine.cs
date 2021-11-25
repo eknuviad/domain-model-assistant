@@ -34,22 +34,18 @@ public void createLine(){
     this.line.AddComponent<LineRenderer>();
     if(obj1 != null && obj2 != null)
     {
-        Debug.Log("prevposition1: "+ obj1.transform.position);
-        Debug.Log("prevposition2: "+ obj2.transform.position);
+        // Debug.Log("prevposition1: "+ obj1.transform.position);
+        // Debug.Log("prevposition2: "+ obj2.transform.position);
         var pos1 = Camera.main.ScreenToWorldPoint(obj1.transform.position + new Vector3(0,-95,0));
         pos1.z = 0;
         var pos2 = Camera.main.ScreenToWorldPoint(obj2.transform.position + new Vector3(0,95,0));
         pos2.z = 0;
-        Debug.Log("position1: "+ pos1);
-        Debug.Log("position2: "+ pos2);
+        // Debug.Log("position1: "+ pos1);
+        // Debug.Log("position2: "+ pos2);
         this.line.GetComponent<LineRenderer>().SetPosition(0, pos1);
         this.line.GetComponent<LineRenderer>().SetPosition(1, pos2); 
         obj1.GetComponent<CompartmentedRectangle>().AddEdge(line); 
         obj2.GetComponent<CompartmentedRectangle>().AddEdge(line);
-        // this.line.GetComponent<Edge>().CreateEdgeTitle(pos1);
-        // this.line.GetComponent<Edge>().CreateEdgeTitle(pos2);
-        // this.line.GetComponent<Edge>().CreateEdgeEndNumber(pos1);
-        // this.line.GetComponent<Edge>().CreateEdgeEndNumber(pos2);
         obj1 = null;
         obj2 = null;
     }

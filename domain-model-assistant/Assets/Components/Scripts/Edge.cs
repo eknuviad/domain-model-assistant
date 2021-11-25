@@ -7,15 +7,17 @@ using UnityEngine.Rendering;
 
 public class Edge : MonoBehaviour
 {
-     public string ID
+    public string ID
     { get; set; }
     private LineRenderer line;
     public List<GameObject> nodes = new List<GameObject>();
-    
+
     public List<GameObject> edgeEnds = new List<GameObject>();
     public GameObject edgeEnd;
-    public GameObject edgeTitle;
-    public GameObject edgeEndNumber;
+    public GameObject edgeTitleUpper;
+    public GameObject edgeEndNumberUpper;
+    public GameObject edgeTitleLower;
+    public GameObject edgeEndNumberLower;
     public GameObject textbox;
     // private Vector3 mousePos;
     public GameObject popupLineMenu;
@@ -23,6 +25,7 @@ public class Edge : MonoBehaviour
     bool hold = false;
     private Diagram _diagram;
     private Vector3 mousePos;
+    public GameObject compositionIcon;
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
@@ -36,15 +39,16 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
-            var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0,-95,0));
+            var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
             pos1.z = 0;
-            var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0,95,0));
+            var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
             pos2.z = 0;
             line.SetPosition(0, pos1);
             line.SetPosition(1, pos2);
         }
-        
-        if(Input.GetMouseButtonDown(0)){
+
+        if (Input.GetMouseButtonDown(0))
+        {
             mousePos = Input.mousePosition;
             SpawnPopupLineMenu();
         }
@@ -55,8 +59,8 @@ public class Edge : MonoBehaviour
         this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
         line = this.gameObject.GetComponent<LineRenderer>();
         // line.material = material;
-        line.material = new Material (Shader.Find ("Sprites/Default"));
-        line.material.color = Color.black; 
+        line.material = new Material(Shader.Find("Sprites/Default"));
+        line.material.color = Color.black;
         line.positionCount = 2; //straightline with 2 end points
         line.startWidth = 0.1f; //line width
         line.endWidth = 0.1f; //line width
@@ -68,12 +72,15 @@ public class Edge : MonoBehaviour
 
     }
 
-    void Destroy(){
-         Destroy(this.gameObject);
+    void Destroy()
+    {
+        Destroy(this.gameObject);
     }
 
-    public bool AddNode(GameObject aNode){
-         if(nodes.Contains(aNode)){
+    public bool AddNode(GameObject aNode)
+    {
+        if (nodes.Contains(aNode))
+        {
             return false;
         }
         nodes.Add(aNode);
@@ -81,30 +88,34 @@ public class Edge : MonoBehaviour
         Debug.Log("node added to edge");
         return true;
     }
-//create edge end for upper object
-    public void CreateEdgeEndUpperObj(GameObject obj){
-        this.edgeTitle = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeEndNumber = GameObject.Instantiate(textbox, obj.transform);
+    //create edge end for upper object
+    public void CreateEdgeEndUpperObj(GameObject obj)
+    {
+        this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
+        this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
         //will need to get cordinates from edge object in future
-        this.edgeTitle.transform.position += new Vector3(40,-170,0);
-        this.edgeEndNumber.transform.position += new Vector3(125,-170,0);
-        this.edgeTitle.GetComponent<InputField>().text = "enter text";
-        this.edgeEndNumber.GetComponent<InputField>().text = "*";
-        Debug.Log(nodes[0].transform.position);
-        Debug.Log(this.edgeTitle.transform.position);
+        this.edgeTitleUpper.transform.position += new Vector3(40, -170, 0);
+        this.edgeEndNumberUpper.transform.position += new Vector3(125, -170, 0);
+        this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
+        this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
+        // Debug.Log(nodes[0].transform.position);
+        // Debug.Log(this.edgeTitleUpper.transform.position);
         Debug.Log("edgeend here");
     }
-    public void CreateEdgeEndLowerObj(GameObject obj){
-        this.edgeTitle = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeEndNumber = GameObject.Instantiate(textbox, obj.transform);
+    public void CreateEdgeEndLowerObj(GameObject obj)
+    {
+        this.edgeTitleLower = GameObject.Instantiate(textbox, obj.transform);
+        this.edgeEndNumberLower = GameObject.Instantiate(textbox, obj.transform);
         //will need to get cordinates from edge object in future
-        this.edgeTitle.transform.position += new Vector3(40,85,0);
-        this.edgeEndNumber.transform.position += new Vector3(125,85,0);
-        this.edgeTitle.GetComponent<InputField>().text = "enter text";
-        this.edgeEndNumber.GetComponent<InputField>().text = "*";
+        this.edgeTitleLower.transform.position += new Vector3(40, 85, 0);
+        this.edgeEndNumberLower.transform.position += new Vector3(125, 85, 0);
+        this.edgeTitleLower.GetComponent<InputField>().text = "enter text";
+        this.edgeEndNumberLower.GetComponent<InputField>().text = "*";
     }
-    public bool AddEdgeEnd(GameObject aEdgeEnd){
-         if(edgeEnds.Contains(aEdgeEnd)){
+    public bool AddEdgeEnd(GameObject aEdgeEnd)
+    {
+        if (edgeEnds.Contains(aEdgeEnd))
+        {
             return false;
         }
         edgeEnds.Add(aEdgeEnd);
@@ -133,18 +144,31 @@ public class Edge : MonoBehaviour
 
     // }
     public void SetRelationship(int type)
-{
-    //line = this.GetComponent<DrawLine>();
-    if(type == 0)
     {
-        //Set relationship to Association
+        //line = this.GetComponent<DrawLine>();
+        if (type == 0)
+        {
+            //Set relationship to Association
+
+        }
 
     }
+
+    public void SetComposition(){
+        //TODO
+        //close/destroy all existing edgeends
+        //instatiate composition prefab if not already else open
+        Debug.Log("compositionicon here");
+        this.compositionIcon = GameObject.Instantiate(this.compositionIcon);
+        this.compositionIcon.transform.SetParent(GameObject.Find("Canvas").transform);
+        //TODO
+        //sets the icon at the bottom midpoint of upperrect.
+       
 }
     public GameObject GetPopUpLineMenu()
-{
-    return popupLineMenu;
-}
+    {
+        return popupLineMenu;
+    }
 
     void SpawnPopupLineMenu()
     {
@@ -154,7 +178,7 @@ public class Edge : MonoBehaviour
             this.popupLineMenu.transform.SetParent(this.transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70,-110,0);
+            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else
