@@ -22,6 +22,7 @@ public class Edge : MonoBehaviour
     float holdTimer = 0;
     bool hold = false;
     private Diagram _diagram;
+    private Vector3 mousePos;
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
@@ -42,9 +43,10 @@ public class Edge : MonoBehaviour
             line.SetPosition(0, pos1);
             line.SetPosition(1, pos2);
         }
-        if(this.hold)
-        {
-            OnBeginHold();  
+        
+        if(Input.GetMouseButtonDown(0)){
+            mousePos = Input.mousePosition;
+            SpawnPopupLineMenu();
         }
     }
 
@@ -111,21 +113,25 @@ public class Edge : MonoBehaviour
         return true;
     }
 
-    public void OnBeginHold()
-    {
-        this.hold = true;
-        holdTimer += Time.deltaTime;
-        //_prevPosition = this.transform.position;
-    }
+    // public void OnBeginHold()
+    // {
+    //     Debug.Log("here1");
+    //     this.hold = true;
+    //     holdTimer += Time.deltaTime;
+    //     //_prevPosition = this.transform.position;
+    // }
 
-    public void OnEndHold()
-    {
-        if (holdTimer > 1f - 5)
-        {
-            SpawnPopupLineMenu();
-        }
+    // public void OnEndHold()
+    // {
+    //     if (holdTimer > 1f - 5)
+    //     {
+    //         Debug.Log("here to spawn edge popup");
+    //         SpawnPopupLineMenu();
+    //     }
+    //     holdTimer = 0;
+    //     this.hold = false;
 
-    }
+    // }
     public void SetRelationship(int type)
 {
     //line = this.GetComponent<DrawLine>();
@@ -145,9 +151,11 @@ public class Edge : MonoBehaviour
         if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
         {
             this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
-            this.popupLineMenu.transform.position = this.transform.position + new Vector3(0, 0, 0);
+            this.popupLineMenu.transform.SetParent(this.transform);
+            //this can be changed so that popupline menu is always instantiated at
+            //midpoint of the relationship
+            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70,-110,0);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
-            this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
         else
         {
