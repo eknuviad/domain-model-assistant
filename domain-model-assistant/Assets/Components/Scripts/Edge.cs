@@ -28,23 +28,20 @@ public class Edge : MonoBehaviour
     }
     void Start()
     {
-
+        createEdge();
     }
 
     void Update()
     {
-        // if (nodes != null)
-        // {
-        //     var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0,-95,0));
-        //     pos1.z = 0;
-        //     var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0,95,0));
-        //     var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position);
-        //     pos1.z = 0;
-        //     var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position);
-        //     pos2.z = 0;
-        //     line.SetPosition(0, pos1);
-        //     line.SetPosition(1, pos2);
-        // }
+        if (nodes != null)
+        {
+            var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0,-95,0));
+            pos1.z = 0;
+            var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0,95,0));
+            pos2.z = 0;
+            line.SetPosition(0, pos1);
+            line.SetPosition(1, pos2);
+        }
         if(this.hold)
         {
             OnBeginHold();  
@@ -64,8 +61,8 @@ public class Edge : MonoBehaviour
         line.useWorldSpace = true; //set to true so lines defined in world space
         line.numCapVertices = 50;
         Debug.Log("line created");
-        CreateEdgeEnd(nodes[0]);//create edge number and title textboxes for first obj
-    
+        CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
+        CreateEdgeEndLowerObj(nodes[1]);
 
     }
 
@@ -82,27 +79,27 @@ public class Edge : MonoBehaviour
         Debug.Log("node added to edge");
         return true;
     }
-
-    public void CreateEdgeEnd(GameObject obj){
-        // var aPos = Camera.main.WorldToScreenPoint(pos);
-        // GameObject edgEnd = GameObject.Instantiate(edgeEnd, nodes[0].transform);
+//create edge end for upper object
+    public void CreateEdgeEndUpperObj(GameObject obj){
         this.edgeTitle = GameObject.Instantiate(textbox, obj.transform);
         this.edgeEndNumber = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeTitle.transform.position += new Vector3(60,-170,0);
+        //will need to get cordinates from edge object in future
+        this.edgeTitle.transform.position += new Vector3(40,-170,0);
         this.edgeEndNumber.transform.position += new Vector3(125,-170,0);
-
-        // edgeEnd.transform.position = aPos;
-        // Vector3[] postions = this.gameObject.GetComponent<LineRenderer>().GetPositions();
-        // Vector3 startPos = this.gameObject.GetComponent<LineRenderer>().GetPosition(0);
-        // var tmp = Camera.main.WorldToScreenPoint(startPos);
-        // tmp.z = 0;
-        // edgeEnd.transform.position = nodes[0].transform.position;
+        this.edgeTitle.GetComponent<InputField>().text = "enter text";
+        this.edgeEndNumber.GetComponent<InputField>().text = "*";
         Debug.Log(nodes[0].transform.position);
         Debug.Log(this.edgeTitle.transform.position);
-        // Vector3 endPos = line.GetPosition(line.positionCount - 1);
         Debug.Log("edgeend here");
-        // edgEnd.transform.position = pos;
-        // AddEdgeEnd(edgEnd);
+    }
+    public void CreateEdgeEndLowerObj(GameObject obj){
+        this.edgeTitle = GameObject.Instantiate(textbox, obj.transform);
+        this.edgeEndNumber = GameObject.Instantiate(textbox, obj.transform);
+        //will need to get cordinates from edge object in future
+        this.edgeTitle.transform.position += new Vector3(40,85,0);
+        this.edgeEndNumber.transform.position += new Vector3(125,85,0);
+        this.edgeTitle.GetComponent<InputField>().text = "enter text";
+        this.edgeEndNumber.GetComponent<InputField>().text = "*";
     }
     public bool AddEdgeEnd(GameObject aEdgeEnd){
          if(edgeEnds.Contains(aEdgeEnd)){
