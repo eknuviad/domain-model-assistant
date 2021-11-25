@@ -13,6 +13,7 @@ public GameObject edge;
 
 public GameObject line;
 
+
 private Vector3 mousePos;
 
 private GameObject obj1;
@@ -70,10 +71,6 @@ public void AddCompartmentedRectangle(GameObject compRect)
     }
     Debug.Log("Comp rect added: " + compRect.GetComponent<CompartmentedRectangle>().ID);
 }
-
-
-
-
 
 
 }

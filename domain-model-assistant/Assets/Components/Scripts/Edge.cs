@@ -16,11 +16,19 @@ public class Edge : MonoBehaviour
     public GameObject edgeEnd;
     public GameObject edgeTitle;
     public GameObject edgeEndNumber;
-
     public GameObject textbox;
+    // private Vector3 mousePos;
+    public GameObject popupLineMenu;
+    float holdTimer = 0;
+    bool hold = false;
+    private Diagram _diagram;
+    void Awake()
+    {
+        _diagram = GetComponentInParent<Diagram>();
+    }
     void Start()
     {
-        createEdge();
+
     }
 
     void Update()
@@ -30,10 +38,17 @@ public class Edge : MonoBehaviour
         //     var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0,-95,0));
         //     pos1.z = 0;
         //     var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0,95,0));
+        //     var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position);
+        //     pos1.z = 0;
+        //     var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position);
         //     pos2.z = 0;
         //     line.SetPosition(0, pos1);
         //     line.SetPosition(1, pos2);
         // }
+        if(this.hold)
+        {
+            OnBeginHold();  
+        }
     }
 
     void createEdge()
@@ -98,4 +113,50 @@ public class Edge : MonoBehaviour
         Debug.Log("edge end added");
         return true;
     }
+
+    public void OnBeginHold()
+    {
+        this.hold = true;
+        holdTimer += Time.deltaTime;
+        //_prevPosition = this.transform.position;
+    }
+
+    public void OnEndHold()
+    {
+        if (holdTimer > 1f - 5)
+        {
+            SpawnPopupLineMenu();
+        }
+
+    }
+    public void SetRelationship(int type)
+{
+    //line = this.GetComponent<DrawLine>();
+    if(type == 0)
+    {
+        //Set relationship to Association
+
+    }
+}
+    public GameObject GetPopUpLineMenu()
+{
+    return popupLineMenu;
+}
+
+    void SpawnPopupLineMenu()
+    {
+        if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
+        {
+            this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
+            this.popupLineMenu.transform.position = this.transform.position + new Vector3(0, 0, 0);
+            this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
+            this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
+        }
+        else
+        {
+            this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
+        }
+    }
+
+
 }
