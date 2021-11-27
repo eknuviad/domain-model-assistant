@@ -13,6 +13,7 @@ public class Edge : MonoBehaviour
     public List<GameObject> nodes = new List<GameObject>();
 
     public List<GameObject> edgeEnds = new List<GameObject>();
+
     public GameObject edgeEnd;
     public GameObject edgeTitleUpper;
     public GameObject edgeEndNumberUpper;
@@ -26,6 +27,7 @@ public class Edge : MonoBehaviour
     private Diagram _diagram;
     private Vector3 mousePos;
     public GameObject compositionIcon;
+    public GameObject aggregationIcon;
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
@@ -112,17 +114,6 @@ public class Edge : MonoBehaviour
         this.edgeTitleLower.GetComponent<InputField>().text = "enter text";
         this.edgeEndNumberLower.GetComponent<InputField>().text = "*";
     }
-    public bool AddEdgeEnd(GameObject aEdgeEnd)
-    {
-        if (edgeEnds.Contains(aEdgeEnd))
-        {
-            return false;
-        }
-        edgeEnds.Add(aEdgeEnd);
-        aEdgeEnd.GetComponent<Node>().AddEdge(this.gameObject);
-        Debug.Log("edge end added");
-        return true;
-    }
 
     // public void OnBeginHold()
     // {
@@ -143,14 +134,9 @@ public class Edge : MonoBehaviour
     //     this.hold = false;
 
     // }
-    public void SetRelationship(int type)
+    public void SetComposition()
     {
-        //line = this.GetComponent<DrawLine>();
-        if (type == 0)
-        {
-            //Set relationship to Association
-
-        }
+        SetIconType(2);
 
     }
 
@@ -163,28 +149,44 @@ public class Edge : MonoBehaviour
     
      */
 
-    public void SetComposition(){
+    public void SetIconType(int type)
+    {
         //TODO
         //close/destroy all existing edgeends
         //instatiate composition prefab if not already else open
-        Debug.Log("nodes " + this.nodes[1]);
+        GameObject edgeNode;
+        float x;
         var a = Vector3.Distance(mousePos, nodes[0].transform.position);
         var b = Vector3.Distance(mousePos, nodes[1].transform.position);
-        Debug.Log("a: " + a);
-        Debug.Log("b: " + b);
-        if(a < b){
-         this.compositionIcon = GameObject.Instantiate(this.compositionIcon);
-         this.compositionIcon.transform.position = this.nodes[0].transform.position + new Vector3(0,-95,0);
-          Debug.Log("node0 location: " + nodes[0].transform.position + new Vector3(0,-95,0));
-        }else{
-         this.compositionIcon = GameObject.Instantiate(this.compositionIcon);
-         this.compositionIcon.transform.position = nodes[1].transform.position + new Vector3(0,95,0);
-         Debug.Log("node1 location: " + nodes[1].transform.position + new Vector3(0,95,0));
-
+        if (a < b)
+        {
+            edgeNode = nodes[0];
+            x = -95;
         }
-        this.compositionIcon.transform.SetParent(GameObject.Find("Canvas").transform);
-        Debug.Log("icon location: " + this.compositionIcon.transform.position);  
-}
+        else
+        {
+            edgeNode = nodes[1];
+            x = 95;
+        }
+
+        switch (type)
+        {
+            case 0:
+                //TODO  
+                break;
+            case 1:
+                //TODO  
+                break;
+            case 2:
+                compositionIcon = GameObject.Instantiate(compositionIcon);
+                compositionIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
+                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode);
+                break;
+            default:
+                //TODO
+                break;
+        }
+    }
     public GameObject GetPopUpLineMenu()
     {
         return popupLineMenu;

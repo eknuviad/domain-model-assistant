@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5818603603601728483}
   - component: {fileID: 3151215533419688668}
   - component: {fileID: 954308551463033402}
+  - component: {fileID: -6637959028379822102}
   m_Layer: 5
   m_Name: CompositionIcon
   m_TagString: Untagged
@@ -36,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0.47036597, y: 0.48000002}
   m_AnchorMax: {x: 0.47036597, y: 0.48000002}
   m_AnchoredPosition: {x: 20.3, y: 44.2}
-  m_SizeDelta: {x: 12.5, y: 25}
+  m_SizeDelta: {x: 15, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5818603603601728483
 CanvasRenderer:
@@ -120,3 +121,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-6637959028379822102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7379804065855290417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de93cbe717f07f84c98a2a7bcec8d059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  node: {fileID: 0}
