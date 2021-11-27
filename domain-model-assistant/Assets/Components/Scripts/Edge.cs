@@ -42,12 +42,26 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
-            var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
-            pos1.z = 0;
-            var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
-            pos2.z = 0;
-            line.SetPosition(0, pos1);
-            line.SetPosition(1, pos2);
+            var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+            var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+            if(diff_x <= diff_y)
+            {
+                var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
+                pos1.z = 0;
+                var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
+                pos2.z = 0;
+                line.SetPosition(0, pos1);
+                line.SetPosition(1, pos2);
+            }
+            else
+            {
+                var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
+                pos1.z = 0;
+                var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
+                pos2.z = 0;
+                line.SetPosition(0, pos1);
+                line.SetPosition(1, pos2);
+            }
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -70,10 +84,35 @@ public class Edge : MonoBehaviour
         line.useWorldSpace = true; //set to true so lines defined in world space
         line.numCapVertices = 50;
         Debug.Log("line created");
-        CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
-        CreateEdgeEndLowerObj(nodes[1]);
 
+        // check closest node edge
+        var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+        var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+        if(diff_x <= diff_y)
+        {
+            CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
+            CreateEdgeEndLowerObj(nodes[1]);
+        }
+        // else
+        // {
+        //     CreateEdgeEndLeftOfObj(nodes[0]);
+        //     CreateEdgeEndRightOfObj(nodes[1]);
+        // }
     }
+
+    // public void CreateEdgeEndRightOfObj(GameObject obj)
+    // {
+    //     this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
+    //     this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
+    //     //will need to get cordinates from edge object in future
+    //     this.edgeTitleUpper.transform.position += new Vector3(40, -170, 0);
+    //     this.edgeEndNumberUpper.transform.position += new Vector3(125, -170, 0);
+    //     this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
+    //     this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
+    //     // Debug.Log(nodes[0].transform.position);
+    //     // Debug.Log(this.edgeTitleUpper.transform.position);
+    //     Debug.Log("edgeend here");
+    // }
 
     void Destroy()
     {
