@@ -40,8 +40,8 @@ public void createLine(){
         pos1.z = 0;
         var pos2 = Camera.main.ScreenToWorldPoint(obj2.transform.position + new Vector3(0,95,0));
         pos2.z = 0;
-        // Debug.Log("position1: "+ pos1);
-        // Debug.Log("position2: "+ pos2);
+        Debug.Log("position1: "+ pos1);
+        Debug.Log("position2: "+ pos2);
         this.line.GetComponent<LineRenderer>().SetPosition(0, pos1);
         this.line.GetComponent<LineRenderer>().SetPosition(1, pos2); 
         obj1.GetComponent<CompartmentedRectangle>().AddEdge(line); 

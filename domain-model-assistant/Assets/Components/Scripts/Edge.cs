@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 
+//this is an unstable implementation of edge, but to demonstrate
+//proof of concept
 public class Edge : MonoBehaviour
 {
     public string ID
@@ -46,6 +48,7 @@ public class Edge : MonoBehaviour
             var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
             if(diff_x <= diff_y)
             {
+                gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
                 var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
                 pos1.z = 0;
                 var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
@@ -55,6 +58,7 @@ public class Edge : MonoBehaviour
             }
             else
             {
+                gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
                 var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
                 pos1.z = 0;
                 var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
@@ -66,9 +70,17 @@ public class Edge : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))//right click
         {
+            //check if type of edge. check if within radius
+            Debug.Log("edgePos: " + gameObject.transform.position);
             mousePos = Input.mousePosition;
-            // OnBeginHold();
-            SpawnPopupLineMenu();
+            Debug.Log("mousePos: " + mousePos);
+            //NB gameobject.transform.position is the location of upper edgeend
+            //or left edgeend
+            var radius = Vector3.Distance(mousePos, gameObject.transform.position);
+            Debug.Log("radius: " + radius);
+            if(radius < 20){
+                SpawnPopupLineMenu();
+            }
         }
         // else if (this.hold && holdTimer > 1f - 5)
         // {
@@ -97,11 +109,13 @@ public class Edge : MonoBehaviour
         var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
         if(diff_x <= diff_y)
         {
+            gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
             CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
             CreateEdgeEndLowerObj(nodes[1]);
         }
         else
         {
+            gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
             CreateEdgeEndLeftObject(nodes[1]);
             CreateEdgeEndRightObject(nodes[0]);
         }
@@ -115,7 +129,8 @@ public class Edge : MonoBehaviour
         //will need to get cordinates from edge object in future
         this.edgeTitleUpper.transform.position += new Vector3(220, -15, 0);
         this.edgeEndNumberUpper.transform.position += new Vector3(210, -60, 0);
-        this.edgeTitleUpper.GetComponent<InputField>().text = "Left Object";
+        //Left Object
+        this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
         this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
         // Debug.Log(nodes[0].transform.position);
         // Debug.Log(this.edgeTitleUpper.transform.position);
@@ -130,7 +145,8 @@ public class Edge : MonoBehaviour
         //will need to get cordinates from edge object in future
         this.edgeTitleUpper.transform.position += new Vector3(-90, -10, 0);
         this.edgeEndNumberUpper.transform.position += new Vector3(-20, -50, 0);
-        this.edgeTitleUpper.GetComponent<InputField>().text = "Right Object";
+        //Right Object
+        this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
         this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
         // Debug.Log(nodes[0].transform.position);
         // Debug.Log(this.edgeTitleUpper.transform.position);

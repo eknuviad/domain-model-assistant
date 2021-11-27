@@ -138,7 +138,7 @@ public class TextBox : MonoBehaviour
     public void OnEndHold2()
     {
         // TODO Don't spawn popup if class is being dragged
-        if (holdTimer2 > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
+        if (holdTimer2 > 2f /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
         {
             if (this.GetSection() != null)
             {
