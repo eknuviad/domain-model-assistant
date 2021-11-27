@@ -64,7 +64,7 @@ public class Edge : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && gameObject.activeSelf)
+        if (Input.GetMouseButtonDown(0))
         {
             mousePos = Input.mousePosition;
             SpawnPopupLineMenu();
