@@ -18,7 +18,7 @@ public class PopupLineMenu : MonoBehaviour
     void Update()
     {
         if(gameObject != null){
-            gameObject.transform.position = updateConstant;
+            //update position on each frame here
         }
     }
 

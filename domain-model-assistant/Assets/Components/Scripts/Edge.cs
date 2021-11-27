@@ -64,11 +64,18 @@ public class Edge : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))//right click
         {
             mousePos = Input.mousePosition;
+            // OnBeginHold();
             SpawnPopupLineMenu();
         }
+        // else if (this.hold && holdTimer > 1f - 5)
+        // {
+        //     this.hold = false;
+        //     holdTimer = 0;
+        //     SpawnPopupLineMenu();
+        // }
     }
 
     void createEdge()
@@ -263,8 +270,27 @@ public class Edge : MonoBehaviour
         return popupLineMenu;
     }
 
-    void SpawnPopupLineMenu()
+    public void OnBeginHold()
     {
+        Debug.Log("beginholdheard");
+        // mousePos = Input.mousePosition;
+        this.hold = true;
+        holdTimer += Time.deltaTime; 
+    }
+
+    // public void OnEndHold()
+    // {
+    //     if (holdTimer > 1f - 5)
+    //     {
+    //         SpawnPopupLineMenu();
+    //     }
+    //     holdTimer = 0;
+    //     this.hold = false;
+
+    // }
+    public void SpawnPopupLineMenu()
+    {
+         Debug.Log("beginholdheard");
         if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
         {
             this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
