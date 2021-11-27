@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AggregationIcon : MonoBehaviour
+public class GeneralizationIcon : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject node;
@@ -10,7 +10,6 @@ public class AggregationIcon : MonoBehaviour
     void Start()
     {
         this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-        
     }
 
     // Update is called once per frame

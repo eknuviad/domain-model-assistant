@@ -56,6 +56,10 @@ MonoBehaviour:
     type: 3}
   compositionIcon: {fileID: 7379804065855290417, guid: e74df07acc15e48678f08944db4e60b4,
     type: 3}
+  aggregationIcon: {fileID: 8308989896837080067, guid: e6db718299161450dbd2d2a536223b55,
+    type: 3}
+  generalizationIcon: {fileID: 6277014932869243938, guid: 330d2a622effd4b11aceaa648a868eef,
+    type: 3}
 --- !u!114 &-4483242937406530835
 MonoBehaviour:
   m_ObjectHideFlags: 0

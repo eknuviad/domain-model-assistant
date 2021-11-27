@@ -28,6 +28,7 @@ public class Edge : MonoBehaviour
     private Vector3 mousePos;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
+    public GameObject  generalizationIcon;
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
@@ -115,45 +116,30 @@ public class Edge : MonoBehaviour
         this.edgeEndNumberLower.GetComponent<InputField>().text = "*";
     }
 
-    // public void OnBeginHold()
-    // {
-    //     Debug.Log("here1");
-    //     this.hold = true;
-    //     holdTimer += Time.deltaTime;
-    //     //_prevPosition = this.transform.position;
-    // }
 
-    // public void OnEndHold()
-    // {
-    //     if (holdTimer > 1f - 5)
-    //     {
-    //         Debug.Log("here to spawn edge popup");
-    //         SpawnPopupLineMenu();
-    //     }
-    //     holdTimer = 0;
-    //     this.hold = false;
+    public void SetAssociation()
+    {
+        SetIconType(0);
 
-    // }
+    }
+    public void SetAggregation()
+    {
+        SetIconType(1);
+
+    }
     public void SetComposition()
     {
         SetIconType(2);
 
     }
+    public void SetGeneralization()
+    {
+        SetIconType(3);
 
-    /*
-    a = |mousepost - posof Ob1|
-    if a < |mousepst - posOfObj2|
-        set edgeend icon to obj1
-    else
-        set edgeend icon to obj2
-    
-     */
+    }
 
     public void SetIconType(int type)
     {
-        //TODO
-        //close/destroy all existing edgeends
-        //instatiate composition prefab if not already else open
         GameObject edgeNode;
         float x;
         var a = Vector3.Distance(mousePos, nodes[0].transform.position);
@@ -168,22 +154,30 @@ public class Edge : MonoBehaviour
             edgeNode = nodes[1];
             x = 95;
         }
-
         switch (type)
         {
             case 0:
                 //TODO  
+               //ASSOCIATION - same as line, 
+               //should destroy any existing icon at intended location
                 break;
             case 1:
                 //TODO  
+                aggregationIcon = GameObject.Instantiate(aggregationIcon);
+                aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
+                aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x);
                 break;
             case 2:
                 compositionIcon = GameObject.Instantiate(compositionIcon);
                 compositionIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
-                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode);
+                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x);
+                break;
+             case 3:
+                generalizationIcon = GameObject.Instantiate(generalizationIcon);
+                generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
+                generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x);
                 break;
             default:
-                //TODO
                 break;
         }
     }
@@ -201,6 +195,7 @@ public class Edge : MonoBehaviour
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
             this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
+            this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else

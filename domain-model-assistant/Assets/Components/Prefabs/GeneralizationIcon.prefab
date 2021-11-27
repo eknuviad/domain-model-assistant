@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4968945512286601245}
   - component: {fileID: 6839114378254712372}
   - component: {fileID: 6399019569228087937}
+  - component: {fileID: 7082245359601953188}
   m_Layer: 5
   m_Name: GeneralizationIcon
   m_TagString: Untagged
@@ -120,3 +121,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7082245359601953188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6277014932869243938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 572b0fec5a9b06043bdc2f6dda259d05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  node: {fileID: 0}
+  updateConstant: 0
