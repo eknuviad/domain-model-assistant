@@ -34,8 +34,8 @@ public void createLine(){
     this.line.AddComponent<LineRenderer>();
     if(obj1 != null && obj2 != null)
     {
-        // Debug.Log("prevposition1: "+ obj1.transform.position);
-        // Debug.Log("prevposition2: "+ obj2.transform.position);
+        Debug.Log("prevposition1: "+ obj1.transform.position + new Vector3(0,-95,0));
+        Debug.Log("prevposition2: "+ obj2.transform.position + new Vector3(0,95,0));
         var pos1 = Camera.main.ScreenToWorldPoint(obj1.transform.position + new Vector3(0,-95,0));
         pos1.z = 0;
         var pos2 = Camera.main.ScreenToWorldPoint(obj2.transform.position + new Vector3(0,95,0));
@@ -50,6 +50,7 @@ public void createLine(){
         obj2 = null;
     }
 }
+
 
 
 public void AddCompartmentedRectangle(GameObject compRect)

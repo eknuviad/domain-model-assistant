@@ -23,7 +23,7 @@ public class PopupLineMenu : MonoBehaviour
     {
         Debug.Log("set line in popupline menu");
         this.edgE = edgE.gameObject;
-        // this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetComposition);
+        this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetComposition);
         // TODO add other relationships
     }
     public GameObject GetLine()

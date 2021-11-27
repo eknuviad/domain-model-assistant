@@ -62,8 +62,8 @@ public class Edge : MonoBehaviour
         line.material = new Material(Shader.Find("Sprites/Default"));
         line.material.color = Color.black;
         line.positionCount = 2; //straightline with 2 end points
-        line.startWidth = 0.1f; //line width
-        line.endWidth = 0.1f; //line width
+        line.startWidth = 0.05f; //line width
+        line.endWidth = 0.05f; //line width
         line.useWorldSpace = true; //set to true so lines defined in world space
         line.numCapVertices = 50;
         Debug.Log("line created");
@@ -154,16 +154,36 @@ public class Edge : MonoBehaviour
 
     }
 
+    /*
+    a = |mousepost - posof Ob1|
+    if a < |mousepst - posOfObj2|
+        set edgeend icon to obj1
+    else
+        set edgeend icon to obj2
+    
+     */
+
     public void SetComposition(){
         //TODO
         //close/destroy all existing edgeends
         //instatiate composition prefab if not already else open
-        Debug.Log("compositionicon here");
-        this.compositionIcon = GameObject.Instantiate(this.compositionIcon);
+        Debug.Log("nodes " + this.nodes[1]);
+        var a = Vector3.Distance(mousePos, nodes[0].transform.position);
+        var b = Vector3.Distance(mousePos, nodes[1].transform.position);
+        Debug.Log("a: " + a);
+        Debug.Log("b: " + b);
+        if(a < b){
+         this.compositionIcon = GameObject.Instantiate(this.compositionIcon);
+         this.compositionIcon.transform.position = this.nodes[0].transform.position + new Vector3(0,-95,0);
+          Debug.Log("node0 location: " + nodes[0].transform.position + new Vector3(0,-95,0));
+        }else{
+         this.compositionIcon = GameObject.Instantiate(this.compositionIcon);
+         this.compositionIcon.transform.position = nodes[1].transform.position + new Vector3(0,95,0);
+         Debug.Log("node1 location: " + nodes[1].transform.position + new Vector3(0,95,0));
+
+        }
         this.compositionIcon.transform.SetParent(GameObject.Find("Canvas").transform);
-        //TODO
-        //sets the icon at the bottom midpoint of upperrect.
-       
+        Debug.Log("icon location: " + this.compositionIcon.transform.position);  
 }
     public GameObject GetPopUpLineMenu()
     {
