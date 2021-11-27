@@ -64,7 +64,7 @@ public class Edge : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && gameObject.activeSelf)
         {
             mousePos = Input.mousePosition;
             SpawnPopupLineMenu();
@@ -93,26 +93,42 @@ public class Edge : MonoBehaviour
             CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
             CreateEdgeEndLowerObj(nodes[1]);
         }
-        // else
-        // {
-        //     CreateEdgeEndLeftOfObj(nodes[0]);
-        //     CreateEdgeEndRightOfObj(nodes[1]);
-        // }
+        else
+        {
+            CreateEdgeEndLeftObject(nodes[1]);
+            CreateEdgeEndRightObject(nodes[0]);
+        }
     }
 
-    // public void CreateEdgeEndRightOfObj(GameObject obj)
-    // {
-    //     this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
-    //     this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
-    //     //will need to get cordinates from edge object in future
-    //     this.edgeTitleUpper.transform.position += new Vector3(40, -170, 0);
-    //     this.edgeEndNumberUpper.transform.position += new Vector3(125, -170, 0);
-    //     this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
-    //     this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
-    //     // Debug.Log(nodes[0].transform.position);
-    //     // Debug.Log(this.edgeTitleUpper.transform.position);
-    //     Debug.Log("edgeend here");
-    // }
+    public void CreateEdgeEndLeftObject(GameObject obj)
+    {
+        //replace edge title upper by edge title right
+        this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
+        this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
+        //will need to get cordinates from edge object in future
+        this.edgeTitleUpper.transform.position += new Vector3(220, -15, 0);
+        this.edgeEndNumberUpper.transform.position += new Vector3(210, -60, 0);
+        this.edgeTitleUpper.GetComponent<InputField>().text = "Left Object";
+        this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
+        // Debug.Log(nodes[0].transform.position);
+        // Debug.Log(this.edgeTitleUpper.transform.position);
+        Debug.Log("edgeend here");
+    }
+
+    public void CreateEdgeEndRightObject(GameObject obj)
+    {
+        //replace edge title upper by edge title left
+        this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
+        this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
+        //will need to get cordinates from edge object in future
+        this.edgeTitleUpper.transform.position += new Vector3(-90, -10, 0);
+        this.edgeEndNumberUpper.transform.position += new Vector3(-20, -50, 0);
+        this.edgeTitleUpper.GetComponent<InputField>().text = "Right Object";
+        this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
+        // Debug.Log(nodes[0].transform.position);
+        // Debug.Log(this.edgeTitleUpper.transform.position);
+        Debug.Log("edgeend here");
+    }
 
     void Destroy()
     {
@@ -181,17 +197,39 @@ public class Edge : MonoBehaviour
     {
         GameObject edgeNode;
         float x;
+        float y;
+        // find closest edge
         var a = Vector3.Distance(mousePos, nodes[0].transform.position);
         var b = Vector3.Distance(mousePos, nodes[1].transform.position);
-        if (a < b)
+        // find if connection is horizontal or vertical
+        var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+        var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+        if (a < b && diff_x <= diff_y)
+        {
+            edgeNode = nodes[0];
+            y = -95;
+            x = 0;
+
+        }
+        else if (diff_x <= diff_y)
+        {
+            edgeNode = nodes[1];
+            y = 95;
+            x = 0;
+
+        }
+        else if (a<b)
         {
             edgeNode = nodes[0];
             x = -95;
+            y = 0;
+
         }
-        else
-        {
+        else{
             edgeNode = nodes[1];
             x = 95;
+            y = 0;
+
         }
         switch (type)
         {
@@ -203,18 +241,18 @@ public class Edge : MonoBehaviour
             case 1:
                 //TODO  
                 aggregationIcon = GameObject.Instantiate(aggregationIcon);
-                aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
-                aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x);
+                aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x, y);
                 break;
             case 2:
                 compositionIcon = GameObject.Instantiate(compositionIcon);
-                compositionIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
-                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x);
+                compositionIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x, y);
                 break;
              case 3:
                 generalizationIcon = GameObject.Instantiate(generalizationIcon);
-                generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(0, x, 0);
-                generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x);
+                generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x, y);
                 break;
             default:
                 break;

@@ -42,6 +42,7 @@ public class PopupLineMenu : MonoBehaviour
     }
     public void Close()
     {
+        Debug.Log("Closing PopuplineMenu");
         this.gameObject.SetActive(false);
     }
 

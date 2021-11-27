@@ -4,29 +4,32 @@ using UnityEngine;
 
 public class AggregationIcon : MonoBehaviour
 {
-    // Start is called before the first frame update
+       // Start is called before the first frame update
     public GameObject node;
-    public float updateConstant;
+    public float updateConstantX;
+    public float updateConstantY;
+
     void Start()
     {
         this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (gameObject != null && updateConstant != -1)
+        if (gameObject != null)
         {
             //update position with respect to associated node
-            gameObject.transform.position = node.transform.position + new Vector3(0, updateConstant, 0);
+            gameObject.transform.position = node.transform.position + new Vector3(updateConstantX, updateConstantY, 0);
         }
     }
 
-    public void SetNode(GameObject aNode, float posConstant)
+    public void SetNode(GameObject aNode, float posConstantX,float posConstantY)
     {
         this.node = aNode;
-        this.updateConstant = posConstant;
+        this.updateConstantX = posConstantX;
+        this.updateConstantY = posConstantY;
+
     }
 
     public GameObject GetNode()
