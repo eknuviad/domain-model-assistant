@@ -40,6 +40,11 @@ public class Diagram : MonoBehaviour
     public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
 
     public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
+
+    public const string AddAttributeEndpoint = GetCdmEndpoint; // +/{classId}/attribute
+
+    public const string DeleteAttributeEndpoint = GetCdmEndpoint + "/class/attributes";
+
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
@@ -48,7 +53,10 @@ public class Diagram : MonoBehaviour
 
     Dictionary<string, List<Attribute>> classIdToAttributes = new Dictionary<string, List<Attribute>>();
 
-    Dictionary<string, string> attrIdsToTypes = new Dictionary<string, string>(); //attribute ids to their types
+    Dictionary<string, string> attrTypeIdsToTypes = new Dictionary<string, string>();
+
+    List<string> createdAttributeIds = new List<string>();
+
 
     enum CanvasMode
     {
@@ -202,9 +210,9 @@ public class Diagram : MonoBehaviour
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
             string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1).Replace("CD", "").ToLower();
-            if (!attrIdsToTypes.ContainsKey(type._id))
+            if (!attrTypeIdsToTypes.ContainsKey(type._id))
             {
-                this.attrIdsToTypes[type._id] = res;
+                this.attrTypeIdsToTypes[type._id] = res;
             }
         });
         // maps each _id to its (class object, position) pair 
@@ -240,7 +248,7 @@ public class Diagram : MonoBehaviour
                         .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
-            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrIdsToTypes[attr.type]);
+            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
         }
     }
 
@@ -308,6 +316,57 @@ public class Diagram : MonoBehaviour
             nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = nameRectPair.Key;
         }
         _namesUpToDate = true;
+    }
+
+    /// <summary>
+    /// Add Attribute
+    /// </summary> 
+    public void AddAttribute(GameObject textbox)
+    {
+        if (UseWebcore)
+        {
+            Section section = textbox.GetComponent<TextBox>().GetSection().GetComponent<Section>();
+            CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
+                                .GetComponent<CompartmentedRectangle>();
+            List<GameObject> attributes = section.GetTextBoxList();
+            string _id = compRect.ID;
+            int rankIndex = -1;
+            string name = null;
+            int typeId = -1;
+            for (int i = 0; i < attributes.Count; i++)
+            {
+                if (attributes[i] == textbox)
+                {
+                    rankIndex = i;
+                    name = textbox.GetComponent<TextBox>().GetName();
+                    typeId = textbox.GetComponent<TextBox>().GetTypeId();
+                    break;
+                }
+            }
+            AddAttributeBody info = new AddAttributeBody(rankIndex, typeId, name);
+            string jsonData = JsonUtility.ToJson(info);
+            Debug.Log(jsonData);
+            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+            PostRequest(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute", jsonData);
+            Debug.Log(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute");
+            reGetRequest = true;
+            GetRequest(GetCdmEndpoint);
+        }
+    }
+
+    /// <summary>
+    /// Deletes Attribute
+    /// </summary> 
+    public void DeleteAttribute(GameObject textBox)
+    {
+        if (UseWebcore)
+        {
+            string _id = textBox.GetComponent<TextBox>().ID;
+            DeleteRequest(DeleteAttributeEndpoint, _id);
+            reGetRequest = true;
+            GetRequest(GetCdmEndpoint);
+            // No need to remove or destroy the node here since entire class diagram is recreated
+        }
     }
 
     /// <summary>
@@ -386,11 +445,14 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void DeleteRequest(string uri, string _id)
     {
+        Debug.Log(uri + "/" + _id); // check if reaching
         var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
         webRequest.method = "DELETE";
         webRequest.disposeDownloadHandlerOnDispose = false;
         webRequest.SetRequestHeader("Content-Type", "application/json");
         _deleteRequestAsyncOp = webRequest.SendWebRequest();
+        Debug.Log("Deleting done"); // check if reaching
+
     }
 
     public void PutRequest(string uri, string data, string _id)
@@ -518,6 +580,22 @@ public class Diagram : MonoBehaviour
         //LoadData();
         GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
           .text = "Rabbit";
+    }
+
+    // public void addToCreatedAttributes(string newAttributeId){
+    //     if(!createdAttributeIds.Contains(newAttributeId)){
+    //         createdAttributeIds.Add(newAttributeId);
+    //         Debug.Log("newly added attribute:" + newAttributeId);
+    //     }
+    // }
+
+    // public List<string> getCreatedAttributes(){
+    //     return createdAttributeIds;
+    // }
+
+    public Dictionary<string, string> getAttrTypeIdsToTypes()
+    {
+        return attrTypeIdsToTypes;
     }
 
     //When pressing on canvas close popumenu and attributeclosebuttons

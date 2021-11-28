@@ -76,6 +76,7 @@ public class Section : MonoBehaviour
             return;
         }
         var TB = GameObject.Instantiate(textbox, this.transform);
+        TB.GetComponent<TextBox>().ID = "-1";
         TB.GetComponent<InputField>().text = "Enter Text ...";
         TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
         // Update size of class depending on number of textboxes(attributes)

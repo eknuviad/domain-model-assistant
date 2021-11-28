@@ -27,3 +27,22 @@ public class CreateJson
 
     public float y; 
 }
+
+
+public class AddAttributeBody
+{
+    public int rankIndex;
+
+    public int typeId;
+
+    public string attributeName;
+
+    
+    public AddAttributeBody(int rIndex, int aTypeId, string name)
+    {
+        this.rankIndex = rIndex;
+        this.typeId = aTypeId;
+        this.attributeName = name;
+    }
+
+}

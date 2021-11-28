@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class TextBox : MonoBehaviour
 {
+    private Diagram _diagram;
     public Text text;
     public GameObject section;
     public GameObject attributeCross;
@@ -13,9 +15,20 @@ public class TextBox : MonoBehaviour
     { get; set; }
     public bool isHighlightedtext
     { get; set; }
+    public string name; //second substring of attribute
 
+    public int typeId;
+    
+    // public bool isChecked;
+    
     float holdTimer2 = 0;
     bool hold2 = false;
+
+    void Awake()
+    {
+        _diagram = GetComponentInParent<Diagram>();
+    }
+
     void Start()
     {
 
@@ -23,9 +36,22 @@ public class TextBox : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            Debug.Log("Enter");
+            string _id = this.ID;
+            if (isValid() && _id.Equals("-1"))
+            {
+                Debug.Log(this.GetSection().GetComponent<Section>()
+                .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>()
+                .ID);
+                _diagram.AddAttribute(this.gameObject);
+            }
+        }
+        
         if (this.hold2)
         {
-            OnBeginHold2();
+            OnBeginHoldTB();
         }
         text = this.GetComponent<Text>();
         if (isHighlightedtext == true)
@@ -34,6 +60,58 @@ public class TextBox : MonoBehaviour
         }
     }
 
+    public bool isValid(){
+        bool res = false;
+        string text = this.GetComponent<InputField>().text;
+        //check that inputfield is of a particular format (Eg. int year)
+        string[] values = text.Split(' ');
+        Debug.Log(values.Length);
+        if (values.Length == 2 && !String.IsNullOrWhiteSpace(values[1]))
+        {
+            Debug.Log("second element is: " + values[1]);
+            this.SetTypeId(values[0]);
+            this.SetName(values[1]);
+            return res = true;
+        } 
+        else 
+        {
+            return res = false;
+        }
+    }
+
+    public void SetName(string aName)
+    {
+        this.name = aName;
+    }
+
+    public string GetName()
+    {
+        return this.name;
+    }
+
+    public void SetTypeId (string value)
+    {
+        Dictionary<string, string> tmpDict = _diagram.getAttrTypeIdsToTypes();
+        string tmpTypeId = null;
+        foreach(var item in tmpDict)
+        {
+            if (item.Value.Equals(value))
+            {
+                tmpTypeId = item.Key;
+                break;
+            }
+        }
+        if (!String.IsNullOrEmpty(tmpTypeId))
+        {
+            this.typeId = Int16.Parse(tmpTypeId);
+        } 
+    }
+
+    public int GetTypeId()
+    {
+        return this.typeId;
+    }
+        
     public bool SetSection(GameObject section)
     {
         if (section == null)
@@ -46,16 +124,16 @@ public class TextBox : MonoBehaviour
 
     public GameObject GetSection()
     {
-        return section;
+        return this.section;
     }
 
-    public void OnBeginHold2()
+    public void OnBeginHoldTB()
     {
         this.hold2 = true;
         holdTimer2 += Time.deltaTime;
     }
 
-    public void OnEndHold2()
+    public void OnEndHoldTB()
     {
         // TODO Don't spawn popup if class is being dragged
         if (holdTimer2 > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
@@ -84,6 +162,7 @@ public class TextBox : MonoBehaviour
 
     public void Destroy()
     {
+        _diagram.DeleteAttribute(this.gameObject); //delete attribute from Diagram
         this.attributeCross.GetComponent<AttributeCross>().Close();
         Destroy(this.gameObject);
     }
