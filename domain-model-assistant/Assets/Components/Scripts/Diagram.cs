@@ -343,7 +343,7 @@ public class Diagram : MonoBehaviour
                     break;
                 }
             }
-            AddAttributeInfo info = new AddAttributeInfo(rankIndex, typeId, name);
+            AddAttributeBody info = new AddAttributeBody(rankIndex, typeId, name);
             string jsonData = JsonUtility.ToJson(info);
             Debug.Log(jsonData);
             // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
@@ -353,11 +353,12 @@ public class Diagram : MonoBehaviour
             GetRequest(GetCdmEndpoint);
         }
     }
+
+    /// <summary>
     /// Deletes Attribute
     /// </summary> 
     public void DeleteAttribute(GameObject textBox)
     {
-        // Debug.Log("We entered into delete attr:" + textBox.GetComponent<TextBox>().text);
         if (UseWebcore)
         {
             string _id = textBox.GetComponent<TextBox>().ID;
@@ -365,11 +366,6 @@ public class Diagram : MonoBehaviour
             reGetRequest = true;
             GetRequest(GetCdmEndpoint);
             // No need to remove or destroy the node here since entire class diagram is recreated
-        }
-        else
-        {
-            //RemoveNode(section);
-            //Destroy(node);
         }
     }
 
