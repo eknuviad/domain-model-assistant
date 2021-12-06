@@ -7,11 +7,10 @@ public class ClassDiagramDTO
 {
     public string eClass;
     public string _id;
-    public string name; // NamedElement?
+    public string name;
     public List<Class> classes;
     public List<CDType> types;
     public Layout layout;
-    // TODO add feedback(s) here
 }
 
 [System.Serializable]
@@ -50,7 +49,7 @@ public class ContainerMap
 {
     public string _id;
     public string key;
-    public List<ElementMap> value/*s*/; // TODO Change this after WebCORE is updated
+    public List<ElementMap> value/*s*/; 
 }
 
 [System.Serializable]
