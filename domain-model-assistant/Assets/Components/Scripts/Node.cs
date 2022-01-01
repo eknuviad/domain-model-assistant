@@ -11,6 +11,8 @@ public class Node: MonoBehaviour
     // renamed textbox as header to avoid parent and child
     // from having the same serializable field
     public GameObject header;
+
+    public List<GameObject> connections;
     
     public string ID
     { get; set; }
@@ -42,6 +44,16 @@ public class Node: MonoBehaviour
             return false;
         }
         header = aHeader;
+        return true;
+    }
+
+    public bool AddEdge(GameObject aEdge){
+        if(connections.Contains(aEdge)){
+            return false;
+        }
+        connections.Add(aEdge);
+        aEdge.GetComponent<Edge>().AddNode(this.gameObject);
+        Debug.Log("Edge added");
         return true;
     }
 

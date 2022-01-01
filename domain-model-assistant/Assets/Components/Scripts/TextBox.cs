@@ -18,9 +18,9 @@ public class TextBox : MonoBehaviour
     public string name; //second substring of attribute
 
     public int typeId;
-    
+
     // public bool isChecked;
-    
+
     float holdTimer2 = 0;
     bool hold2 = false;
 
@@ -48,7 +48,7 @@ public class TextBox : MonoBehaviour
                 _diagram.AddAttribute(this.gameObject);
             }
         }
-        
+
         if (this.hold2)
         {
             OnBeginHoldTB();
@@ -60,7 +60,8 @@ public class TextBox : MonoBehaviour
         }
     }
 
-    public bool isValid(){
+    public bool isValid()
+    {
         bool res = false;
         string text = this.GetComponent<InputField>().text;
         //check that inputfield is of a particular format (Eg. int year)
@@ -72,8 +73,8 @@ public class TextBox : MonoBehaviour
             this.SetTypeId(values[0]);
             this.SetName(values[1]);
             return res = true;
-        } 
-        else 
+        }
+        else
         {
             return res = false;
         }
@@ -89,11 +90,11 @@ public class TextBox : MonoBehaviour
         return this.name;
     }
 
-    public void SetTypeId (string value)
+    public void SetTypeId(string value)
     {
         Dictionary<string, string> tmpDict = _diagram.getAttrTypeIdsToTypes();
         string tmpTypeId = null;
-        foreach(var item in tmpDict)
+        foreach (var item in tmpDict)
         {
             if (item.Value.Equals(value))
             {
@@ -104,7 +105,7 @@ public class TextBox : MonoBehaviour
         if (!String.IsNullOrEmpty(tmpTypeId))
         {
             this.typeId = Int16.Parse(tmpTypeId);
-        } 
+        }
     }
 
     public int GetTypeId()
@@ -136,7 +137,7 @@ public class TextBox : MonoBehaviour
     public void OnEndHoldTB()
     {
         // TODO Don't spawn popup if class is being dragged
-        if (holdTimer2 > 1f - 5 /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
+        if (holdTimer2 > 2f /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
         {
             if (this.GetSection() != null)
             {
@@ -167,7 +168,8 @@ public class TextBox : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public GameObject GetAttributeCross(){
+    public GameObject GetAttributeCross()
+    {
         return this.attributeCross;
     }
 

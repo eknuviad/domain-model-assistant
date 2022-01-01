@@ -1,44 +1,73 @@
-﻿// using UnityEngine;
-// using UnityEngine.UI;
- 
-// public class DrawLine : MonoBehaviour
-// {
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Rendering;
 
-//     private RectTransform object1;
-//     private RectTransform object2;
-//     private Image image;
-//     private RectTransform rectTransform;
 
-//     // Start is called before the first frame update
-//     void Start()
-//     {
-//         image = GetComponent<Image>();
-//         rectTransform = GetComponent<RectTransform>();
-//     }
- 
-//     public void SetObjects(GameObject one, GameObject two)
-//     {
-//         object1 = one.GetComponent<RectTransform>();
-//         object2 = two.GetComponent<RectTransform>();
- 
-//         RectTransform aux;
-//         if (object1.localPosition.x > object2.localPosition.x)
-//         {
-//             aux = object1;
-//             object1 = object2;
-//             object2 = aux;
-//         }
-//     }
+public class DrawLine: MonoBehaviour{
 
-//     // Update is called once per frame
-//     void Update()
-//     {
-//         if (object1.gameObject.activeSelf && object2.gameObject.activeSelf)
-//         {
-//             rectTransform.localPosition = (object1.localPosition + object2.localPosition) / 2;
-//             Vector3 dif = object2.localPosition - object1.localPosition;
-//             rectTransform.sizeDelta = new Vector3(dif.magnitude, 5);
-//             rectTransform.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
-//         }
-//     }
-// }
+// private List<GameObject> nodes;
+public GameObject edge;
+
+public GameObject line;
+
+
+private Vector3 mousePos;
+
+private GameObject obj1;
+private GameObject obj2;
+void Start(){
+    
+}
+
+
+void Update(){
+ 
+}
+
+
+public void createLine(){
+    // this.line = new GameObject("Line",typeof(Edge));
+    this.line = GameObject.Instantiate(edge);
+    this.line.AddComponent<LineRenderer>();
+    if(obj1 != null && obj2 != null)
+    {
+        Debug.Log("prevposition1: "+ obj1.transform.position + new Vector3(0,-95,0));
+        Debug.Log("prevposition2: "+ obj2.transform.position + new Vector3(0,95,0));
+        var pos1 = Camera.main.ScreenToWorldPoint(obj1.transform.position + new Vector3(0,-95,0));
+        pos1.z = 0;
+        var pos2 = Camera.main.ScreenToWorldPoint(obj2.transform.position + new Vector3(0,95,0));
+        pos2.z = 0;
+        Debug.Log("position1: "+ pos1);
+        Debug.Log("position2: "+ pos2);
+        this.line.GetComponent<LineRenderer>().SetPosition(0, pos1);
+        this.line.GetComponent<LineRenderer>().SetPosition(1, pos2); 
+        obj1.GetComponent<CompartmentedRectangle>().AddEdge(line); 
+        obj2.GetComponent<CompartmentedRectangle>().AddEdge(line);
+        obj1 = null;
+        obj2 = null;
+    }
+}
+
+
+
+public void AddCompartmentedRectangle(GameObject compRect)
+{
+    if( obj1 == null){
+        obj1 = compRect;
+        Debug.Log("obj1 set");
+    }
+    else if(obj1 != compRect){
+        obj2 = compRect;
+        Debug.Log("obj2 set");
+        createLine();
+    }else{
+        obj2 = null;
+    }
+    Debug.Log("Comp rect added: " + compRect.GetComponent<CompartmentedRectangle>().ID);
+}
+
+
+}
