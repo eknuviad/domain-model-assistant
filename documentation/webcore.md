@@ -22,12 +22,12 @@ be translated into C# code to be used within the application.
 
 Get the entire class diagram
 ```bash
-curl --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES' --header 'Content-Type: application/json'
+curl --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES' --header 'Content-Type: application/json'; echo
 ```
 
 Get all class `_id`s and names
 ```bash
-echo "console.log(JSON.parse(process.argv.slice(2).join('')).classes.map(c=>c._id+': '+c.name))" | node - `curl --silent --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/' --header 'Content-Type: application/json'`
+echo "console.log(JSON.parse(process.argv.slice(2).join('')).classDiagram.classes.map(c=>c._id+': '+c.name))" | node - `curl --silent --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES/' --header 'Content-Type: application/json'`; echo
 ```
 Sample output: `[ 'X', 'City', 'Y' ]`
 
