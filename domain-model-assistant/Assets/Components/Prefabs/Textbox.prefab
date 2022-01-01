@@ -186,7 +186,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: -2204039392561895175}
           m_TargetAssemblyTypeName: TextBox, Assembly-CSharp
-          m_MethodName: OnBeginHold2
+          m_MethodName: OnBeginHoldTB
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -202,7 +202,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: -2204039392561895175}
           m_TargetAssemblyTypeName: TextBox, Assembly-CSharp
-          m_MethodName: OnEndHold2
+          m_MethodName: OnEndHoldTB
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
