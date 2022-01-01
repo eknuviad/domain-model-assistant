@@ -51,7 +51,7 @@ public class TextBox : MonoBehaviour
 
         if (this.hold2)
         {
-            OnBeginHold2();
+            OnBeginHoldTB();
         }
         text = this.GetComponent<Text>();
         if (isHighlightedtext == true)
@@ -69,7 +69,6 @@ public class TextBox : MonoBehaviour
         Debug.Log(values.Length);
         if (values.Length == 2 && !String.IsNullOrWhiteSpace(values[1]))
         {
-            // if(!values[1].Equals(' ')
             Debug.Log("second element is: " + values[1]);
             this.SetTypeId(values[0]);
             this.SetName(values[1]);
@@ -113,14 +112,14 @@ public class TextBox : MonoBehaviour
     {
         return this.typeId;
     }
-
-    public bool SetSection(GameObject sSection)
+        
+    public bool SetSection(GameObject section)
     {
-        if (sSection == null)
+        if (section == null)
         {
             return false;
         }
-        this.section = sSection;
+        this.section = section;
         return true;
     }
 
@@ -129,13 +128,13 @@ public class TextBox : MonoBehaviour
         return this.section;
     }
 
-    public void OnBeginHold2()
+    public void OnBeginHoldTB()
     {
         this.hold2 = true;
         holdTimer2 += Time.deltaTime;
     }
 
-    public void OnEndHold2()
+    public void OnEndHoldTB()
     {
         // TODO Don't spawn popup if class is being dragged
         if (holdTimer2 > 2f /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
@@ -149,7 +148,6 @@ public class TextBox : MonoBehaviour
 
     void SpawnAttributeCross()
     {
-        Debug.Log("here");
         if (this.attributeCross.GetComponent<AttributeCross>().GetTextBox() == null)
         {
             this.attributeCross = GameObject.Instantiate(this.attributeCross);

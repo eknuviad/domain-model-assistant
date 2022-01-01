@@ -29,7 +29,7 @@ public class CreateJson
 }
 
 
-public class AddAttributeInfo
+public class AddAttributeBody
 {
     public int rankIndex;
 
@@ -38,7 +38,7 @@ public class AddAttributeInfo
     public string attributeName;
 
     
-    public AddAttributeInfo(int rIndex, int aTypeId, string name)
+    public AddAttributeBody(int rIndex, int aTypeId, string name)
     {
         this.rankIndex = rIndex;
         this.typeId = aTypeId;
