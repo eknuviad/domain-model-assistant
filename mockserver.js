@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const cors = require("cors");
 const corsOptions = {
-  origin: ['http://localhost:8080', 'http://127.0.0.1'],
+  origin: ['http://localhost:8080', 'http://localhost', 'http://127.0.0.1'],
   methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
   credentials: true,            //access-control-allow-credentials:true
   optionSuccessStatus: 200,

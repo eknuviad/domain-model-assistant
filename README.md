@@ -25,7 +25,8 @@ and would be widely used by domain modeling beginners.
 In order to run our project, you will need to follow the steps below:
 
 1. Download the release of [Unity](https://unity3d.com/get-unity/download) mentioned in
-[ProjectVersion.txt](domain-model-assistant/ProjectSettings/ProjectVersion.txt)
+[ProjectVersion.txt](domain-model-assistant/ProjectSettings/ProjectVersion.txt).
+   **All collaborators on the project must use this exact version.**
 1. Download [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/), or any other compatible IDE
 1. Setup and start a [WebCORE](https://bitbucket.org/mcgillram/) server instance on your local machine.
 See [this page](documentation/webcore.md) for more information about WebCORE.
