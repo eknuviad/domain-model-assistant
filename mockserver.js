@@ -17,21 +17,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const cors = require("cors");
 const corsOptions = {
-  origin: ['http://localhost:8080', 'http://127.0.0.1'],
+  origin: ['http://localhost:8080', 'http://localhost', 'http://127.0.0.1'],
   methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
   credentials: true,            //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 }
 
-app.use(cors(corsOptions)) // Use this after the variable declaration
+app.use(cors(corsOptions)); // Use this after the variable declaration
 
 const SUCCESS = 200;
 const PORT = 8080;
 
+const CDM_NAME = "MULTIPLE_CLASSES";
+
 var classDiagram = {
   "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//ClassDiagram",
   "_id": "100",
-  "name": "MULTIPLE_CLASSES",
+  "name": CDM_NAME,
   "classes": [
     {
       "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
@@ -133,7 +135,7 @@ var valueValueId = 106;
 var counterAttributeId = 3; // counter for ading attributes, for having unique IDs for each attribute
 
 // GET class diagram
-app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
+app.get('/classdiagram/:cdmName', (req, res) => {
   //console.log(classDiagram);
   console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
@@ -141,7 +143,7 @@ app.get('/classdiagram/MULTIPLE_CLASSES', (req, res) => {
 });
 
 // Add class
-app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
+app.post('/classdiagram/:cdmName/class', (req, res) => {
   const className = req.body.className;
   const xPos = req.body.x;
   const yPos = req.body.y;
@@ -175,7 +177,7 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class', (req, res) => {
 });
 
 //Update class position
-app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res) => {
+app.put('/classdiagram/:cdmName/:classId/position', (req, res) => {
   const classId = req.params.classId;
   var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
   // retrieve name of class with updated position
@@ -193,7 +195,7 @@ app.put('/classdiagram/MULTIPLE_CLASSES/:classId/position', (req, res) => {
 });
 
 // Delete class
-app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
+app.delete('/classdiagram/:cdmName/class/:class_id', (req, res) => {
   const classId = req.params.class_id;
   const allClassIds = classDiagram.classes.map(c => c._id);
   var indexToRemove = allClassIds.indexOf(classId);
@@ -211,9 +213,9 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/:class_id', (req, res) => {
   console.log(`>>>>> Deleted class with id: ${classId}`);
   res.sendStatus(SUCCESS);
 });
+
 // Delete Attribute
-app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,res) => {
-// app.delete('/classdiagram/MULTIPLE_CLASSES/class/MULTIPLE_ATTRIBUTES/attribute/:attributeId', (req,res) => {
+app.delete('/classdiagram/:cdmName/class/attributes/:attributeId', (req,res) => {
   const AttributeId = req.params.attributeId;
   
   for (var i = 0; i < classDiagram.classes.length; i++) {
@@ -223,17 +225,14 @@ app.delete('/classdiagram/MULTIPLE_CLASSES/class/attributes/:attributeId', (req,
       }
     }
   }
-    
-
 
   //console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
   // util.inspect()
   res.sendStatus(SUCCESS);
-
-})
+});
 
 // Add attribute
-app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) => {
+app.post('/classdiagram/:cdmName/class/:classId/attribute', (req, res) => {
   //console.log("HEHFJHFJEHFKJEHFKEJKFJEKFJEKFJEKFJEKFJJKFEJF");
   const classId = req.params.classId;
   const attributeName = req.body.attributeName;
@@ -250,7 +249,6 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) =
       })
       counterAttributeId += 1;
     }
-    
   }
 
   console.log(">>> Added attribute given req.body: " + JSON.stringify(req.body));
@@ -258,8 +256,41 @@ app.post('/classdiagram/MULTIPLE_CLASSES/class/:classId/attribute', (req, res) =
   res.sendStatus(SUCCESS);
 });
 
-var server = app.listen(PORT, () => {
-  var host = server.address().address
-  var port = server.address().port
-  console.log("Example app listening at http://%s:%s", host, port)
+// Give feedback (work in progress)
+app.get("/classdiagram/:cdmName/feedback", (req, res) => {
+
+});
+
+/** Gets the item with the given _id by recursing into the iterable. */
+function getById(id, iterable) {
+  if (Array.isArray(iterable)) {
+    for (var item of iterable) {
+      if (id == item["_id"]) {
+        return item;
+      } else {
+        result = getById(id, item);
+        if (result) {
+          return result;
+        }
+      }
+    }
+  } else if (typeof iterable === "object") {
+    for (var key in iterable) {
+      if (key == "_id" && id == iterable[key]) {
+        return iterable;
+      } else {
+        result = getById(id, iterable[key]);
+        if (result) {
+          return result;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+const server = app.listen(PORT, () => {
+  var host = server.address().address;
+  var port = server.address().port;
+  console.log(`Mock WebCORE app listening at http://${host}:${port}`);
 });
