@@ -91,7 +91,8 @@ public class Section : MonoBehaviour
         this.AddTextBox(TB);
 
         // close the popup menu
-        if(this.compRect != null){
+        if (this.compRect != null)
+        {
             this.compRect.GetComponent<CompartmentedRectangle>().GetPopUpMenu().GetComponent<PopupMenu>().Close();
         }
     }
