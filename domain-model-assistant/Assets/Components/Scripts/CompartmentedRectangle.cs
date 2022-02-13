@@ -164,6 +164,7 @@ public class CompartmentedRectangle : Node
     {
         Debug.Log("set line heard");
         _diagram.gameObject.GetComponent<DrawLine>().AddCompartmentedRectangle(this.gameObject);
+        this.popupMenu.GetComponent<PopupMenu>().Close(); // close the popup menu
     }
     
     // ************ END UI model Methods for Compartmented Rectangle ****************//

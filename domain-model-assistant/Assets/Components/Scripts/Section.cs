@@ -89,6 +89,12 @@ public class Section : MonoBehaviour
         //this.GetCompartmentedRectangle().transform.localScale += new Vector3((float)0.2,(float)0.5, 0);
         //this.GetComponent<Section>().GetCompartmentedRectangle().transform.localScale +=  new Vector3(0,(float)0.5,0);
         this.AddTextBox(TB);
+
+        // close the popup menu
+        if (this.compRect != null)
+        {
+            this.compRect.GetComponent<CompartmentedRectangle>().GetPopUpMenu().GetComponent<PopupMenu>().Close();
+        }
     }
 
     // Used when creating attribute after reading JSON from the WebCORE server
