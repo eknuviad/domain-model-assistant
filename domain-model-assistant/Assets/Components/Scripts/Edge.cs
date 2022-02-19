@@ -121,6 +121,28 @@ public class Edge : MonoBehaviour
         }
     }
 
+    public Vector3[] GetPositions() {
+        Vector3[] positions = new Vector3[line.positionCount];
+        line.GetPositions(positions);
+        return positions;
+    }
+
+
+    public float GetWidth() {
+        return line.startWidth;
+    }
+
+    public void setColor(int color){
+        switch(color){
+            case 0:
+                line.material.color = Color.black;
+                break;
+            case 1:
+                line.material.color = Color.blue;
+                break;
+
+        }
+    }
     public void CreateEdgeEndLeftObject(GameObject obj)
     {
         //replace edge title upper by edge title right
