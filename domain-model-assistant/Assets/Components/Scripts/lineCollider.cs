@@ -7,13 +7,15 @@ using UnityEngine;
 public class lineCollider : MonoBehaviour
 {
 
-    Ray ray;
-    RaycastHit hit;
 
     Edge edge;
 
     //The collider for the line
     PolygonCollider2D polygonCollider2D;
+
+    LineRenderer highlightBox;
+
+    Color c1 = new Color(195, 230, 239, 1);
 
     //The points to draw a collision shape between
     List<Vector2> colliderPoints = new List<Vector2>(); 
@@ -23,6 +25,9 @@ public class lineCollider : MonoBehaviour
     {
         edge = GetComponent<Edge>();
         polygonCollider2D = GetComponent<PolygonCollider2D>();
+        highlightBox = new GameObject().AddComponent<LineRenderer>() as LineRenderer;
+        highlightBox.SetColors(c1,c1);
+        highlightBox.enabled = false;
     
     }
 
@@ -35,22 +40,14 @@ public class lineCollider : MonoBehaviour
     void Update()
     {
         colliderPoints = CalculateColliderPoints();
-        foreach (var item in colliderPoints)
-        {
-            //Debug.Log(item.ToString());
-        }
+    
         polygonCollider2D.SetPath(0, colliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
         // if (Input.GetMouseButtonDown (0)){
         //     Debug.Log("mouse clicked");
         //     edge.SpawnPopupLineMenu();
         // }
 
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out hit))
-        {
-            Debug.Log("mouse hovering");
-          
-        }
+        
     
     }
 
@@ -62,16 +59,17 @@ public class lineCollider : MonoBehaviour
         edge.setColor(1);
     }
     //mouse exits, set color back to black, never triggered for some reason
-    void onMouseExit()
+    void OnMouseExit()
     {
         Debug.Log("mouse exit");
         edge.setColor(0);
     }
 
-    void onMouseUp()
+    void OnMouseUp()
     {
         Debug.Log("mouse up");
-        edge.SpawnPopupLineMenu();
+        //edge.SpawnPopupLineMenu();
+        ToggleHighlightBox();
     }
 
     // public void OnPointerDown(EventSystems.PointerEventData eventData)
@@ -86,7 +84,7 @@ public class lineCollider : MonoBehaviour
 
         //Get the Width of the Line
        // float width = 0.5f;
-        float width = 5f * edge.GetWidth();
+        float width = 2f * edge.GetWidth();
 
         //m = (y2 - y1) / (x2 - x1)
         float m = (positions[1].y - positions[0].y) / (positions[1].x - positions[0].x);
@@ -107,5 +105,21 @@ public class lineCollider : MonoBehaviour
         };
 
         return colliderPositions;
+    }
+
+    public void ToggleHighlightBox(){
+        if(highlightBox.enabled == false){
+            //update and turn on
+            colliderPoints = CalculateColliderPoints();
+            highlightBox.positionCount = 4;
+            highlightBox.SetPosition(0,colliderPoints[0]);
+            highlightBox.SetPosition(1,colliderPoints[1]);
+            highlightBox.SetPosition(2,colliderPoints[2]);
+            highlightBox.SetPosition(3,colliderPoints[3]);
+            highlightBox.enabled = true;
+        }else{
+            //turn off
+            highlightBox.enabled = false;
+        }
     }
 }
