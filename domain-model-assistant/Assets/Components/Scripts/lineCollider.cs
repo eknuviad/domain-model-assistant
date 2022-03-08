@@ -68,9 +68,12 @@ public class lineCollider : MonoBehaviour
     void OnMouseUp()
     {
         Debug.Log("mouse up");
-        //edge.SpawnPopupLineMenu();
-        ToggleHighlightBox();
+        edge.SpawnPopupLineMenu();
+        edge.setColor(2);
+        //ToggleHighlightBox();
     }
+
+
 
     // public void OnPointerDown(EventSystems.PointerEventData eventData)
     // {
@@ -122,4 +125,6 @@ public class lineCollider : MonoBehaviour
             highlightBox.enabled = false;
         }
     }
+
+    
 }

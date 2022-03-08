@@ -27,7 +27,7 @@ public class Edge : MonoBehaviour
     float holdTimer = 0;
     bool hold = false;
     private Diagram _diagram;
-    private Vector3 mousePos;
+    public Vector3 mousePos;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject  generalizationIcon;
@@ -47,7 +47,7 @@ public class Edge : MonoBehaviour
             var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
             var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
             if(diff_x <= diff_y)
-            {
+            {//
                 gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
                 var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
                 pos1.z = 0;
@@ -140,6 +140,10 @@ public class Edge : MonoBehaviour
             case 1:
                 line.material.color = Color.blue;
                 break;
+            case 2:
+                line.material.color = Color.magenta;
+                break;
+
 
         }
     }
@@ -335,7 +339,7 @@ public class Edge : MonoBehaviour
             this.popupLineMenu.transform.SetParent(this.transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
+            this.popupLineMenu.transform.position = Input.mousePosition + new Vector3(70, -110, 0);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
