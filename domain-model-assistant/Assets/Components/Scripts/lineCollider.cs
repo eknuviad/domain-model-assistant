@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,9 +69,17 @@ public class lineCollider : MonoBehaviour
     void OnMouseUp()
     {
         Debug.Log("mouse up");
-        edge.SpawnPopupLineMenu();
         edge.setColor(2);
         //ToggleHighlightBox();
+    }
+
+    void OnMouseOver()
+    {
+        if(Input.GetMouseButtonDown(1))
+        {
+            edge.mousePos = Input.mousePosition;
+            edge.SpawnPopupLineMenu();
+        }
     }
 
 

@@ -67,27 +67,6 @@ public class Edge : MonoBehaviour
                 line.SetPosition(1, pos2);
             }
         }
-
-        if (Input.GetMouseButtonDown(1))//right click
-        {
-            //check if type of edge. check if within radius
-            Debug.Log("edgePos: " + gameObject.transform.position);
-            mousePos = Input.mousePosition;
-            Debug.Log("mousePos: " + mousePos);
-            //NB gameobject.transform.position is the location of upper edgeend
-            //or left edgeend
-            var radius = Vector3.Distance(mousePos, gameObject.transform.position);
-            Debug.Log("radius: " + radius);
-            if(radius < 20){
-                SpawnPopupLineMenu();
-            }
-        }
-        // else if (this.hold && holdTimer > 1f - 5)
-        // {
-        //     this.hold = false;
-        //     holdTimer = 0;
-        //     SpawnPopupLineMenu();
-        // }
     }
 
     void createEdge()
@@ -339,12 +318,13 @@ public class Edge : MonoBehaviour
             this.popupLineMenu.transform.SetParent(this.transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = Input.mousePosition + new Vector3(70, -110, 0);
+            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else
         {
+            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
             this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
     }
