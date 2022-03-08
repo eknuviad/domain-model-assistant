@@ -100,18 +100,21 @@ public class Edge : MonoBehaviour
         }
     }
 
-    public Vector3[] GetPositions() {
+    public Vector3[] GetPositions() 
+    {
         Vector3[] positions = new Vector3[line.positionCount];
         line.GetPositions(positions);
         return positions;
     }
 
 
-    public float GetWidth() {
+    public float GetWidth() 
+    {
         return line.startWidth;
     }
 
-    public void setColor(int color){
+    public void setColor(int color)
+    {
         switch(color){
             case 0:
                 line.material.color = Color.black;

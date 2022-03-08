@@ -32,7 +32,8 @@ public class lineCollider : MonoBehaviour
     
     }
 
-    private void OnDrawGizmos() {
+    private void OnDrawGizmos() 
+    {
         Gizmos.color = Color.black;
         if (colliderPoints != null) colliderPoints.ForEach(p => Gizmos.DrawSphere(p, 0.1f));
     }
@@ -75,7 +76,7 @@ public class lineCollider : MonoBehaviour
 
     void OnMouseOver()
     {
-        if(Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1))
         {
             edge.mousePos = Input.mousePosition;
             edge.SpawnPopupLineMenu();
@@ -90,7 +91,8 @@ public class lineCollider : MonoBehaviour
     // }
     //mouse exit, set back to black
     
-    private List<Vector2> CalculateColliderPoints() {
+    private List<Vector2> CalculateColliderPoints() 
+    {
         //Get All positions on the line renderer
         Vector3[] positions = edge.GetPositions();
 
@@ -118,22 +120,5 @@ public class lineCollider : MonoBehaviour
 
         return colliderPositions;
     }
-
-    public void ToggleHighlightBox(){
-        if(highlightBox.enabled == false){
-            //update and turn on
-            colliderPoints = CalculateColliderPoints();
-            highlightBox.positionCount = 4;
-            highlightBox.SetPosition(0,colliderPoints[0]);
-            highlightBox.SetPosition(1,colliderPoints[1]);
-            highlightBox.SetPosition(2,colliderPoints[2]);
-            highlightBox.SetPosition(3,colliderPoints[3]);
-            highlightBox.enabled = true;
-        }else{
-            //turn off
-            highlightBox.enabled = false;
-        }
-    }
-
     
 }
