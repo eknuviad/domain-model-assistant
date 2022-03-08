@@ -8,7 +8,6 @@ using UnityEngine;
 public class lineCollider : MonoBehaviour
 {
 
-
     Edge edge;
 
     //The collider for the line
@@ -44,13 +43,7 @@ public class lineCollider : MonoBehaviour
         colliderPoints = CalculateColliderPoints();
     
         polygonCollider2D.SetPath(0, colliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
-        // if (Input.GetMouseButtonDown (0)){
-        //     Debug.Log("mouse clicked");
-        //     edge.SpawnPopupLineMenu();
-        // }
 
-        
-    
     }
 
     
@@ -71,7 +64,6 @@ public class lineCollider : MonoBehaviour
     {
         Debug.Log("mouse up");
         edge.setColor(2);
-        //ToggleHighlightBox();
     }
 
     void OnMouseOver()
@@ -82,14 +74,6 @@ public class lineCollider : MonoBehaviour
             edge.SpawnPopupLineMenu();
         }
     }
-
-
-
-    // public void OnPointerDown(EventSystems.PointerEventData eventData)
-    // {
-    //    Debug.Log ("pointer down while over the Collider!");
-    // }
-    //mouse exit, set back to black
     
     private List<Vector2> CalculateColliderPoints() 
     {
@@ -97,7 +81,7 @@ public class lineCollider : MonoBehaviour
         Vector3[] positions = edge.GetPositions();
 
         //Get the Width of the Line
-       // float width = 0.5f;
+        // float width = 0.5f;
         float width = 2f * edge.GetWidth();
 
         //m = (y2 - y1) / (x2 - x1)
