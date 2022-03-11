@@ -159,7 +159,7 @@ public class Edge : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public int indexOfNode(GameObject aNode)
+    public int IndexOfNode(GameObject aNode)
     {
         int index = nodes.IndexOf(aNode);
         return index;
