@@ -39,6 +39,7 @@ public class CompartmentedRectangle : Node
     void Start()
     {
         state = State.Default;
+        numOfConnectionPoints = 8; // default value
         CreateHeader();
         CreateSection();
     }
@@ -154,6 +155,11 @@ public class CompartmentedRectangle : Node
     {
         return this.transform.position;
     }
+
+    // public override List<Vector2> GetConnectionPointsLocations()
+    // {
+    //     return null;
+    // }
 
     public GameObject GetPopUpMenu()
     {
