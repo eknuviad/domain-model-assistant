@@ -14,6 +14,7 @@ public class Edge : MonoBehaviour
     private LineRenderer line;
     public List<GameObject> nodes = new List<GameObject>();
 
+    public const int RequiredNumOfNodes = 2;
     public List<GameObject> edgeEnds = new List<GameObject>();
 
     public GameObject edgeEnd;
@@ -174,16 +175,43 @@ public class Edge : MonoBehaviour
         Destroy(this.gameObject);
     }
 
+    public int indexOfNode(GameObject aNode)
+    {
+        int index = nodes.IndexOf(aNode);
+        return index;
+    }
+
     public bool AddNode(GameObject aNode)
     {
+        bool wasAdded = false;
         if (nodes.Contains(aNode))
         {
-            return false;
+            return wasAdded;
         }
+        if (nodes.Count >= RequiredNumOfNodes)
+        {
+            return wasAdded;
+        }
+
         nodes.Add(aNode);
-        aNode.GetComponent<Node>().AddEdge(this.gameObject);
-        Debug.Log("node added to edge");
-        return true;
+        if (aNode.GetComponent<Node>().IndexOfConnection(this.gameObject) != -1)
+        {
+            wasAdded = true;
+        }
+        else
+        {
+            wasAdded = aNode.GetComponent<Node>().AddEdge(this.gameObject);
+            if (!wasAdded)
+            {
+                nodes.Remove(aNode);
+            }
+        }
+        
+        if(wasAdded)
+        {
+            Debug.Log("node added to edge");
+        }
+        return wasAdded;
     }
     //create edge end for upper object
     public void CreateEdgeEndUpperObj(GameObject obj)

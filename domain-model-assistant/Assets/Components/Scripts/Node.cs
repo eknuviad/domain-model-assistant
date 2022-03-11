@@ -39,7 +39,7 @@ public class Node: MonoBehaviour
 
     public bool AddHeader(GameObject aHeader)
     {
-        if(aHeader == null)
+        if (aHeader == null)
         {
             return false;
         }
@@ -47,14 +47,45 @@ public class Node: MonoBehaviour
         return true;
     }
 
-    public bool AddEdge(GameObject aEdge){
-        if(connections.Contains(aEdge)){
+    public int IndexOfConnection(GameObject aEdge)
+    {
+        int index = connections.IndexOf(aEdge);
+        return index;
+    }
+
+    public GameObject GetConnections()
+    {
+        ReadOnlyCollection<GameObject> newConnections = new ReadOnlyCollection<GameObject>(connections);
+        return newConnections;
+    }
+
+    public bool AddConnection(GameObject aEdge)
+    {
+        bool wasAdded =  false;
+        if (connections.Contains(aEdge))
+        {
             return false;
         }
         connections.Add(aEdge);
-        aEdge.GetComponent<Edge>().AddNode(this.gameObject);
-        Debug.Log("Edge added");
-        return true;
+        if (aEdge.GetComponent<Edge>().indexOfNode(this.gameObject) != -1)
+        {
+            wasAdded = true;
+        }
+        else
+        {
+            wasAdded = aEdge.GetComponent<Edge>().AddNode(this.gameObject);
+            if (!wasAdded)
+            {
+                connections.Remove(aEdge);
+            }
+        }
+        
+        // print log for debugging
+        if (wasAdded)
+        {
+            Debug.Log("Edge added");
+        }
+        return wasAdded;
     }
 
 }
