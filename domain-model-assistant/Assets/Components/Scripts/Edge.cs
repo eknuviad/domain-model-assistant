@@ -351,6 +351,9 @@ public class Edge : MonoBehaviour
 
             }
         }
+        if(nodes[1]==null||nodes[0]==null){
+            Destroy();
+        }
     }
 
 }
