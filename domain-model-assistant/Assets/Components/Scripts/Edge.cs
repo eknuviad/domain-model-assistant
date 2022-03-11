@@ -184,7 +184,7 @@ public class Edge : MonoBehaviour
         }
         else
         {
-            wasAdded = aNode.GetComponent<Node>().AddEdge(this.gameObject);
+            wasAdded = aNode.GetComponent<Node>().AddConnection(this.gameObject);
             if (!wasAdded)
             {
                 nodes.Remove(aNode);
