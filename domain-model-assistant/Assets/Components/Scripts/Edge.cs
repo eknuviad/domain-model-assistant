@@ -52,30 +52,32 @@ public class Edge : MonoBehaviour
         if (nodes != null)
         {
             if(nodes[0] != null && nodes[1] != null)
-             {
-            var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-            var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-            if(diff_x <= diff_y)
             {
-                gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
-                var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
-                pos1.z = 0;
-                var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
-                pos2.z = 0;
-                line.SetPosition(0, pos1);
-                line.SetPosition(1, pos2);
-            }
-            else
+                var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+                var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+                if(diff_x <= diff_y)
+                {
+                    gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
+                    var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
+                    pos1.z = 0;
+                    var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
+                    pos2.z = 0;
+                    line.SetPosition(0, pos1);
+                    line.SetPosition(1, pos2);
+                }
+                else
+                {
+                    gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
+                    var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
+                    pos1.z = 0;
+                    var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
+                    pos2.z = 0;
+                    line.SetPosition(0, pos1);
+                    line.SetPosition(1, pos2);
+                }
+            } 
+            else 
             {
-                gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
-                var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
-                pos1.z = 0;
-                var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
-                pos2.z = 0;
-                line.SetPosition(0, pos1);
-                line.SetPosition(1, pos2);
-            }
-        }else{
             RetrieveNodes();
             
         }
