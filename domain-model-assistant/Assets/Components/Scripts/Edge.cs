@@ -14,8 +14,11 @@ public class Edge : MonoBehaviour
     private LineRenderer line;
     public List<GameObject> nodes = new List<GameObject>();
 
+    public List<string> nodesId = new List<string>();
+
     public List<GameObject> edgeEnds = new List<GameObject>();
 
+    public GameObject[] classes;
     public GameObject edgeEnd;
     public GameObject edgeTitleUpper;
     public GameObject edgeEndNumberUpper;
@@ -26,6 +29,8 @@ public class Edge : MonoBehaviour
     public GameObject popupLineMenu;
     float holdTimer = 0;
     bool hold = false;
+
+    public GameObject diagram;
     private Diagram _diagram;
     private Vector3 mousePos;
     public GameObject compositionIcon;
@@ -33,7 +38,9 @@ public class Edge : MonoBehaviour
     public GameObject  generalizationIcon;
     void Awake()
     {
-        _diagram = GetComponentInParent<Diagram>();
+        //_diagram = diagram.GetComponent<Diagram>();
+        //Debug.Log(_diagram);
+            
     }
     void Start()
     {
@@ -44,6 +51,8 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
+            if(nodes[0] != null && nodes[1] != null)
+             {
             var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
             var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
             if(diff_x <= diff_y)
@@ -66,6 +75,9 @@ public class Edge : MonoBehaviour
                 line.SetPosition(0, pos1);
                 line.SetPosition(1, pos2);
             }
+        }else{
+            RetrieveNodes();
+            
         }
 
         if (Input.GetMouseButtonDown(1))//right click
@@ -88,7 +100,7 @@ public class Edge : MonoBehaviour
         //     holdTimer = 0;
         //     SpawnPopupLineMenu();
         // }
-    }
+    }}
 
     void createEdge()
     {
@@ -165,6 +177,7 @@ public class Edge : MonoBehaviour
             return false;
         }
         nodes.Add(aNode);
+        nodesId.Add(aNode.GetComponent<CompartmentedRectangle>().ID);
         aNode.GetComponent<Node>().AddEdge(this.gameObject);
         Debug.Log("node added to edge");
         return true;
@@ -320,6 +333,23 @@ public class Edge : MonoBehaviour
         else
         {
             this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
+        }
+    }
+
+    public void RetrieveNodes()
+    {
+        classes = GameObject.FindGameObjectsWithTag("comprec");
+        foreach (var comp in classes)
+        {
+            if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[0]))
+            {
+                nodes[0] = comp;
+            }else if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[1]))
+            {
+                //Debug.Log(comp.GetComponent<CompartmentedRectangle>().ID);
+                nodes[1] = comp;
+
+            }
         }
     }
 
