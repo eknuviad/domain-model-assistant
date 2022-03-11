@@ -17,8 +17,13 @@ public class Edge : MonoBehaviour
     public List<GameObject> nodes = new List<GameObject>();
     public const int RequiredNumOfNodes = 2;
     public const int RequiredNumOfEdgeEnds = 2;
-    public GameObject edgeEnd;
+
+    public List<string> nodesId = new List<string>();
+
     public List<GameObject> edgeEnds = new List<GameObject>();
+
+    public GameObject[] classes;
+    public GameObject edgeEnd;
     public GameObject edgeTitleUpper;
     public GameObject edgeEndNumberUpper;
     public GameObject edgeTitleLower;
@@ -28,6 +33,8 @@ public class Edge : MonoBehaviour
     public GameObject popupLineMenu;
     float holdTimer = 0;
     bool hold = false;
+
+    public GameObject diagram;
     private Diagram _diagram;
     public Vector3 mousePos;
     public Vector3 linePosition1;
@@ -39,7 +46,9 @@ public class Edge : MonoBehaviour
     private int[] prevConnectionPointIndices = new int[] {-1,-1}; // used to keep track of connection point changes for updating availabilities  
     void Awake()
     {
-        _diagram = GetComponentInParent<Diagram>();
+        //_diagram = diagram.GetComponent<Diagram>();
+        //Debug.Log(_diagram);
+            
     }
     void Start()
     {
@@ -50,10 +59,14 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
+            if(nodes[0] != null && nodes[1] != null)
+            {
             var node1 = nodes[0].GetComponent<Node>();
             var node2 = nodes[1].GetComponent<Node>();
             var node1_locs = node1.GetConnectionPointsLocations();
             var node2_locs = node2.GetConnectionPointsLocations();
+            
+        
 
             var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
             var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
@@ -91,7 +104,18 @@ public class Edge : MonoBehaviour
             edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
             edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
         }
-
+        else
+        {
+            RetrieveNodes();
+            
+        }
+        }
+        // else if (this.hold && holdTimer > 1f - 5)
+        // {
+        //     this.hold = false;
+        //     holdTimer = 0;
+        //     SpawnPopupLineMenu();
+        // }
     }
 
     void createEdge()
@@ -241,6 +265,12 @@ public class Edge : MonoBehaviour
         Debug.Log("edgeend here");
     }
 
+    void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
+
+   
     //create edge end for upper object
     public void CreateEdgeEndUpperObj(GameObject obj)
     {
@@ -266,10 +296,6 @@ public class Edge : MonoBehaviour
         this.edgeEndNumberLower.GetComponent<InputField>().text = "*";
     }
 
-    void Destroy()
-    {
-        Destroy(this.gameObject);
-    }
 
     public int IndexOfNode(GameObject aNode)
     {
@@ -290,6 +316,7 @@ public class Edge : MonoBehaviour
         }
 
         nodes.Add(aNode);
+        nodesId.Add(aNode.GetComponent<CompartmentedRectangle>().ID);
 
         if (aNode.GetComponent<Node>().IndexOfConnection(this.gameObject) != -1)
         {
@@ -532,6 +559,22 @@ public class Edge : MonoBehaviour
             }
         }
         return indices;
+    }
+    public void RetrieveNodes()
+    {
+        classes = GameObject.FindGameObjectsWithTag("comprec");
+        foreach (var comp in classes)
+        {
+            if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[0]))
+            {
+                nodes[0] = comp;
+            }else if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[1]))
+            {
+                //Debug.Log(comp.GetComponent<CompartmentedRectangle>().ID);
+                nodes[1] = comp;
+
+            }
+        }
     }
 
 }
