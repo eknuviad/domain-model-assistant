@@ -1,2 +1,10 @@
+<<<<<<< HEAD
 
 node_modules/
+=======
+# Ignore the node_modules dir
+node_modules/
+
+# Ignore DS_Store on Mac
+.DS_Store
+>>>>>>> 7be0876... fix and added variables for edge positioning

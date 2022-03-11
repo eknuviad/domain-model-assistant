@@ -13,7 +13,9 @@ public class Node: MonoBehaviour
     // from having the same serializable field
     public GameObject header;
 
-    public List<GameObject> connections;
+    private List<GameObject> connections = new List<GameObject>();
+
+    protected int numOfConnectionPoints; 
     
     public string ID
     { get; set; }
@@ -63,13 +65,18 @@ public class Node: MonoBehaviour
     public bool AddConnection(GameObject aEdge)
     {
         bool wasAdded =  false;
+
         if (connections.Contains(aEdge))
         {
+            Debug.Log("connections contain edge already");
             return false;
-        }
+        }   
         connections.Add(aEdge);
-        if (aEdge.GetComponent<Edge>().indexOfNode(this.gameObject) != -1)
+        if (aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject) != -1)
         {
+            var index = aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject);
+            Debug.Log("index of node" + index);
+            Debug.Log("size of node" + aEdge.GetComponent<Edge>().nodes.Count);
             wasAdded = true;
         }
         else
@@ -80,7 +87,7 @@ public class Node: MonoBehaviour
                 connections.Remove(aEdge);
             }
         }
-        
+            
         // print log for debugging
         if (wasAdded)
         {
@@ -88,5 +95,7 @@ public class Node: MonoBehaviour
         }
         return wasAdded;
     }
+
+    // public abstract List<Vector2> GetConnectionPointsLocations();
 
 }
