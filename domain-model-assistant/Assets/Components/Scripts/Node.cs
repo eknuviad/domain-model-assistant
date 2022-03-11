@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -53,7 +54,7 @@ public class Node: MonoBehaviour
         return index;
     }
 
-    public GameObject GetConnections()
+    public ReadOnlyCollection<GameObject> GetConnections()
     {
         ReadOnlyCollection<GameObject> newConnections = new ReadOnlyCollection<GameObject>(connections);
         return newConnections;
