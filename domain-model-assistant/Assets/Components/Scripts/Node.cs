@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Node: MonoBehaviour
+public abstract class Node: MonoBehaviour
 {
     // private string id;
     public GameObject canvas;
@@ -15,7 +15,10 @@ public class Node: MonoBehaviour
 
     private List<GameObject> connections = new List<GameObject>();
 
-    protected int numOfConnectionPoints; 
+    protected int NumOfConnectionPoints
+    { get; set; } 
+
+    protected List<bool> connectionPointsAvailable = new List<bool>();
     
     public string ID
     { get; set; }
@@ -58,25 +61,22 @@ public class Node: MonoBehaviour
 
     public ReadOnlyCollection<GameObject> GetConnections()
     {
-        ReadOnlyCollection<GameObject> newConnections = new ReadOnlyCollection<GameObject>(connections);
-        return newConnections;
+        return connections.AsReadOnly();
     }
 
     public bool AddConnection(GameObject aEdge)
     {
         bool wasAdded =  false;
-
         if (connections.Contains(aEdge))
         {
-            Debug.Log("connections contain edge already");
-            return false;
+            return wasAdded;
         }   
+
         connections.Add(aEdge);
+
         if (aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject) != -1)
         {
             var index = aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject);
-            Debug.Log("index of node" + index);
-            Debug.Log("size of node" + aEdge.GetComponent<Edge>().nodes.Count);
             wasAdded = true;
         }
         else
@@ -96,6 +96,36 @@ public class Node: MonoBehaviour
         return wasAdded;
     }
 
-    // public abstract List<Vector2> GetConnectionPointsLocations();
+    public abstract List<Vector2> GetConnectionPointsLocations();
+
+    public void SetConnectionPointAvailable(int index, bool isAvailable)
+    {
+        // Debug.Log("index: " + index);
+        // Debug.Log("Array size: " + connectionPointAvailable.Count);
+        connectionPointsAvailable[index] = isAvailable;
+    }
+
+    public bool GetConnectionPointAvailable(int index)
+    {
+        return connectionPointsAvailable[index];
+    }
+
+    public ReadOnlyCollection<bool> GetConnectionPointsAvailable()
+    {
+        return connectionPointsAvailable.AsReadOnly();
+    }
+
+    public int GetNumberOfConnectionPointsAvailable()
+    {
+        int count = 0;
+        foreach (bool avail in connectionPointsAvailable)
+        {
+            if (avail)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
 
 }
