@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,11 +15,10 @@ public class Edge : MonoBehaviour
     { get; set; }
     private LineRenderer line;
     public List<GameObject> nodes = new List<GameObject>();
-
     public const int RequiredNumOfNodes = 2;
-    public List<GameObject> edgeEnds = new List<GameObject>();
-
+    public const int RequiredNumOfEdgeEnds = 2;
     public GameObject edgeEnd;
+    public List<GameObject> edgeEnds = new List<GameObject>();
     public GameObject edgeTitleUpper;
     public GameObject edgeEndNumberUpper;
     public GameObject edgeTitleLower;
@@ -31,7 +32,8 @@ public class Edge : MonoBehaviour
     private Vector3 mousePos;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
-    public GameObject  generalizationIcon;
+    public GameObject generalizationIcon;
+    private int[] prevConnectionPointIndices = new int[] {-1,-1}; // used to keep track of connection point changes for updating availabilities  
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
@@ -45,44 +47,141 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
-            var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-            var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-            if(diff_x <= diff_y)
+            // Testing 
+            // var node = nodes[0].GetComponent<Node>();
+            // List<Vector2> locations = node.GetConnectionPointsLocations();
+            // foreach(var loc in locations) 
+            // {
+            //     Debug.Log(loc.ToString());
+            // }
+
+            // Debug.Log("Mouse: " + Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+            var node1 = nodes[0].GetComponent<Node>();
+            var node2 = nodes[1].GetComponent<Node>();
+            var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
+            var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
+
+            var node1_locs = node1.GetConnectionPointsLocations();
+            var node2_locs = node2.GetConnectionPointsLocations();
+
+            Debug.Log("available node1_locs size: " + node1.GetNumberOfConnectionPointsAvailable());
+            Debug.Log("available node2_locs size: " + node2.GetNumberOfConnectionPointsAvailable());
+
+            Vector2 edgeEnd1_loc = nodes[0].transform.position;
+            Vector2 edgeEnd2_loc = nodes[1].transform.position;
+
+            if (node1.GetNumberOfConnectionPointsAvailable() == 0 || node2.GetNumberOfConnectionPointsAvailable() == 0)
             {
-                gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
-                var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
-                pos1.z = 0;
-                var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
-                pos2.z = 0;
-                line.SetPosition(0, pos1);
-                line.SetPosition(1, pos2);
-            }
+                //TODO: Implement Node Connection Points Expansion 
+                Debug.Log("Entered critical area");
+            } 
             else
             {
-                gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
-                var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
-                pos1.z = 0;
-                var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
-                pos2.z = 0;
-                line.SetPosition(0, pos1);
-                line.SetPosition(1, pos2);
+                int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailable(), node2.GetConnectionPointsAvailable());
+                bool nodeOneUpdated = prevConnectionPointIndices[0] != indices[0];
+                bool nodeTwoUpdated = prevConnectionPointIndices[1] != indices[1];
+                Debug.Log("prevConnectionPointIndex 1: " + prevConnectionPointIndices[0]);
+                Debug.Log("prevConnectionPointIndex 2: " + prevConnectionPointIndices[1]);
+                // Debug.Log("currIndex 1: " + indices[0]);
+                // Debug.Log("currIndex 2: " + indices[1]);
+                if (nodeOneUpdated || nodeTwoUpdated)
+                {
+                    if(prevConnectionPointIndices[0] >= 0 && prevConnectionPointIndices[1] >= 0)
+                    {
+                        if(prevConnectionPointIndices[0] < node1_locs.Count && prevConnectionPointIndices[1] < node2_locs.Count)
+                        {
+                            Debug.Log("prevConnectionPointIndices 1: " + prevConnectionPointIndices[0]);
+                            Debug.Log("prevConnectionPointIndices 2: " + prevConnectionPointIndices[1]);
+                            float prevDist = Vector2.Distance(edgeEnd1.Position, edgeEnd2.Position);
+                            float currentDist = Vector2.Distance(node1_locs[indices[0]], node2_locs[indices[1]]);
+                            Debug.Log("difference: " + Math.Abs(prevDist - currentDist));
+                            if (Math.Abs(prevDist - currentDist) < 250)
+                            {
+                                Debug.Log("Do not change");
+                                indices[0] = prevConnectionPointIndices[0];
+                                indices[1] = prevConnectionPointIndices[1];
+                            } else {
+                                Debug.Log("Change but why?");
+                            }
+                        }
+                    } 
+
+                    if (prevConnectionPointIndices[0] >= 0 && nodeOneUpdated)
+                    {
+                        node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
+                    }
+                    if (prevConnectionPointIndices[1] >= 0 && nodeTwoUpdated)
+                    {
+                        node2.SetConnectionPointAvailable(prevConnectionPointIndices[1], true);
+                    }
+                }
+
+                if(node1.GetConnectionPointAvailable(indices[0]) || node2.GetConnectionPointAvailable(indices[1]))
+                {
+                    edgeEnd1_loc = node1_locs[indices[0]];
+                    edgeEnd2_loc = node2_locs[indices[1]];
+                } 
+                else
+                {
+                    Debug.Log("Errorrrrrrrrr !!!!!!!!!!!!!!!!!!!!!!!!!!");
+                }
+
+                edgeEnd1.Position = edgeEnd1_loc;
+                edgeEnd2.Position = edgeEnd2_loc;
+
+                // Set connection points as unavailable
+                node1.SetConnectionPointAvailable(indices[0], false);
+                node2.SetConnectionPointAvailable(indices[1], false);
+  
+                prevConnectionPointIndices[0] = indices[0];
+                prevConnectionPointIndices[1] = indices[1];
             }
+
+            var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.Position);
+            pos1.z = 0;
+            var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.Position);
+            pos2.z = 0;
+            line.SetPosition(0, pos1);
+            line.SetPosition(1, pos2);
+        //     var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+        //     var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+        //     if (diff_x <= diff_y)
+        //     {
+        //         gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
+        //         var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
+        //         pos1.z = 0;
+        //         var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
+        //         pos2.z = 0;
+        //         line.SetPosition(0, pos1);
+        //         line.SetPosition(1, pos2);
+        //     }
+        //     else
+        //     {
+        //         gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
+        //         var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
+        //         pos1.z = 0;
+        //         var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
+        //         pos2.z = 0;
+        //         line.SetPosition(0, pos1);
+        //         line.SetPosition(1, pos2);
+        //     }
         }
 
-        if (Input.GetMouseButtonDown(1))//right click
-        {
-            //check if type of edge. check if within radius
-            Debug.Log("edgePos: " + gameObject.transform.position);
-            mousePos = Input.mousePosition;
-            Debug.Log("mousePos: " + mousePos);
-            //NB gameobject.transform.position is the location of upper edgeend
-            //or left edgeend
-            var radius = Vector3.Distance(mousePos, gameObject.transform.position);
-            Debug.Log("radius: " + radius);
-            if(radius < 20){
-                SpawnPopupLineMenu();
-            }
-        }
+        // if (Input.GetMouseButtonDown(1))//right click
+        // {
+        //     //check if type of edge. check if within radius
+        //     Debug.Log("edgePos: " + gameObject.transform.position);
+        //     mousePos = Input.mousePosition;
+        //     Debug.Log("mousePos: " + mousePos);
+        //     //NB gameobject.transform.position is the location of upper edgeend
+        //     //or left edgeend
+        //     var radius = Vector3.Distance(mousePos, gameObject.transform.position);
+        //     Debug.Log("radius: " + radius);
+        //     if (radius < 20){
+        //         SpawnPopupLineMenu();
+        //     }
+        // }
         // else if (this.hold && holdTimer > 1f - 5)
         // {
         //     this.hold = false;
@@ -105,20 +204,57 @@ public class Edge : MonoBehaviour
         line.numCapVertices = 50;
         Debug.Log("line created");
 
-        // check closest node edge
+        var edgeEnd1 = GameObject.Instantiate(edgeEnd);
+        var edgeEnd2 = GameObject.Instantiate(edgeEnd);
+        edgeEnd1.GetComponent<EdgeEnd>().SetEdge(this.gameObject);
+        edgeEnd2.GetComponent<EdgeEnd>().SetEdge(this.gameObject);
+
+        // var node1 = nodes[0].GetComponent<Node>();
+        // var node2 = nodes[1].GetComponent<Node>();
+
+        // var node1_locs = node1.GetAvailableConnectionPointsLocations();
+        // var node2_locs = node2.GetAvailableConnectionPointsLocations();
+
+        // if (node1_locs.Count == 0 || node2_locs.Count == 0)
+        // {
+        //     //TODO: Implement Node Connection Points Expansion 
+        // } 
+        // else
+        // {
+        //     int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs);
+        //     var edgeEnd1_loc = node1_locs[indices[0]];
+        //     var edgeEnd2_loc = node2_locs[indices[1]];
+
+        //     edgeEnd1.GetComponent<EdgeEnd>().Position = edgeEnd1_loc;
+        //     node1.SetConnectionPointAvailability(indices[0], false);
+
+        //     edgeEnd2.GetComponent<EdgeEnd>().Position = edgeEnd2_loc;
+        //     node2.SetConnectionPointAvailability(indices[1], false);
+        // }
+
+        // var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.GetComponent<EdgeEnd>().Position);
+        // pos1.z = 0;
+        // var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.GetComponent<EdgeEnd>().Position);
+        // pos2.z = 0;
+        // line.SetPosition(0, pos1);
+        // line.SetPosition(1, pos2);
+
+        // // check closest node edge
         var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
         var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-        if(diff_x <= diff_y)
+        if (diff_x <= diff_y)
         {
             gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
-            CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
-            CreateEdgeEndLowerObj(nodes[1]);
+            // Debug.Log("hello hello hello how low");
+        //     CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
+        //     CreateEdgeEndLowerObj(nodes[1]);
         }
         else
         {
             gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
-            CreateEdgeEndLeftObject(nodes[1]);
-            CreateEdgeEndRightObject(nodes[0]);
+            // Debug.Log("hello hello hello how low");
+        //     CreateEdgeEndLeftObject(nodes[1]);
+        //     CreateEdgeEndRightObject(nodes[0]);
         }
     }
 
@@ -154,49 +290,6 @@ public class Edge : MonoBehaviour
         Debug.Log("edgeend here");
     }
 
-    void Destroy()
-    {
-        Destroy(this.gameObject);
-    }
-
-    public int IndexOfNode(GameObject aNode)
-    {
-        int index = nodes.IndexOf(aNode);
-        return index;
-    }
-
-    public bool AddNode(GameObject aNode)
-    {
-        bool wasAdded = false;
-        if (nodes.Contains(aNode))
-        {
-            return wasAdded;
-        }
-        if (nodes.Count >= RequiredNumOfNodes)
-        {
-            return wasAdded;
-        }
-
-        nodes.Add(aNode);
-        if (aNode.GetComponent<Node>().IndexOfConnection(this.gameObject) != -1)
-        {
-            wasAdded = true;
-        }
-        else
-        {
-            wasAdded = aNode.GetComponent<Node>().AddConnection(this.gameObject);
-            if (!wasAdded)
-            {
-                nodes.Remove(aNode);
-            }
-        }
-        
-        if(wasAdded)
-        {
-            Debug.Log("node added to edge");
-        }
-        return wasAdded;
-    }
     //create edge end for upper object
     public void CreateEdgeEndUpperObj(GameObject obj)
     {
@@ -222,6 +315,68 @@ public class Edge : MonoBehaviour
         this.edgeEndNumberLower.GetComponent<InputField>().text = "*";
     }
 
+    void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
+
+    public int IndexOfNode(GameObject aNode)
+    {
+        int index = nodes.IndexOf(aNode);
+        return index;
+    }
+
+    public bool AddNode(GameObject aNode)
+    {
+        bool wasAdded = false;
+        if (nodes.Contains(aNode))
+        {
+            return wasAdded;
+        }
+        if (nodes.Count >= RequiredNumOfNodes)
+        {
+            return wasAdded;
+        }
+
+        nodes.Add(aNode);
+
+        if (aNode.GetComponent<Node>().IndexOfConnection(this.gameObject) != -1)
+        {
+            wasAdded = true;
+        }
+        else
+        {
+            wasAdded = aNode.GetComponent<Node>().AddConnection(this.gameObject);
+            if (!wasAdded)
+            {
+                nodes.Remove(aNode);
+            }
+        }
+        
+        if (wasAdded)
+        {
+            Debug.Log("node added to edge");
+        }
+        return wasAdded;
+    }
+
+    public bool AddEdgeEnd(GameObject aEdgeEnd)
+    {
+        bool wasAdded = false;
+        if (edgeEnds.Contains(aEdgeEnd))
+        {
+            return wasAdded;
+        }
+        edgeEnds.Add(aEdgeEnd);
+        wasAdded = true;
+        Debug.Log("Edge end added to edge");
+        return wasAdded;
+    }
+
+    public int GetNumberOfEdgeEnds()
+    {
+        return edgeEnds.Count;
+    } 
 
     public void SetAssociation()
     {
@@ -349,6 +504,38 @@ public class Edge : MonoBehaviour
         {
             this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
+    }
+
+    /// <summary> This function takes two lists of connection points Vec2 coordinates 
+    /// and returns the indices of each lists as an array of int such that the pairwise 
+    /// distance is minimal and the connections indexed are available.   
+    /// </summary>
+    private int[] GetIndicesOfMinDist(List<Vector2>node1_locs, List<Vector2>node2_locs, ReadOnlyCollection<bool> node1_avails, ReadOnlyCollection<bool> node2_avails)
+    {
+        int[] indices = new int[2];
+        float minDist = float.MaxValue;
+        for (int i = 0; i < node1_locs.Count; i++)
+        {
+            if (!node1_avails[i])
+            {
+                continue;
+            }
+            for (int j = 0; j < node2_locs.Count; j++)
+            {
+                if (!node2_avails[j])
+                {
+                    continue;
+                }
+                float dist = Vector2.Distance(node1_locs[i], node2_locs[j])*Vector2.Distance(node1_locs[i], node2_locs[j]);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    indices[0] = i;
+                    indices[1] = j;
+                }
+            }
+        }
+        return indices;
     }
 
 }
