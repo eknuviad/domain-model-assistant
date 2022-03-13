@@ -20,6 +20,8 @@ public class CompartmentedRectangle : Node
 
     private string id; //should move to node class later
     private Vector2 _prevPosition;
+    private float rectHeight;
+    private float rectWidth;
     private int headerOffsetX = -31;
     private int headerOffsetY = 70;
     private int sectionOffsetY = -71;
@@ -42,6 +44,14 @@ public class CompartmentedRectangle : Node
     void Start()
     {
         state = State.Default;
+        NumOfConnectionPoints = 8; // default value
+        for(int i = 0; i < NumOfConnectionPoints; i++)
+        {
+            connectionPointsAvailable.Add(true);
+        }
+        RectTransform rectangle = (RectTransform)this.transform;
+        rectHeight = rectangle.rect.height;
+        rectWidth = rectangle.rect.width;
         CreateHeader();
         CreateSection();
         id = this.GetComponent<CompartmentedRectangle>().ID;
@@ -158,6 +168,32 @@ public class CompartmentedRectangle : Node
     public Vector2 GetPosition()
     {
         return this.transform.position;
+    }
+
+    public override List<Vector2> GetConnectionPointsLocations()
+    {
+        // int debug_count = 0;
+        // foreach (bool avail in connectionPointsAvailable)
+        // {
+        //     Debug.Log("avail " + debug_count++ + " :" + avail);
+        // }
+        List<Vector2> locations = new List<Vector2>();
+        var origin = this.GetPosition() + new Vector2(-rectHeight/2, -rectWidth/2);
+        var increment = (rectWidth / (NumOfConnectionPoints / 4));
+        // int count = 0;
+        for (float x = 0; x <= rectWidth; x += increment)
+        {
+            for (float y = rectHeight; y >= 0; y -= increment)
+            {
+                if ((y > 0 && y < rectHeight) && (x > 0 && x < rectWidth))
+                {
+                    continue;
+                } 
+                locations.Add(origin + new Vector2(x,y));
+                // count++;
+            }
+        }
+        return locations;
     }
 
     public GameObject GetPopUpMenu()
