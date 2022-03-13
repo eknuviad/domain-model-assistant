@@ -17,8 +17,6 @@ public class CompartmentedRectangle : Node
     public State state
     { get; set; }
     private Diagram _diagram;
-
-    private string id; //should move to node class later
     private Vector2 _prevPosition;
     private float rectHeight;
     private float rectWidth;
@@ -26,7 +24,6 @@ public class CompartmentedRectangle : Node
     private int headerOffsetY = 70;
     private int sectionOffsetY = -71;
     private int popupMenuOffsetX = 138;
-
     public bool isHighlighted
     { get; set; }
     public enum State
@@ -54,8 +51,6 @@ public class CompartmentedRectangle : Node
         rectWidth = rectangle.rect.width;
         CreateHeader();
         CreateSection();
-        id = this.GetComponent<CompartmentedRectangle>().ID;
-        Debug.Log(id);
     }
 
     // Update is called once per frame

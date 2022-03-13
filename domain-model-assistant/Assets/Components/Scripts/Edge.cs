@@ -15,17 +15,8 @@ public class Edge : MonoBehaviour
     { get; set; }
     private LineRenderer line;
     public List<GameObject> nodes = new List<GameObject>();
-
     public const int RequiredNumOfNodes = 2;
     public const int RequiredNumOfEdgeEnds = 2;
-
-
-    public List<string> nodesId = new List<string>();
-
-    public List<GameObject> edgeEnds = new List<GameObject>();
-
-    public GameObject[] classes;
-
     public GameObject edgeEnd;
     public List<GameObject> edgeEnds = new List<GameObject>();
     public GameObject edgeTitleUpper;
@@ -37,8 +28,6 @@ public class Edge : MonoBehaviour
     public GameObject popupLineMenu;
     float holdTimer = 0;
     bool hold = false;
-
-    public GameObject diagram;
     private Diagram _diagram;
     private Vector3 mousePos;
     public GameObject compositionIcon;
@@ -47,9 +36,7 @@ public class Edge : MonoBehaviour
     private int[] prevConnectionPointIndices = new int[] {-1,-1}; // used to keep track of connection point changes for updating availabilities  
     void Awake()
     {
-        //_diagram = diagram.GetComponent<Diagram>();
-        //Debug.Log(_diagram);
-            
+        _diagram = GetComponentInParent<Diagram>();
     }
     void Start()
     {
@@ -60,7 +47,6 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
-
             var node1 = nodes[0].GetComponent<Node>();
             var node2 = nodes[1].GetComponent<Node>();
             var node1_locs = node1.GetConnectionPointsLocations();
@@ -96,37 +82,6 @@ public class Edge : MonoBehaviour
             pos2.z = 0;
             line.SetPosition(0, pos1);
             line.SetPosition(1, pos2);
-
-            if(nodes[0] != null && nodes[1] != null)
-            {
-                var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-                var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-                if(diff_x <= diff_y)
-                {
-                    gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
-                    var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
-                    pos1.z = 0;
-                    var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(0, 95, 0));
-                    pos2.z = 0;
-                    line.SetPosition(0, pos1);
-                    line.SetPosition(1, pos2);
-                }
-                else
-                {
-                    gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
-                    var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(-95, 0, 0));
-                    pos1.z = 0;
-                    var pos2 = Camera.main.ScreenToWorldPoint(nodes[1].transform.position + new Vector3(95, 0, 0));
-                    pos2.z = 0;
-                    line.SetPosition(0, pos1);
-                    line.SetPosition(1, pos2);
-                }
-            } 
-            else 
-            {
-            RetrieveNodes();
-            
-
         }
 
         if (Input.GetMouseButtonDown(1))//right click
@@ -143,7 +98,6 @@ public class Edge : MonoBehaviour
                 SpawnPopupLineMenu();
             }
         }
-
         else if (this.hold && holdTimer > 1f - 5)
         {
             this.hold = false;
@@ -151,7 +105,6 @@ public class Edge : MonoBehaviour
             SpawnPopupLineMenu();
         }
     }
-
 
     void createEdge()
     {
@@ -259,20 +212,6 @@ public class Edge : MonoBehaviour
         // Debug.Log(nodes[0].transform.position);
         // Debug.Log(this.edgeTitleUpper.transform.position);
         Debug.Log("edgeend here");
-    }
-
-
-    public bool AddNode(GameObject aNode)
-    {
-        if (nodes.Contains(aNode))
-        {
-            return false;
-        }
-        nodes.Add(aNode);
-        nodesId.Add(aNode.GetComponent<CompartmentedRectangle>().ID);
-        aNode.GetComponent<Node>().AddEdge(this.gameObject);
-        Debug.Log("node added to edge");
-        return true;
     }
 
     //create edge end for upper object
@@ -491,7 +430,6 @@ public class Edge : MonoBehaviour
         }
     }
 
-
     /// <summary> This function takes two lists of connection points Vec2 coordinates 
     /// and returns the indices of each lists as an array of int such that the pairwise 
     /// distance is minimal and the connections indexed are available.
@@ -526,26 +464,6 @@ public class Edge : MonoBehaviour
             }
         }
         return indices;
-
-    public void RetrieveNodes()
-    {
-        classes = GameObject.FindGameObjectsWithTag("comprec");
-        foreach (var comp in classes)
-        {
-            if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[0]))
-            {
-                nodes[0] = comp;
-            }else if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[1]))
-            {
-                //Debug.Log(comp.GetComponent<CompartmentedRectangle>().ID);
-                nodes[1] = comp;
-
-            }
-        }
-        if(nodes[1]==null||nodes[0]==null){
-            Destroy();
-        }
-
     }
 
 }
