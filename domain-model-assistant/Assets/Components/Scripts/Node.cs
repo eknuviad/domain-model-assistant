@@ -105,12 +105,12 @@ public abstract class Node: MonoBehaviour
         connectionPointsAvailable[index] = isAvailable;
     }
 
-    public bool GetConnectionPointAvailable(int index)
+    public bool GetConnectionPointAvailability(int index)
     {
         return connectionPointsAvailable[index];
     }
 
-    public ReadOnlyCollection<bool> GetConnectionPointsAvailable()
+    public ReadOnlyCollection<bool> GetConnectionPointsAvailabilities()
     {
         return connectionPointsAvailable.AsReadOnly();
     }
