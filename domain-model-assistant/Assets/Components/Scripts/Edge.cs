@@ -28,6 +28,9 @@ public class Edge : MonoBehaviour
     bool hold = false;
     private Diagram _diagram;
     public Vector3 mousePos;
+    public Vector3 linePosition1;
+    public Vector3 linePosition2;
+    public Vector3 popupLineMenuOffset;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject  generalizationIcon;
@@ -47,7 +50,7 @@ public class Edge : MonoBehaviour
             var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
             var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
             if(diff_x <= diff_y)
-            {//
+            {
                 gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
                 var pos1 = Camera.main.ScreenToWorldPoint(nodes[0].transform.position + new Vector3(0, -95, 0));
                 pos1.z = 0;
@@ -100,11 +103,16 @@ public class Edge : MonoBehaviour
         }
     }
 
-    public Vector3[] GetPositions() 
+    public Vector3 GetPosition1() 
     {
-        Vector3[] positions = new Vector3[line.positionCount];
-        line.GetPositions(positions);
-        return positions;
+        linePosition1 = line.GetPosition(0);
+        return linePosition1;
+    }
+
+    public Vector3 GetPosition2() 
+    {
+        linePosition2 = line.GetPosition(1);
+        return linePosition2;
     }
 
 
@@ -315,19 +323,20 @@ public class Edge : MonoBehaviour
     public void SpawnPopupLineMenu()
     {
          Debug.Log("beginholdheard");
+        popupLineMenuOffset = new Vector3(70, -110, 0);
         if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
         {
             this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
             this.popupLineMenu.transform.SetParent(this.transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
+            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else
         {
-            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
+            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
             this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
     }
