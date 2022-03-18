@@ -260,22 +260,61 @@ public class Edge : MonoBehaviour
                 //TODO  
                //ASSOCIATION - same as line, 
                //should destroy any existing icon at intended location
+                compositionIcon.SetActive(false);
+                generalizationIcon.SetActive(false);
+                aggregationIcon.SetActive(false);
                 break;
             case 1:
                 //TODO  
-                aggregationIcon = GameObject.Instantiate(aggregationIcon);
-                aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x, y);
+                if (compositionIcon.activeSelf==true)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf==true)
+                {
+                    generalizationIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==false)
+                {
+                    aggregationIcon.SetActive(true);
+                    aggregationIcon = GameObject.Instantiate(aggregationIcon);
+                    aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                    aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x, y);
+                }
                 break;
             case 2:
-                compositionIcon = GameObject.Instantiate(compositionIcon);
-                compositionIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x, y);
+                if (generalizationIcon.activeSelf==true)
+                {
+                    generalizationIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==true)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (compositionIcon.activeSelf==false)
+                {
+                    compositionIcon.SetActive(true);
+                    compositionIcon = GameObject.Instantiate(compositionIcon);
+                    compositionIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                    compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x, y);
+                }
                 break;
              case 3:
-                generalizationIcon = GameObject.Instantiate(generalizationIcon);
-                generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x, y);
+                if (compositionIcon.activeSelf==true)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==true)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf==false)
+                {
+                    generalizationIcon.SetActive(true);
+                    generalizationIcon = GameObject.Instantiate(generalizationIcon);
+                    generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                    generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x, y);
+                }
                 break;
             default:
                 break;
