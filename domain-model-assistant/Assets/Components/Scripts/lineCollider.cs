@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This script instantiated a polygonCollider2D with the same shape as the line renderer 
+/// This script instantiates a polygonCollider2D with the same shape as the line renderer 
 /// object in edge, and move along with the edge. It detects mouse hovering, mouse exit and mouse clicks activities which allows
 /// highlighting upon left click and linePopupMenu spawning upon right click.
 /// </summary>
@@ -46,7 +46,8 @@ public class LineCollider : MonoBehaviour
     //mouse hover, not clicked, set color to blue
     void OnMouseEnter()
     {  
-        if(!isSelected){
+        if (!isSelected)
+        {
             edge.setColor(1);
         }
     }
@@ -60,10 +61,13 @@ public class LineCollider : MonoBehaviour
 
     void OnMouseUp()
     {
-        if(isSelected){
+        if (isSelected)
+        {
             isSelected = false;
             edge.setColor(1);
-        }else{
+        }
+        else
+        {
             edge.setColor(2);
             isSelected = true;
         }
@@ -90,9 +94,10 @@ public class LineCollider : MonoBehaviour
         float width = 2f * edge.GetWidth();
 
         //m = (y2 - y1) / (x2 - x1)
-        float m = (linePos2.y - linePos1.y) / (linePos2.x - linePos1.x);
-        float deltaX = (width / 2f) * (m / Mathf.Pow(m * m + 1, 0.5f));
-        float deltaY = (width / 2f) * (1 / Mathf.Pow(1 + m * m, 0.5f));
+        //slope for vertical lines are undefined
+        float slope = linePos2.x - linePos1.x !=0 ? (linePos2.y - linePos1.y) / (linePos2.x - linePos1.x) : 0;
+        float deltaX = (width / 2f) * (slope / Mathf.Pow(slope * slope + 1, 0.5f));
+        float deltaY = (width / 2f) * (1 / Mathf.Pow(1 + slope * slope, 0.5f));
 
         //Calculate the Offset from each point to the collision vertex
         Vector3[] offsets = new Vector3[2];
@@ -100,7 +105,7 @@ public class LineCollider : MonoBehaviour
         offsets[1] = new Vector3(deltaX, -deltaY);
 
         //Generate the Colliders Vertices
-        List<Vector2> colliderPositions = new List<Vector2> {
+        var colliderPositions = new List<Vector2> {
             linePos1 + offsets[0],
             linePos2 + offsets[0],
             linePos2 + offsets[1],
