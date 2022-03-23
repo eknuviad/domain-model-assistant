@@ -29,7 +29,10 @@ public class Edge : MonoBehaviour
     float holdTimer = 0;
     bool hold = false;
     private Diagram _diagram;
-    private Vector3 mousePos;
+    public Vector3 mousePos;
+    public Vector3 linePosition1;
+    public Vector3 linePosition2;
+    public Vector3 popupLineMenuOffset;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject generalizationIcon;
@@ -89,26 +92,6 @@ public class Edge : MonoBehaviour
             edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
         }
 
-        if (Input.GetMouseButtonDown(1))//right click
-        {
-            //check if type of edge. check if within radius
-            Debug.Log("edgePos: " + gameObject.transform.position);
-            mousePos = Input.mousePosition;
-            Debug.Log("mousePos: " + mousePos);
-            //NB gameobject.transform.position is the location of upper edgeend
-            //or left edgeend
-            var radius = Vector3.Distance(mousePos, gameObject.transform.position);
-            Debug.Log("radius: " + radius);
-            if (radius < 20){
-                SpawnPopupLineMenu();
-            }
-        }
-        else if (this.hold && holdTimer > 1f - 5)
-        {
-            this.hold = false;
-            holdTimer = 0;
-            SpawnPopupLineMenu();
-        }
     }
 
     void createEdge()
@@ -192,6 +175,40 @@ public class Edge : MonoBehaviour
         // }
     }
 
+    public Vector3 GetPosition1() 
+    {
+        linePosition1 = line.GetPosition(0);
+        return linePosition1;
+    }
+
+    public Vector3 GetPosition2() 
+    {
+        linePosition2 = line.GetPosition(1);
+        return linePosition2;
+    }
+
+
+    public float GetWidth() 
+    {
+        return line.startWidth;
+    }
+
+    public void setColor(int color)
+    {
+        switch(color){
+            case 0:
+                line.material.color = Color.black;
+                break;
+            case 1:
+                line.material.color = Color.blue;
+                break;
+            case 2:
+                line.material.color = Color.magenta;
+                break;
+
+
+        }
+    }
     public void CreateEdgeEndLeftObject(GameObject obj)
     {
         //replace edge title upper by edge title right
@@ -377,22 +394,61 @@ public class Edge : MonoBehaviour
                 //TODO  
                //ASSOCIATION - same as line, 
                //should destroy any existing icon at intended location
+                compositionIcon.SetActive(false);
+                generalizationIcon.SetActive(false);
+                aggregationIcon.SetActive(false);
                 break;
             case 1:
                 //TODO  
-                aggregationIcon = GameObject.Instantiate(aggregationIcon);
-                aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x, y);
+                if (compositionIcon.activeSelf==true)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf==true)
+                {
+                    generalizationIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==false)
+                {
+                    aggregationIcon.SetActive(true);
+                    aggregationIcon = GameObject.Instantiate(aggregationIcon);
+                    aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                    aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x, y);
+                }
                 break;
             case 2:
-                compositionIcon = GameObject.Instantiate(compositionIcon);
-                compositionIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x, y);
+                if (generalizationIcon.activeSelf==true)
+                {
+                    generalizationIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==true)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (compositionIcon.activeSelf==false)
+                {
+                    compositionIcon.SetActive(true);
+                    compositionIcon = GameObject.Instantiate(compositionIcon);
+                    compositionIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                    compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x, y);
+                }
                 break;
              case 3:
-                generalizationIcon = GameObject.Instantiate(generalizationIcon);
-                generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x, y);
+                if (compositionIcon.activeSelf==true)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==true)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf==false)
+                {
+                    generalizationIcon.SetActive(true);
+                    generalizationIcon = GameObject.Instantiate(generalizationIcon);
+                    generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
+                    generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x, y);
+                }
                 break;
             default:
                 break;
@@ -424,18 +480,20 @@ public class Edge : MonoBehaviour
     public void SpawnPopupLineMenu()
     {
          Debug.Log("beginholdheard");
+        popupLineMenuOffset = new Vector3(70, -110, 0);
         if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
         {
             this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
             this.popupLineMenu.transform.SetParent(this.transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
+            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else
         {
+            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
             this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
     }
