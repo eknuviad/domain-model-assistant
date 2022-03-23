@@ -82,6 +82,11 @@ public class Edge : MonoBehaviour
             pos2.z = 0;
             line.SetPosition(0, pos1);
             line.SetPosition(1, pos2);
+
+            edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
+            edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
+            edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
+            edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
         }
 
         if (Input.GetMouseButtonDown(1))//right click
@@ -120,10 +125,11 @@ public class Edge : MonoBehaviour
         line.numCapVertices = 50;
         Debug.Log("line created");
 
-        var edgeEnd1 = GameObject.Instantiate(edgeEnd);
-        var edgeEnd2 = GameObject.Instantiate(edgeEnd);
-        edgeEnd1.GetComponent<EdgeEnd>().SetEdge(this.gameObject);
-        edgeEnd2.GetComponent<EdgeEnd>().SetEdge(this.gameObject);
+        var edgeEnd1 = GameObject.Instantiate(edgeEnd).GetComponent<EdgeEnd>();
+        var edgeEnd2 = GameObject.Instantiate(edgeEnd).GetComponent<EdgeEnd>();
+        
+        edgeEnd1.SetEdge(this.gameObject);
+        edgeEnd2.SetEdge(this.gameObject);
 
         var node1 = nodes[0].GetComponent<Node>();
         var node2 = nodes[1].GetComponent<Node>();
@@ -146,8 +152,8 @@ public class Edge : MonoBehaviour
         // set the optimal connection points
         var edgeEnd1_loc = node1_locs[indices[0]];
         var edgeEnd2_loc = node2_locs[indices[1]];
-        edgeEnd1.GetComponent<EdgeEnd>().Position = edgeEnd1_loc;
-        edgeEnd2.GetComponent<EdgeEnd>().Position = edgeEnd2_loc;
+        edgeEnd1.Position = edgeEnd1_loc;
+        edgeEnd2.Position = edgeEnd2_loc;
 
         // set the connection points as taken 
         node1.SetConnectionPointAvailable(indices[0], false);
@@ -158,13 +164,17 @@ public class Edge : MonoBehaviour
         prevConnectionPointIndices[1] = indices[1];
 
         // update the line end positions
-        var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.GetComponent<EdgeEnd>().Position);
+        var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.Position);
         pos1.z = 0;
-        var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.GetComponent<EdgeEnd>().Position);
+        var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.Position);
         pos2.z = 0;
         line.SetPosition(0, pos1);
         line.SetPosition(1, pos2);
 
+        edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
+        edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
+        edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
+        edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
         // // check closest node edge
         // var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
         // var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
