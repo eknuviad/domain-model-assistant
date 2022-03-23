@@ -27,7 +27,10 @@ public class Edge : MonoBehaviour
     float holdTimer = 0;
     bool hold = false;
     private Diagram _diagram;
-    private Vector3 mousePos;
+    public Vector3 mousePos;
+    public Vector3 linePosition1;
+    public Vector3 linePosition2;
+    public Vector3 popupLineMenuOffset;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject  generalizationIcon;
@@ -67,27 +70,6 @@ public class Edge : MonoBehaviour
                 line.SetPosition(1, pos2);
             }
         }
-
-        if (Input.GetMouseButtonDown(1))//right click
-        {
-            //check if type of edge. check if within radius
-            Debug.Log("edgePos: " + gameObject.transform.position);
-            mousePos = Input.mousePosition;
-            Debug.Log("mousePos: " + mousePos);
-            //NB gameobject.transform.position is the location of upper edgeend
-            //or left edgeend
-            var radius = Vector3.Distance(mousePos, gameObject.transform.position);
-            Debug.Log("radius: " + radius);
-            if(radius < 20){
-                SpawnPopupLineMenu();
-            }
-        }
-        // else if (this.hold && holdTimer > 1f - 5)
-        // {
-        //     this.hold = false;
-        //     holdTimer = 0;
-        //     SpawnPopupLineMenu();
-        // }
     }
 
     void createEdge()
@@ -121,6 +103,40 @@ public class Edge : MonoBehaviour
         }
     }
 
+    public Vector3 GetPosition1() 
+    {
+        linePosition1 = line.GetPosition(0);
+        return linePosition1;
+    }
+
+    public Vector3 GetPosition2() 
+    {
+        linePosition2 = line.GetPosition(1);
+        return linePosition2;
+    }
+
+
+    public float GetWidth() 
+    {
+        return line.startWidth;
+    }
+
+    public void setColor(int color)
+    {
+        switch(color){
+            case 0:
+                line.material.color = Color.black;
+                break;
+            case 1:
+                line.material.color = Color.blue;
+                break;
+            case 2:
+                line.material.color = Color.magenta;
+                break;
+
+
+        }
+    }
     public void CreateEdgeEndLeftObject(GameObject obj)
     {
         //replace edge title upper by edge title right
@@ -346,18 +362,20 @@ public class Edge : MonoBehaviour
     public void SpawnPopupLineMenu()
     {
          Debug.Log("beginholdheard");
+        popupLineMenuOffset = new Vector3(70, -110, 0);
         if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
         {
             this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
             this.popupLineMenu.transform.SetParent(this.transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = this.mousePos + new Vector3(70, -110, 0);
+            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
             this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else
         {
+            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
             this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
     }
