@@ -17,6 +17,13 @@ public class Edge : MonoBehaviour
     public List<GameObject> nodes = new List<GameObject>();
     public const int RequiredNumOfNodes = 2;
     public const int RequiredNumOfEdgeEnds = 2;
+
+
+    public List<string> nodesId = new List<string>();
+
+    public GameObject[] classes;
+
+
     public GameObject edgeEnd;
     public List<GameObject> edgeEnds = new List<GameObject>();
     public GameObject edgeTitleUpper;
@@ -50,48 +57,58 @@ public class Edge : MonoBehaviour
     {
         if (nodes != null)
         {
-            var node1 = nodes[0].GetComponent<Node>();
-            var node2 = nodes[1].GetComponent<Node>();
-            var node1_locs = node1.GetConnectionPointsLocations();
-            var node2_locs = node2.GetConnectionPointsLocations();
+            if (nodes[0] != null && nodes[1] != null)
+            {
+                var node1 = nodes[0].GetComponent<Node>();
+                var node2 = nodes[1].GetComponent<Node>();
+                var node1_locs = node1.GetConnectionPointsLocations();
+                var node2_locs = node2.GetConnectionPointsLocations();
 
-            var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
-            var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
+                var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
+                var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
             
-            int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(), node2.GetConnectionPointsAvailabilities());
+                int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(), node2.GetConnectionPointsAvailabilities());
 
-            // release previous connection points
-            node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
-            node2.SetConnectionPointAvailable(prevConnectionPointIndices[1], true);
+                // release previous connection points
+                node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
+                node2.SetConnectionPointAvailable(prevConnectionPointIndices[1], true);
 
-            // set the optimal connection points
-            var edgeEnd1_loc = node1_locs[indices[0]];
-            var edgeEnd2_loc = node2_locs[indices[1]];
-            edgeEnd1.Position = edgeEnd1_loc;
-            edgeEnd2.Position = edgeEnd2_loc;
+                // set the optimal connection points
+                var edgeEnd1_loc = node1_locs[indices[0]];
+                var edgeEnd2_loc = node2_locs[indices[1]];
+                edgeEnd1.Position = edgeEnd1_loc;
+                edgeEnd2.Position = edgeEnd2_loc;
 
-            // set the connection points as taken
-            node1.SetConnectionPointAvailable(indices[0], false);
-            node2.SetConnectionPointAvailable(indices[1], false);
+                // set the connection points as taken
+                node1.SetConnectionPointAvailable(indices[0], false);
+                node2.SetConnectionPointAvailable(indices[1], false);
 
-            // record the connection for the next update
-            prevConnectionPointIndices[0] = indices[0];
-            prevConnectionPointIndices[1] = indices[1];
+                // record the connection for the next update
+                prevConnectionPointIndices[0] = indices[0];
+                prevConnectionPointIndices[1] = indices[1];
 
-            // update the line end positions
-            var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.Position);
-            pos1.z = 0;
-            var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.Position);
-            pos2.z = 0;
-            line.SetPosition(0, pos1);
-            line.SetPosition(1, pos2);
+                // update the line end positions
+                var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.Position);
+                pos1.z = 0;
+                var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.Position);
+                pos2.z = 0;
+                line.SetPosition(0, pos1);
+                line.SetPosition(1, pos2);
+                
+                edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
+                edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
+                edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
+                edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
+                
+                
+                } 
+                else 
+                {
+                RetrieveNodes();
+                }
 
-            edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
-            edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
-            edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
-            edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
-        }
 
+    }
     }
 
     void createEdge()
@@ -241,6 +258,7 @@ public class Edge : MonoBehaviour
         Debug.Log("edgeend here");
     }
 
+
     //create edge end for upper object
     public void CreateEdgeEndUpperObj(GameObject obj)
     {
@@ -290,6 +308,7 @@ public class Edge : MonoBehaviour
         }
 
         nodes.Add(aNode);
+        nodesId.Add(aNode.GetComponent<CompartmentedRectangle>().ID);
 
         if (aNode.GetComponent<Node>().IndexOfConnection(this.gameObject) != -1)
         {
@@ -532,6 +551,29 @@ public class Edge : MonoBehaviour
             }
         }
         return indices;
+
+    }
+
+    public void RetrieveNodes()
+    {
+        classes = GameObject.FindGameObjectsWithTag("comprec");
+        foreach (var comp in classes)
+        {
+            if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[0]))
+            {
+                nodes[0] = comp;
+            }else if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[1]))
+            {
+                //Debug.Log(comp.GetComponent<CompartmentedRectangle>().ID);
+                nodes[1] = comp;
+
+            }
+        }
+        if(nodes[1]==null||nodes[0]==null){
+            Destroy();
+        }
+
+
     }
 
 }
