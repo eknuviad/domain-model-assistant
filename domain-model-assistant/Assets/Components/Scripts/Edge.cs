@@ -159,20 +159,20 @@ public class Edge : MonoBehaviour
         edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
         edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
         // // check closest node edge
-        // var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-        // var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-        // if (diff_x <= diff_y)
-        // {
-        //     gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
+         var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+         var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+         if (diff_x <= diff_y)
+         {
+             gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
         // //     CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
         // //     CreateEdgeEndLowerObj(nodes[1]);
-        // }
-        // else
-        // {
-        //     gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
+         }
+         else
+         {
+            gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
         // //     CreateEdgeEndLeftObject(nodes[1]);
         // //     CreateEdgeEndRightObject(nodes[0]);
-        // }
+         }
     }
 
     public Vector3 GetPosition1() 
