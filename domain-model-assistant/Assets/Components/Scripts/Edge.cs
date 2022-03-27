@@ -47,8 +47,7 @@ public class Edge : MonoBehaviour
     }
 
     void Update()
-    {
-        if (nodes != null)
+    {if (nodes != null)
         {
             var node1 = nodes[0].GetComponent<Node>();
             var node2 = nodes[1].GetComponent<Node>();
@@ -167,22 +166,23 @@ public class Edge : MonoBehaviour
         pos2.z = 0;
         line.SetPosition(0, pos1);
         line.SetPosition(1, pos2);
-
-        // // check closest node edge
-        // var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-        // var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-        // if (diff_x <= diff_y)
-        // {
-        //     gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
-        // //     CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
-        // //     CreateEdgeEndLowerObj(nodes[1]);
-        // }
-        // else
-        // {
-        //     gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
-        // //     CreateEdgeEndLeftObject(nodes[1]);
-        // //     CreateEdgeEndRightObject(nodes[0]);
-        // }
+        var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+        var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+        if (diff_x <= diff_y)
+        {
+            gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
+            // Debug.Log("hello hello hello how low");
+        //     CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
+        //     CreateEdgeEndLowerObj(nodes[1]);
+        }
+        else
+        {
+            gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
+            // Debug.Log("hello hello hello how low");
+        //     CreateEdgeEndLeftObject(nodes[1]);
+        //     CreateEdgeEndRightObject(nodes[0]);
+        }
+        
     }
 
     public Vector3 GetPosition1() 
@@ -471,14 +471,11 @@ public class Edge : MonoBehaviour
 
     /// <summary> This function takes two lists of connection points Vec2 coordinates 
     /// and returns the indices of each lists as an array of int such that the pairwise 
-    /// distance is minimal and the connections indexed are available.
-    /// 
-    /// Previous connections are regarded as available in order to return the index of 
-    /// updated connection points if they are strictly smaller in distance than the previous
-    /// connection, otherwise the previous indices are returned.
+    /// distance is minimal and the connections indexed are available.   
     /// </summary>
     private int[] GetIndicesOfMinDist(List<Vector2>node1_locs, List<Vector2>node2_locs, ReadOnlyCollection<bool> node1_avails, ReadOnlyCollection<bool> node2_avails)
     {
+        
         int[] indices = new int[2];
         float minDist = float.MaxValue;
         for (int i = 0; i < node1_locs.Count; i++)
