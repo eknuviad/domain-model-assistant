@@ -10,7 +10,7 @@ using UnityEngine;
 /// highlighting upon left click and linePopupMenu spawning upon right click.
 /// </summary>
 [RequireComponent(typeof(Edge), typeof(PolygonCollider2D))]
-public class LineCollider : MonoBehaviour
+public class lineCollider : MonoBehaviour
 {
 
     Edge edge;
