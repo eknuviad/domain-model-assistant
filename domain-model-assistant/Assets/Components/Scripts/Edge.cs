@@ -61,61 +61,54 @@ public class Edge : MonoBehaviour
         {
             if(nodes[0] != null && nodes[1] != null)
             {
-            var node1 = nodes[0].GetComponent<Node>();
-            var node2 = nodes[1].GetComponent<Node>();
-            var node1_locs = node1.GetConnectionPointsLocations();
-            var node2_locs = node2.GetConnectionPointsLocations();
+                var node1 = nodes[0].GetComponent<Node>();
+                var node2 = nodes[1].GetComponent<Node>();
+                var node1_locs = node1.GetConnectionPointsLocations();
+                var node2_locs = node2.GetConnectionPointsLocations();
+                
             
-        
 
-            var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
-            var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
-            
-            int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(), node2.GetConnectionPointsAvailabilities());
+                var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
+                var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
+                
+                int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(), node2.GetConnectionPointsAvailabilities());
 
-            // release previous connection points
-            node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
-            node2.SetConnectionPointAvailable(prevConnectionPointIndices[1], true);
+                // release previous connection points
+                node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
+                node2.SetConnectionPointAvailable(prevConnectionPointIndices[1], true);
 
-            // set the optimal connection points
-            var edgeEnd1_loc = node1_locs[indices[0]];
-            var edgeEnd2_loc = node2_locs[indices[1]];
-            edgeEnd1.Position = edgeEnd1_loc;
-            edgeEnd2.Position = edgeEnd2_loc;
+                // set the optimal connection points
+                var edgeEnd1_loc = node1_locs[indices[0]];
+                var edgeEnd2_loc = node2_locs[indices[1]];
+                edgeEnd1.Position = edgeEnd1_loc;
+                edgeEnd2.Position = edgeEnd2_loc;
 
-            // set the connection points as taken
-            node1.SetConnectionPointAvailable(indices[0], false);
-            node2.SetConnectionPointAvailable(indices[1], false);
+                // set the connection points as taken
+                node1.SetConnectionPointAvailable(indices[0], false);
+                node2.SetConnectionPointAvailable(indices[1], false);
 
-            // record the connection for the next update
-            prevConnectionPointIndices[0] = indices[0];
-            prevConnectionPointIndices[1] = indices[1];
+                // record the connection for the next update
+                prevConnectionPointIndices[0] = indices[0];
+                prevConnectionPointIndices[1] = indices[1];
 
-            // update the line end positions
-            var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.Position);
-            pos1.z = 0;
-            var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.Position);
-            pos2.z = 0;
-            line.SetPosition(0, pos1);
-            line.SetPosition(1, pos2);
+                // update the line end positions
+                var pos1 = Camera.main.ScreenToWorldPoint(edgeEnd1.Position);
+                pos1.z = 0;
+                var pos2 = Camera.main.ScreenToWorldPoint(edgeEnd2.Position);
+                pos2.z = 0;
+                line.SetPosition(0, pos1);
+                line.SetPosition(1, pos2);
 
-            edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
-            edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
-            edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
-            edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
+                edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
+                edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
+                edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
+                edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
+            }
+            else
+            {
+                RetrieveNodes();
+            }
         }
-        else
-        {
-            RetrieveNodes();
-            
-        }
-        }
-        // else if (this.hold && holdTimer > 1f - 5)
-        // {
-        //     this.hold = false;
-        //     holdTimer = 0;
-        //     SpawnPopupLineMenu();
-        // }
     }
 
     void createEdge()
@@ -233,69 +226,11 @@ public class Edge : MonoBehaviour
 
         }
     }
-    public void CreateEdgeEndLeftObject(GameObject obj)
-    {
-        //replace edge title upper by edge title right
-        this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
-        //will need to get cordinates from edge object in future
-        this.edgeTitleUpper.transform.position += new Vector3(220, -15, 0);
-        this.edgeEndNumberUpper.transform.position += new Vector3(210, -60, 0);
-        //Left Object
-        this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
-        this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
-        // Debug.Log(nodes[0].transform.position);
-        // Debug.Log(this.edgeTitleUpper.transform.position);
-        Debug.Log("edgeend here");
-    }
-
-    public void CreateEdgeEndRightObject(GameObject obj)
-    {
-        //replace edge title upper by edge title left
-        this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
-        //will need to get cordinates from edge object in future
-        this.edgeTitleUpper.transform.position += new Vector3(-90, -10, 0);
-        this.edgeEndNumberUpper.transform.position += new Vector3(-20, -50, 0);
-        //Right Object
-        this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
-        this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
-        // Debug.Log(nodes[0].transform.position);
-        // Debug.Log(this.edgeTitleUpper.transform.position);
-        Debug.Log("edgeend here");
-    }
 
     void Destroy()
     {
         Destroy(this.gameObject);
     }
-
-   
-    //create edge end for upper object
-    public void CreateEdgeEndUpperObj(GameObject obj)
-    {
-        this.edgeTitleUpper = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeEndNumberUpper = GameObject.Instantiate(textbox, obj.transform);
-        //will need to get cordinates from edge object in future
-        this.edgeTitleUpper.transform.position += new Vector3(40, -170, 0);
-        this.edgeEndNumberUpper.transform.position += new Vector3(125, -170, 0);
-        this.edgeTitleUpper.GetComponent<InputField>().text = "enter text";
-        this.edgeEndNumberUpper.GetComponent<InputField>().text = "*";
-        // Debug.Log(nodes[0].transform.position);
-        // Debug.Log(this.edgeTitleUpper.transform.position);
-        Debug.Log("edgeend here");
-    }
-    public void CreateEdgeEndLowerObj(GameObject obj)
-    {
-        this.edgeTitleLower = GameObject.Instantiate(textbox, obj.transform);
-        this.edgeEndNumberLower = GameObject.Instantiate(textbox, obj.transform);
-        //will need to get cordinates from edge object in future
-        this.edgeTitleLower.transform.position += new Vector3(40, 85, 0);
-        this.edgeEndNumberLower.transform.position += new Vector3(125, 85, 0);
-        this.edgeTitleLower.GetComponent<InputField>().text = "enter text";
-        this.edgeEndNumberLower.GetComponent<InputField>().text = "*";
-    }
-
 
     public int IndexOfNode(GameObject aNode)
     {
@@ -425,14 +360,6 @@ public class Edge : MonoBehaviour
         edgeEnd.SetIconType(3);
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
-
-    public void updateIconsPosition(Vector2 pos)
-    {
-        // compositionIcon.transform.position = pos;
-        // generalizationIcon.transform.position = pos;
-        // aggregationIcon.transform.position = pos;
-    }
-
     public GameObject GetPopUpLineMenu()
     {
         return popupLineMenu;
@@ -446,16 +373,6 @@ public class Edge : MonoBehaviour
         holdTimer += Time.deltaTime; 
     }
 
-    // public void OnEndHold()
-    // {
-    //     if (holdTimer > 1f - 5)
-    //     {
-    //         SpawnPopupLineMenu();
-    //     }
-    //     holdTimer = 0;
-    //     this.hold = false;
-
-    // }
     public void SpawnPopupLineMenu()
     {
          Debug.Log("beginholdheard");
