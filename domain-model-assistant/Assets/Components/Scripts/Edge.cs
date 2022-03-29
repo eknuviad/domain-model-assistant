@@ -360,7 +360,7 @@ public class Edge : MonoBehaviour
     {
         EdgeEnd edgeEnd = edgeEnds[GetClosestEdgeEndIndex()].GetComponent<EdgeEnd>();
         edgeEnd.SetIconType(0);
-
+        popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
     public void SetAggregation()
     {
@@ -381,6 +381,7 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(1);
+        popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
     public void SetComposition()
     {
@@ -401,6 +402,7 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(2);
+        popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
     public void SetGeneralization()
     {
@@ -421,6 +423,7 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(3);
+        popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
 
     public void updateIconsPosition(Vector2 pos)
