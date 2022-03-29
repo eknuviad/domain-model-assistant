@@ -1,6 +1,6 @@
 # Domain Modeling Assistant Project :beginner:
 
-Year2022 Capstone Design Project - Team 08
+Year2022 Capstone Design Project - Team 08  
 Year2021 Capstone Design Project - Team 04  
 
 ## Project Description
