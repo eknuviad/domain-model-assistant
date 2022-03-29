@@ -1,6 +1,7 @@
 # Domain Modeling Assistant Project :beginner:
 
-Capstone Design Project - Team 04
+Year2022 Capstone Design Project - Team 08
+Year2021 Capstone Design Project - Team 04  
 
 ## Project Description
 
@@ -50,6 +51,13 @@ For more information about the project implementation, see [here](documentation/
 ___
 
 ## Team 
+
+| Name              | Major                  | Year |
+|:-----------------:|:----------------------:|:----:|
+|Jack Wei           | Computer Engineering   | U3   |
+|Linwei Yuan        | Computer Engineering   | U3   |
+|Ruixin Su          | Software Engineering   | U3   |
+|Jianmo Li          | Computer Engineering   | U3   |
 
 | Name              | Major                  | Year |
 |:-----------------:|:----------------------:|:----:|
