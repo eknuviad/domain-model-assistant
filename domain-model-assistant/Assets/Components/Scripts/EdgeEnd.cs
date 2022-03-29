@@ -26,6 +26,10 @@ public class EdgeEnd : MonoBehaviour
     public static Vector2 TitleHorizontalOffset = new Vector2(80,0);
     public static Vector2 NumberTitleOffset = new Vector2(0,-20);
     private GameObject edge;
+    public GameObject compositionIcon;
+    public GameObject aggregationIcon;
+    public GameObject generalizationIcon;
+    public bool hasActiveIcon = false;
     // public GameObject popupMenu;
     void Start()
     {
@@ -36,6 +40,19 @@ public class EdgeEnd : MonoBehaviour
         edgeEndNumber = GameObject.Instantiate(textbox, this.transform);
         edgeEndNumber.GetComponent<InputField>().text = "*";
         edgeEndNumber.transform.position = Position + new Vector2(85,-20);
+
+        generalizationIcon = GameObject.Instantiate(generalizationIcon);
+        aggregationIcon = GameObject.Instantiate(aggregationIcon);
+        compositionIcon = GameObject.Instantiate(compositionIcon);
+
+        generalizationIcon.SetActive(false);
+        aggregationIcon.SetActive(false);
+        compositionIcon.SetActive(false);
+
+        generalizationIcon.GetComponent<GeneralizationIcon>().SetEdgeEnd(this);
+        aggregationIcon.GetComponent<AggregationIcon>().SetEdgeEnd(this);
+        compositionIcon.GetComponent<CompositionIcon>().SetEdgeEnd(this);
+
         Debug.Log("instatntiate");
     }
 
@@ -71,6 +88,10 @@ public class EdgeEnd : MonoBehaviour
 
         edgeEndTitle.transform.position = titlePos;
         edgeEndNumber.transform.position = numberPos;
+
+        compositionIcon.transform.position = Position;
+        aggregationIcon.transform.position = Position;
+        generalizationIcon.transform.position = Position;
     }
 
     void Destroy()
@@ -106,6 +127,69 @@ public class EdgeEnd : MonoBehaviour
         wasSet = true;
         Debug.Log("Edge end: Edge set");
         return wasSet;
+    }
+
+    public void SetIconType(int type)
+    {
+        switch (type)
+        {
+            case 0:
+                //TODO  
+               //ASSOCIATION - same as line, 
+               //should destroy any existing icon at intended location
+                compositionIcon.SetActive(false);
+                generalizationIcon.SetActive(false);
+                aggregationIcon.SetActive(false);
+                hasActiveIcon = false;
+                break;
+            case 1:
+                hasActiveIcon = true;
+                if (compositionIcon.activeSelf==true)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf==true)
+                {
+                    generalizationIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==false)
+                {
+                    aggregationIcon.SetActive(true);
+                }
+                break;
+            case 2:
+                hasActiveIcon = true;
+                if (generalizationIcon.activeSelf==true)
+                {
+                    generalizationIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==true)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (compositionIcon.activeSelf==false)
+                {
+                    compositionIcon.SetActive(true);
+                }
+                break;
+             case 3:
+                hasActiveIcon = true;
+                if (compositionIcon.activeSelf==true)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (aggregationIcon.activeSelf==true)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf==false)
+                {
+                    generalizationIcon.SetActive(true);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
 }

@@ -40,9 +40,9 @@ public class Edge : MonoBehaviour
     public Vector3 linePosition1;
     public Vector3 linePosition2;
     public Vector3 popupLineMenuOffset;
-    public GameObject compositionIcon;
-    public GameObject aggregationIcon;
-    public GameObject generalizationIcon;
+    // public GameObject compositionIcon;
+    // public GameObject aggregationIcon;
+    // public GameObject generalizationIcon;
     private int[] prevConnectionPointIndices = new int[] {-1,-1}; // used to keep track of connection point changes for updating availabilities  
     void Awake()
     {
@@ -358,129 +358,78 @@ public class Edge : MonoBehaviour
 
     public void SetAssociation()
     {
-        SetIconType(0);
+        EdgeEnd edgeEnd = edgeEnds[GetClosestEdgeEndIndex()].GetComponent<EdgeEnd>();
+        edgeEnd.SetIconType(0);
 
     }
     public void SetAggregation()
     {
-        SetIconType(1);
-
+        EdgeEnd edgeEnd;
+        EdgeEnd otherEdgeEnd;
+        if (GetClosestEdgeEndIndex() == 1)
+        {
+            edgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+        }
+        else
+        {
+            edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+        }
+        if(otherEdgeEnd.hasActiveIcon)
+        {
+            otherEdgeEnd.SetIconType(0);
+        }
+        edgeEnd.SetIconType(1);
     }
     public void SetComposition()
     {
-        SetIconType(2);
-
+        EdgeEnd edgeEnd;
+        EdgeEnd otherEdgeEnd;
+        if (GetClosestEdgeEndIndex() == 1)
+        {
+            edgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+        }
+        else
+        {
+            edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+        }
+        if(otherEdgeEnd.hasActiveIcon)
+        {
+            otherEdgeEnd.SetIconType(0);
+        }
+        edgeEnd.SetIconType(2);
     }
     public void SetGeneralization()
     {
-        SetIconType(3);
-
+        EdgeEnd edgeEnd;
+        EdgeEnd otherEdgeEnd;
+        if (GetClosestEdgeEndIndex() == 1)
+        {
+            edgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+        }
+        else
+        {
+            edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+        }
+        if(otherEdgeEnd.hasActiveIcon)
+        {
+            otherEdgeEnd.SetIconType(0);
+        }
+        edgeEnd.SetIconType(3);
     }
 
-    public void SetIconType(int type)
+    public void updateIconsPosition(Vector2 pos)
     {
-        GameObject edgeNode;
-        float x;
-        float y;
-        // find closest edge
-        var a = Vector3.Distance(mousePos, nodes[0].transform.position);
-        var b = Vector3.Distance(mousePos, nodes[1].transform.position);
-        // find if connection is horizontal or vertical
-        var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-        var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-        if (a < b && diff_x <= diff_y)
-        {
-            edgeNode = nodes[0];
-            y = -95;
-            x = 0;
-
-        }
-        else if (diff_x <= diff_y)
-        {
-            edgeNode = nodes[1];
-            y = 95;
-            x = 0;
-
-        }
-        else if (a<b)
-        {
-            edgeNode = nodes[0];
-            x = -95;
-            y = 0;
-
-        }
-        else{
-            edgeNode = nodes[1];
-            x = 95;
-            y = 0;
-
-        }
-        switch (type)
-        {
-            case 0:
-                //TODO  
-               //ASSOCIATION - same as line, 
-               //should destroy any existing icon at intended location
-                compositionIcon.SetActive(false);
-                generalizationIcon.SetActive(false);
-                aggregationIcon.SetActive(false);
-                break;
-            case 1:
-                //TODO  
-                if (compositionIcon.activeSelf==true)
-                {
-                    compositionIcon.SetActive(false);
-                }
-                if (generalizationIcon.activeSelf==true)
-                {
-                    generalizationIcon.SetActive(false);
-                }
-                if (aggregationIcon.activeSelf==false)
-                {
-                    aggregationIcon.SetActive(true);
-                    aggregationIcon = GameObject.Instantiate(aggregationIcon);
-                    aggregationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                    aggregationIcon.GetComponent<AggregationIcon>().SetNode(edgeNode, x, y);
-                }
-                break;
-            case 2:
-                if (generalizationIcon.activeSelf==true)
-                {
-                    generalizationIcon.SetActive(false);
-                }
-                if (aggregationIcon.activeSelf==true)
-                {
-                    aggregationIcon.SetActive(false);
-                }
-                if (compositionIcon.activeSelf==false)
-                {
-                    compositionIcon.SetActive(true);
-                    compositionIcon = GameObject.Instantiate(compositionIcon);
-                    compositionIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                    compositionIcon.GetComponent<CompositionIcon>().SetNode(edgeNode, x, y);
-                }
-                break;
-             case 3:
-                if (compositionIcon.activeSelf==true)
-                {
-                    compositionIcon.SetActive(false);
-                }
-                if (aggregationIcon.activeSelf==true)
-                {
-                    aggregationIcon.SetActive(false);
-                }
-                if (generalizationIcon.activeSelf==false)
-                {
-                    generalizationIcon.SetActive(true);
-                    generalizationIcon = GameObject.Instantiate(generalizationIcon);
-                    generalizationIcon.transform.position = edgeNode.transform.position + new Vector3(x, y, 0);
-                    generalizationIcon.GetComponent<GeneralizationIcon>().SetNode(edgeNode, x, y);
-                }
-                break;
-            default:
-                break;
-        }
+        // compositionIcon.transform.position = pos;
+        // generalizationIcon.transform.position = pos;
+        // aggregationIcon.transform.position = pos;
     }
+
     public GameObject GetPopUpLineMenu()
     {
         return popupLineMenu;
@@ -559,6 +508,21 @@ public class Edge : MonoBehaviour
             }
         }
         return indices;
+    }
+
+    private int GetClosestEdgeEndIndex()
+    {
+        var node1_dist = Vector3.Distance(mousePos, nodes[0].transform.position);
+        var node2_dist = Vector3.Distance(mousePos, nodes[1].transform.position);
+
+        if(node1_dist < node2_dist)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
     }
     public void RetrieveNodes()
     {

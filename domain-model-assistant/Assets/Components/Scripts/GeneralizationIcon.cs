@@ -5,9 +5,7 @@ using UnityEngine;
 public class GeneralizationIcon : MonoBehaviour
 {
     // Start is called before the first frame update
-    public GameObject node;
-    public float updateConstantX;
-    public float updateConstantY;
+    public EdgeEnd edgeEnd;
 
     void Start()
     {
@@ -20,21 +18,18 @@ public class GeneralizationIcon : MonoBehaviour
         if (gameObject != null)
         {
             //update position with respect to associated node
-            gameObject.transform.position = node.transform.position + new Vector3(updateConstantX, updateConstantY, 0);
+            gameObject.transform.position = edgeEnd.Position;
         }
     }
 
-    public void SetNode(GameObject aNode, float posConstantX,float posConstantY)
+    public void SetEdgeEnd(EdgeEnd aEdgeEnd)
     {
-        this.node = aNode;
-        this.updateConstantX = posConstantX;
-        this.updateConstantY = posConstantY;
-
+        this.edgeEnd = aEdgeEnd;
     }
 
-    public GameObject GetNode()
+    public EdgeEnd GetEdgeEnd()
     {
-        return this.node;
+        return this.edgeEnd;
     }
     public void Destroy()
     {
