@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System.Drawing;
+//using System.Diagnostics;
+//using System.Diagnostics;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +15,11 @@ public class CompartmentedRectangle : Node
     public TextBox text;
     // popup menu variables
     public GameObject popupMenu;
+    public RectTransform rectangle;
+    
+    public Color highlight = new Color(0.61f, 0.81f, 0.973f);
+    public Color headerColor; // = this.transform.GetChild(1).gameObject.GetComponent<Image>().color;
+    public Color sectionColor;
     float holdTimer = 0;
     bool hold = false;
     public State state
@@ -49,13 +57,24 @@ public class CompartmentedRectangle : Node
         {
             connectionPointsAvailable.Add(true);
         }
-        RectTransform rectangle = (RectTransform)this.transform;
+        rectangle = (RectTransform)this.transform;
         rectHeight = rectangle.rect.height;
         rectWidth = rectangle.rect.width;
         CreateHeader();
         CreateSection();
         id = this.GetComponent<CompartmentedRectangle>().ID;
-        Debug.Log(id);
+        // Debug.Log(this.transform.GetChild(0));
+        // Debug.Log(this.transform.GetChild(1));
+        // Debug.Log(this.transform.GetChild(2));
+        // Debug.Log(this.transform.GetChild(3));
+       
+        GameObject childHeader;
+        GameObject childSection;
+        childHeader = this.transform.GetChild(0).gameObject;
+        headerColor = childHeader.GetComponent<Image>().color;
+        childSection = this.transform.GetChild(2).gameObject;
+        sectionColor = childSection.GetComponent<Image>().color;
+            
     }
 
     // Update is called once per frame
@@ -65,11 +84,7 @@ public class CompartmentedRectangle : Node
         {
             OnBeginHold();
         }
-        if (isHighlighted)
-        {
-            GameObject child = this.transform.GetChild(1).gameObject;
-            child.GetComponent<Image>().color = Color.yellow; // or change to light blue
-        }
+        //this.transform.GetChild(1).gameObject.GetComponent<Image>().material.color = Color.white;
     }
 
     // ************ BEGIN Controller Methods for Compartmented Rectangle ****************//
@@ -109,7 +124,8 @@ public class CompartmentedRectangle : Node
         }
         holdTimer = 0;
         this.hold = false;
-
+        toggleHighlight();
+        
         //update class position
         _diagram.UpdateClass(this.textbox, this.gameObject);
 
@@ -206,6 +222,29 @@ public class CompartmentedRectangle : Node
         Debug.Log("set line heard");
         _diagram.gameObject.GetComponent<DrawLine>().AddCompartmentedRectangle(this.gameObject);
         this.popupMenu.GetComponent<PopupMenu>().Close(); // close the popup menu
+    }
+
+    public void toggleHighlight(){
+        if(isHighlighted){
+            isHighlighted = false;
+            this.transform.GetChild(1).gameObject.GetComponent<Image>().color = headerColor;
+            this.transform.GetChild(3).gameObject.GetComponent<Image>().color = sectionColor;
+            this.transform.GetChild(4).gameObject.GetComponent<Image>().color = sectionColor;
+            //restore color
+        }
+        else
+        {
+            isHighlighted = true;
+            Color newHeader = headerColor;
+            Color newSection = sectionColor;
+            newHeader = (newHeader + highlight)/2;
+            newSection = (newSection + highlight)/2;
+            this.transform.GetChild(1).gameObject.GetComponent<Image>().color = newHeader;
+            this.transform.GetChild(3).gameObject.GetComponent<Image>().color = newSection;
+            this.transform.GetChild(4).gameObject.GetComponent<Image>().color = newSection;
+            
+
+        }
     }
     
     // ************ END UI model Methods for Compartmented Rectangle ****************//
