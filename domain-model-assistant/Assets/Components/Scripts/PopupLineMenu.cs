@@ -30,7 +30,7 @@ public class PopupLineMenu : MonoBehaviour
         this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetAggregation);
         this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetComposition);
         this.transform.GetChild(3).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetGeneralization);
-        //this.transform.GetChild(4).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.Destroy);
+        this.transform.GetChild(4).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.DeleteEdge);
     }
     public GameObject GetLine()
     {

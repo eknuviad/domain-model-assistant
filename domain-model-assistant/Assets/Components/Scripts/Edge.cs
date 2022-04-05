@@ -360,6 +360,14 @@ public class Edge : MonoBehaviour
         edgeEnd.SetIconType(3);
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
+    public void DeleteEdge()
+    {
+        Destroy(this.gameObject);
+        Destroy(edgeEnds[0].gameObject);
+        Destroy(edgeEnds[1].gameObject);
+        //close the popup menu after clicking Delete
+        popupLineMenu.GetComponent<PopupLineMenu>().Close();
+    }
     public GameObject GetPopUpLineMenu()
     {
         return popupLineMenu;
