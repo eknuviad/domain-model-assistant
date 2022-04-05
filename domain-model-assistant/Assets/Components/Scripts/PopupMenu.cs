@@ -21,6 +21,11 @@ public class PopupMenu : MonoBehaviour
         {
             this.gameObject.transform.position = compRect.transform.position + new Vector3(UpdatePositionConst, 0, 0);
         }
+        if (Input.GetMouseButtonDown(2))
+        {
+            Debug.Log("close popupmenu");
+            this.gameObject.SetActive(false);
+        }
     }
 
     public void SetCompartmentedRectangle(CompartmentedRectangle compRect)
