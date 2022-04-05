@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class Node: MonoBehaviour
+public class Node: MonoBehaviour
 {
     // private string id;
     public GameObject canvas;
@@ -13,12 +12,7 @@ public abstract class Node: MonoBehaviour
     // from having the same serializable field
     public GameObject header;
 
-    private List<GameObject> connections = new List<GameObject>();
-
-    protected int NumOfConnectionPoints
-    { get; set; } 
-
-    protected List<bool> connectionPointsAvailable = new List<bool>();
+    public List<GameObject> connections;
     
     public string ID
     { get; set; }
@@ -45,7 +39,7 @@ public abstract class Node: MonoBehaviour
 
     public bool AddHeader(GameObject aHeader)
     {
-        if (aHeader == null)
+        if(aHeader == null)
         {
             return false;
         }
@@ -53,79 +47,14 @@ public abstract class Node: MonoBehaviour
         return true;
     }
 
-    public int IndexOfConnection(GameObject aEdge)
-    {
-        int index = connections.IndexOf(aEdge);
-        return index;
-    }
-
-    public ReadOnlyCollection<GameObject> GetConnections()
-    {
-        return connections.AsReadOnly();
-    }
-
-    public bool AddConnection(GameObject aEdge)
-    {
-        bool wasAdded =  false;
-        if (connections.Contains(aEdge))
-        {
-            return wasAdded;
-        }   
-
+    public bool AddEdge(GameObject aEdge){
+        if(connections.Contains(aEdge)){
+            return false;
+        }
         connections.Add(aEdge);
-
-        if (aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject) != -1)
-        {
-            var index = aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject);
-            wasAdded = true;
-        }
-        else
-        {
-            wasAdded = aEdge.GetComponent<Edge>().AddNode(this.gameObject);
-            if (!wasAdded)
-            {
-                connections.Remove(aEdge);
-            }
-        }
-            
-        // print log for debugging
-        if (wasAdded)
-        {
-            Debug.Log("Edge added");
-        }
-        return wasAdded;
-    }
-
-    public abstract List<Vector2> GetConnectionPointsLocations();
-
-    public void SetConnectionPointAvailable(int index, bool isAvailable)
-    {
-        // Debug.Log("index: " + index);
-        // Debug.Log("Array size: " + connectionPointAvailable.Count);
-        connectionPointsAvailable[index] = isAvailable;
-    }
-
-    public bool GetConnectionPointAvailability(int index)
-    {
-        return connectionPointsAvailable[index];
-    }
-
-    public ReadOnlyCollection<bool> GetConnectionPointsAvailabilities()
-    {
-        return connectionPointsAvailable.AsReadOnly();
-    }
-
-    public int GetNumberOfConnectionPointsAvailable()
-    {
-        int count = 0;
-        foreach (bool avail in connectionPointsAvailable)
-        {
-            if (avail)
-            {
-                count++;
-            }
-        }
-        return count;
+        aEdge.GetComponent<Edge>().AddNode(this.gameObject);
+        Debug.Log("Edge added");
+        return true;
     }
 
 }

@@ -20,11 +20,6 @@ public class PopupLineMenu : MonoBehaviour
         if(gameObject != null){
             //update position on each frame here
         }
-        if (Input.GetMouseButtonDown(2))
-        {
-            Debug.Log("close popuplinemenu");
-            this.gameObject.SetActive(false);
-        }
     }
 
     public void SetLine(Edge edgE)
@@ -35,7 +30,7 @@ public class PopupLineMenu : MonoBehaviour
         this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetAggregation);
         this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetComposition);
         this.transform.GetChild(3).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetGeneralization);
-        this.transform.GetChild(4).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.DeleteEdge);
+        //this.transform.GetChild(4).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.Destroy);
     }
     public GameObject GetLine()
     {
