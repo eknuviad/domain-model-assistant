@@ -20,7 +20,7 @@ public class PopupLineMenu : MonoBehaviour
         if(gameObject != null){
             //update position on each frame here
         }
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(0))
         {
             Debug.Log("close popuplinemenu");
             this.gameObject.SetActive(false);
