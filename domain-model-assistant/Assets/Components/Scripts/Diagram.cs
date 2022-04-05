@@ -141,11 +141,13 @@ public class Diagram : MonoBehaviour
                 var req = _getRequestAsyncOp.webRequest;
                 if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
                 {
+                    //store GET query response in tmp&newResult
                     var tmp = req.downloadHandler.text;
                     if (tmp != null && tmp != "")
                     {
                         var newResult = tmp;
                         //resend get request for frames where json data is not updated in time
+                        //reGetRequest is true after AddClass
                         if (reGetRequest)
                         {
                             reGetRequest = false;
@@ -200,6 +202,7 @@ public class Diagram : MonoBehaviour
     public void LoadJson(string cdmJson)
     {
         ResetDiagram();
+        //Debug.Log(cdmJson);
         var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
         //store attributes of class in a dictionary
