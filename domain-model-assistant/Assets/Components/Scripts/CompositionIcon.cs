@@ -5,7 +5,9 @@ using UnityEngine;
 public class CompositionIcon : MonoBehaviour
 {
     // Start is called before the first frame update
-    public EdgeEnd edgeEnd;
+    public GameObject node;
+    public float updateConstantX;
+    public float updateConstantY;
 
     void Start()
     {
@@ -18,18 +20,21 @@ public class CompositionIcon : MonoBehaviour
         if (gameObject != null)
         {
             //update position with respect to associated node
-            gameObject.transform.position = edgeEnd.Position;
+            gameObject.transform.position = node.transform.position + new Vector3(updateConstantX, updateConstantY, 0);
         }
     }
 
-    public void SetEdgeEnd(EdgeEnd aEdgeEnd)
+    public void SetNode(GameObject aNode, float posConstantX,float posConstantY)
     {
-        this.edgeEnd = aEdgeEnd;
+        this.node = aNode;
+        this.updateConstantX = posConstantX;
+        this.updateConstantY = posConstantY;
+
     }
 
-    public EdgeEnd GetEdgeEnd()
+    public GameObject GetNode()
     {
-        return this.edgeEnd;
+        return this.node;
     }
     public void Destroy()
     {

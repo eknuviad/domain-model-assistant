@@ -44,8 +44,8 @@ public void createLine(){
         Debug.Log("position2: "+ pos2);
         this.line.GetComponent<LineRenderer>().SetPosition(0, pos1);
         this.line.GetComponent<LineRenderer>().SetPosition(1, pos2); 
-        obj1.GetComponent<CompartmentedRectangle>().AddConnection(line); 
-        obj2.GetComponent<CompartmentedRectangle>().AddConnection(line);
+        obj1.GetComponent<CompartmentedRectangle>().AddEdge(line); 
+        obj2.GetComponent<CompartmentedRectangle>().AddEdge(line);
         obj1 = null;
         obj2 = null;
     }
