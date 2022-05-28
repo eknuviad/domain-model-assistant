@@ -57,7 +57,7 @@ public class CompartmentedRectangle : Node
         {
             connectionPointsAvailable.Add(true);
         }
-        RectTransform rectangle = (RectTransform)this.transform;
+        rectangle = (RectTransform)this.transform;
         rectHeight = rectangle.rect.height;
         rectWidth = rectangle.rect.width;
         CreateHeader();

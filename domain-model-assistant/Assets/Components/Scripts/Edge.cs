@@ -104,12 +104,6 @@ public class Edge : MonoBehaviour
                 RetrieveNodes();
             }
         }
-        else if (this.hold && holdTimer > 1f - 5)
-        {
-            this.hold = false;
-            holdTimer = 0;
-            SpawnPopupLineMenu();
-        }
     }
 
     void createEdge()
