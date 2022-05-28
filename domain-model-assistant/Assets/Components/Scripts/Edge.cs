@@ -24,13 +24,6 @@ public class Edge : MonoBehaviour
 
     public GameObject[] classes;
     public GameObject edgeEnd;
-    public List<GameObject> edgeEnds = new List<GameObject>();
-    public GameObject edgeTitleUpper;
-    public GameObject edgeEndNumberUpper;
-    public GameObject edgeTitleLower;
-    public GameObject edgeEndNumberLower;
-    public GameObject textbox;
-    // private Vector3 mousePos;
     public GameObject popupLineMenu;
     float holdTimer = 0;
     bool hold = false;
