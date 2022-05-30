@@ -30,21 +30,9 @@ public class User
     private UnityWebRequestAsyncOperation _putRequestAsyncOp;
 
     /// <summary>
-    /// The user's authorization credentials.
+    /// The user's authorization credentials, as a JSON string.
     /// </summary>
-    protected Dictionary<string, string> AuthCreds => new Dictionary<string, string>
-    {
-        { "username", Name },
-        { "password", _password },
-    };
-
-    /// <summary>
-    /// The user's authorization header.
-    /// </summary>
-    protected Dictionary<string, string> AuthHeader => new Dictionary<string, string>
-    {
-        { "Authorization", "Bearer " + _token },
-    };
+    protected string AuthCreds => "{\"username\": \"" + Name + "\", \"password\": \"" + _password + "\"}";
     
     public User(string name, string password)
     {
@@ -59,7 +47,14 @@ public class User
     /// </summary>
     private string GetToken()
     {
-        return "TODO";
+        var request = UnityWebRequest.Put(UserRegisterEndpoint, AuthCreds);
+        request.SetRequestHeader("Content-Type", "application/json");
+        var _putRequestAsyncOp = request.SendWebRequest();
+        while (!_putRequestAsyncOp.isDone) {} // Wait for the request to complete.
+        var response = _putRequestAsyncOp.webRequest.downloadHandler.text;
+        return response.Trim().Replace("User registered. Your authorization token is '", "")
+            .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
+                + "subsequent requests.", "");
     }
 
     /// <summary>
@@ -92,6 +87,68 @@ public class User
         return new User(username, password);
     }
 
+    /// <summary>
+    /// Sends a GET request to the server. The response is stored in _getResult.
+    /// </summary>
+    protected void GetRequest(string uri)
+    {
+        // TODO Check if a `using` block can be used here, to auto-dispose the web request
+        var webRequest = WrapRequest(UnityWebRequest.Get(uri));
+        webRequest.timeout = 1;
+        _getRequestAsyncOp = webRequest.SendWebRequest();
+        //_updateNeeded = true;
+    }
+
+    /// <summary>
+    /// Sends a POST request to the server.
+    /// </summary>
+    protected void PostRequest(string uri, string data)
+    {
+        var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
+        _postRequestAsyncOp = webRequest.SendWebRequest();
+    }
+
+    /// <summary>
+    /// Sends a DELETE request to the server.
+    /// </summary>
+    protected void DeleteRequest(string uri)
+    {
+        var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
+        _deleteRequestAsyncOp = webRequest.SendWebRequest();
+    }
+
+    /// <summary>
+    /// Sends a PUT request to the server.
+    /// </summary>
+    protected void PutRequest(string uri, string data)
+    {
+        var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
+        _putRequestAsyncOp = webRequest.SendWebRequest();
+    }
+
+    /// <summary>
+    /// Wraps a UnityWebRequest with the user's authorization header.
+    /// </summary>
+    private UnityWebRequest WrapRequest(UnityWebRequest request)
+    {
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + _token);
+        request.disposeDownloadHandlerOnDispose = false;
+        return request;
+    }
+
+    public void DisposeRequestAsyncOps()
+    {
+        var ops = new [] { _getRequestAsyncOp, _postRequestAsyncOp, _deleteRequestAsyncOp, _putRequestAsyncOp };
+        foreach (var op in ops)
+        {
+            if (op != null && op.isDone)
+            {
+                op.webRequest.Dispose();
+            }
+        }
+    }
+
     public string ToString()
     {
         return "User" + Description();
@@ -100,6 +157,6 @@ public class User
     protected string Description()
     {
         return "(name=" + Name + ", token=" + _token + ")";
-    } 
+    }
 
 }
