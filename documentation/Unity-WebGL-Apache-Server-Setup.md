@@ -72,6 +72,10 @@ In the `Directory`s section, add the following entry, changing the path accordin
           Header set Content-Type "application/octet-stream"
         </FilesMatch>
         
+        <FilesMatch "\.(wasm.gz)$">
+          Header set Content-Type "application/wasm"
+        </FilesMatch>
+
       </IfModule>
     </Directory>
     ```
