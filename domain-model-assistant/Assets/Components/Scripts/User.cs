@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Class to represent a user.
@@ -23,12 +24,23 @@ public class User
 
     private static readonly RandomNumberGenerator _random = RandomNumberGenerator.Create();
 
+    private UnityWebRequestAsyncOperation _getRequestAsyncOp;
+    private UnityWebRequestAsyncOperation _postRequestAsyncOp;
+    private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
+    private UnityWebRequestAsyncOperation _putRequestAsyncOp;
+
+    /// <summary>
+    /// The user's authorization credentials.
+    /// </summary>
     protected Dictionary<string, string> AuthCreds => new Dictionary<string, string>
     {
         { "username", Name },
         { "password", _password },
     };
 
+    /// <summary>
+    /// The user's authorization header.
+    /// </summary>
     protected Dictionary<string, string> AuthHeader => new Dictionary<string, string>
     {
         { "Authorization", "Bearer " + _token },
@@ -50,16 +62,25 @@ public class User
         return "TODO";
     }
 
+    /// <summary>
+    /// Login the user and update their token if needed.
+    /// </summary>
     public bool Login()
     {
         return true;
     }
 
+    /// <summary>
+    /// Logout the user.
+    /// </summary>
     public bool Logout()
     {
         return true;
     }
 
+    /// <summary>
+    /// Create a user with a random name and password, useful for testing.
+    /// </summary>
     public static User CreateRandom()
     {
         var usernameBytes = new Byte[UsernamePrefixLength];
