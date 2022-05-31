@@ -82,7 +82,7 @@ public class User
         var passwordBytes = new Byte[2 * UsernamePrefixLength];
         _random.GetBytes(usernameBytes);
         _random.GetBytes(passwordBytes);
-        var username = usernameBytes.Where(c => c >= 'a' && c <= 'z').Aggregate("", (acc, c) => acc + c);
+        var username = usernameBytes.Select(b => b % 26 + (int)'a').Aggregate("", (s, c) => s + (char)c);
         var password = passwordBytes.Aggregate("", (acc, c) => acc + c);
         return new User(username, password);
     }
