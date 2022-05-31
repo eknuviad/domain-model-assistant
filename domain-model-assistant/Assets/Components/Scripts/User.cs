@@ -149,7 +149,7 @@ public class User
         }
     }
 
-    public string ToString()
+    public override string ToString()
     {
         return "User" + Description();
     }

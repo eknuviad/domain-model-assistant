@@ -581,8 +581,10 @@ public class Diagram : MonoBehaviour
     {
         Debug.Log("Debug button clicked!");
         //LoadData();
-        GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
-          .text = "Rabbit";
+        // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
+        //   .text = "Rabbit";
+        var user = User.CreateRandom();
+        Debug.Log(user);
     }
 
     public Dictionary<string, string> getAttrTypeIdsToTypes()
