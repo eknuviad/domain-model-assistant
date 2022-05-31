@@ -585,6 +585,10 @@ public class Diagram : MonoBehaviour
         //   .text = "Rabbit";
         var user = User.CreateRandom();
         Debug.Log(user);
+        user.Login();
+        Debug.Log(user.LoggedIn);
+        user.Logout();
+        Debug.Log(user.LoggedIn);
     }
 
     public Dictionary<string, string> getAttrTypeIdsToTypes()

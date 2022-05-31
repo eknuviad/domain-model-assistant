@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using UnityEngine;
 using UnityEngine.Networking;
 
 /// <summary>
@@ -9,6 +10,7 @@ using UnityEngine.Networking;
 /// </summary>
 public class User
 {
+
     public const string UserRegisterEndpoint = Constants.WebcoreEndpoint + "/user/public/register";
     public const string UserLoginEndpoint = Constants.WebcoreEndpoint + "/user/public/login";
     public const string UserLogoutEndpoint = Constants.WebcoreEndpoint + "/user/logout";
@@ -17,8 +19,8 @@ public class User
 
     public string Name { get; set; }
 
-    private readonly string _password;
-    private readonly string _token;
+    private string _password;
+    private string _token;
 
     public bool LoggedIn { get; private set; }
 
@@ -62,7 +64,24 @@ public class User
     /// </summary>
     public bool Login()
     {
-        return true;
+        var result = false;
+        using (var request = WrapRequest(UnityWebRequest.Post(UserLoginEndpoint, AuthCreds)))
+        {
+            var _postRequestAsyncOp = request.SendWebRequest();
+            while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
+            if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.LogError("Network error: " + _postRequestAsyncOp.webRequest.error);
+                return false;
+            }
+            var response = _postRequestAsyncOp.webRequest.downloadHandler.text;
+            _token = response.Trim().Replace("Logged in. Your authorization token is '", "")
+                .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
+                    + "subsequent requests.", "");
+            LoggedIn = true;
+            result = true;
+        }
+        return result;
     }
 
     /// <summary>
@@ -70,6 +89,16 @@ public class User
     /// </summary>
     public bool Logout()
     {
+        var request = WrapRequest(UnityWebRequest.Post(UserLogoutEndpoint, ""));
+        var _postRequestAsyncOp = request.SendWebRequest();
+        while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
+        if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
+        {
+            Debug.LogError("Network error: " + _postRequestAsyncOp.webRequest.error);
+            return false;
+        }
+        _token = null;
+        LoggedIn = false;
         return true;
     }
 
@@ -156,7 +185,24 @@ public class User
 
     protected string Description()
     {
+        // TODO token returned for debugging only, remove before release
         return "(name=" + Name + ", token=" + _token + ")";
+    }
+
+}
+
+
+/// <summary>
+/// A student who interacts with the application via the frontend.
+/// </summary>
+class Student : User
+{
+
+    public Student(string name, string password) : base(name, password) {}
+
+    public bool CreateCdm(string name)
+    {
+        return true;
     }
 
 }
