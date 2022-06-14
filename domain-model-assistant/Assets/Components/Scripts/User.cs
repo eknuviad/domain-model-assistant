@@ -54,6 +54,7 @@ public class User
         var _putRequestAsyncOp = request.SendWebRequest();
         while (!_putRequestAsyncOp.isDone) {} // Wait for the request to complete.
         var response = _putRequestAsyncOp.webRequest.downloadHandler.text;
+        _putRequestAsyncOp.webRequest.Dispose();
         return response.Trim().Replace("User registered. Your authorization token is '", "")
             .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
                 + "subsequent requests.", "");
@@ -65,8 +66,10 @@ public class User
     public bool Login()
     {
         var result = false;
-        using (var request = WrapRequest(UnityWebRequest.Post(UserLoginEndpoint, AuthCreds)))
+        using (var request = WrapRequest(UnityWebRequest.Put(UserLoginEndpoint, AuthCreds)))
         {
+            // set method to POST here because built-in Post() does not support JSON, used by AuthCreds
+            request.method = UnityWebRequest.kHttpVerbPOST;
             var _postRequestAsyncOp = request.SendWebRequest();
             while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
             if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
@@ -89,17 +92,23 @@ public class User
     /// </summary>
     public bool Logout()
     {
-        var request = WrapRequest(UnityWebRequest.Post(UserLogoutEndpoint, ""));
-        var _postRequestAsyncOp = request.SendWebRequest();
-        while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
-        if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
+        var result = false;
+        using (var request = WrapRequest(UnityWebRequest.Post(UserLogoutEndpoint, "")))
         {
-            Debug.LogError("Network error: " + _postRequestAsyncOp.webRequest.error);
-            return false;
+            // set method to POST here because built-in Post() does not support JSON, used by AuthCreds
+            request.method = UnityWebRequest.kHttpVerbPOST;
+            var _postRequestAsyncOp = request.SendWebRequest();
+            while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
+            if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.LogError("Network error: " + _postRequestAsyncOp.webRequest.error);
+                return false;
+            }
+            _token = null;
+            LoggedIn = false;
+            result = true;
         }
-        _token = null;
-        LoggedIn = false;
-        return true;
+        return result;
     }
 
     /// <summary>
@@ -107,11 +116,11 @@ public class User
     /// </summary>
     public static User CreateRandom()
     {
-        var usernameBytes = new Byte[UsernamePrefixLength];
-        var passwordBytes = new Byte[2 * UsernamePrefixLength];
+        var usernameBytes = new byte[UsernamePrefixLength];
+        var passwordBytes = new byte[2 * UsernamePrefixLength];
         _random.GetBytes(usernameBytes);
         _random.GetBytes(passwordBytes);
-        var username = usernameBytes.Select(b => b % 26 + (int)'a').Aggregate("", (s, c) => s + (char)c);
+        var username = usernameBytes.Select(b => b % 26 + 'a').Aggregate("", (s, c) => s + (char)c);
         var password = passwordBytes.Aggregate("", (acc, c) => acc + c);
         return new User(username, password);
     }

@@ -261,6 +261,26 @@ app.get("/classdiagram/:cdmName/feedback", (req, res) => {
 
 });
 
+app.put("/user/public/register", (req, res) => {
+  // print request for debugging
+  console.log("Hit /user/public/register");
+  console.log(req.body);
+  res.status(SUCCESS).send("User registered. Your authorization token is 'fake-token'. " +
+      "Please embed this token in the header as 'Authorization : Bearer <token>' for the subsequent requests.");
+});
+
+app.post("/user/public/login", (req, res) => {
+  console.log("Hit /user/public/login");
+  console.log(req.body);
+  res.sendStatus(SUCCESS);
+});
+
+app.post("/user/logout", (req, res) => {
+  console.log("Hit /user/logout");
+  console.log(req.body);
+  res.sendStatus(SUCCESS);
+});
+
 /** Gets the item with the given _id by recursing into the iterable. */
 function getById(id, iterable) {
   if (Array.isArray(iterable)) {
