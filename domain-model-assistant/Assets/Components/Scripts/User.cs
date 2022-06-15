@@ -95,8 +95,6 @@ public class User
         var result = false;
         using (var request = WrapRequest(UnityWebRequest.Post(UserLogoutEndpoint, "")))
         {
-            // set method to POST here because built-in Post() does not support JSON, used by AuthCreds
-            request.method = UnityWebRequest.kHttpVerbPOST;
             var _postRequestAsyncOp = request.SendWebRequest();
             while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
             if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
@@ -130,8 +128,7 @@ public class User
     /// </summary>
     protected void GetRequest(string uri)
     {
-        // TODO Check if a `using` block can be used here, to auto-dispose the web request
-        var webRequest = WrapRequest(UnityWebRequest.Get(uri));
+        using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
         webRequest.timeout = 1;
         _getRequestAsyncOp = webRequest.SendWebRequest();
         //_updateNeeded = true;
@@ -142,7 +139,7 @@ public class User
     /// </summary>
     protected void PostRequest(string uri, string data)
     {
-        var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
+        using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
         _postRequestAsyncOp = webRequest.SendWebRequest();
     }
 
@@ -151,16 +148,16 @@ public class User
     /// </summary>
     protected void DeleteRequest(string uri)
     {
-        var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
+        using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
         _deleteRequestAsyncOp = webRequest.SendWebRequest();
     }
 
     /// <summary>
     /// Sends a PUT request to the server.
     /// </summary>
-    protected void PutRequest(string uri, string data)
+    protected void PutRequest(string uri, string data = "")
     {
-        var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
+        using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
         _putRequestAsyncOp = webRequest.SendWebRequest();
     }
 
@@ -211,7 +208,13 @@ class Student : User
 
     public bool CreateCdm(string name)
     {
+        PutRequest(CdmEndpoint(name));
         return true;
+    }
+
+    private string CdmEndpoint(string cdmName)
+    {
+        return Constants.WebcoreEndpoint + "/" + Name + "/classdiagram/" + cdmName;
     }
 
 }
