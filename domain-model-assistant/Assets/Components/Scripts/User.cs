@@ -28,11 +28,6 @@ public class User
 
     private static readonly RandomNumberGenerator _random = RandomNumberGenerator.Create();
 
-    private UnityWebRequestAsyncOperation _getRequestAsyncOp;
-    private UnityWebRequestAsyncOperation _postRequestAsyncOp;
-    private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
-    private UnityWebRequestAsyncOperation _putRequestAsyncOp;
-
     /// <summary>
     /// The user's authorization credentials, as a JSON string.
     /// </summary>
@@ -52,9 +47,7 @@ public class User
     private string GetToken()
     {
         var response = PutRequest(UserRegisterEndpoint, AuthCreds, setAuthBearer: false);
-        return response.Trim().Replace("User registered. Your authorization token is '", "")
-            .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
-                + "subsequent requests.", "");
+        return TrimTokenResponse(response);
     }
 
     /// <summary>
@@ -62,26 +55,10 @@ public class User
     /// </summary>
     public bool Login()
     {
-        var result = false;
-        using (var request = WrapRequest(UnityWebRequest.Put(UserLoginEndpoint, AuthCreds)))
-        {
-            // set method to POST here because built-in Post() does not support JSON, used by AuthCreds
-            request.method = UnityWebRequest.kHttpVerbPOST;
-            var _postRequestAsyncOp = request.SendWebRequest();
-            while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
-            if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
-            {
-                Debug.LogError("Network error: " + _postRequestAsyncOp.webRequest.error);
-                return false;
-            }
-            var response = _postRequestAsyncOp.webRequest.downloadHandler.text;
-            _token = response.Trim().Replace("Logged in. Your authorization token is '", "")
-                .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
-                    + "subsequent requests.", "");
-            LoggedIn = true;
-            result = true;
-        }
-        return result;
+        var response = PostRequest(UserLoginEndpoint, AuthCreds, setAuthBearer: true);
+        _token = TrimTokenResponse(response);
+        LoggedIn = true;
+        return true;
     }
 
     /// <summary>
@@ -132,10 +109,12 @@ public class User
     /// <summary>
     /// Sends a DELETE request to the server.
     /// </summary>
-    protected void DeleteRequest(string uri)
+    protected string DeleteRequest(string uri)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
-        _deleteRequestAsyncOp = webRequest.SendWebRequest();
+        var requestAsyncOp = webRequest.SendWebRequest();
+        while (!requestAsyncOp.isDone) {} // wait for the request to complete
+        return RequestTextOrShowError(requestAsyncOp);
     }
 
     /// <summary>
@@ -155,7 +134,8 @@ public class User
     }
 
     /// <summary>
-    /// Wraps a UnityWebRequest with the user's authorization header.
+    /// Wraps a UnityWebRequest with the necessary request headers, including user's authorization header if
+    /// setAuthBearer is set to true.
     /// </summary>
     private UnityWebRequest WrapRequest(UnityWebRequest request, bool setAuthBearer = true)
     {
@@ -183,16 +163,16 @@ public class User
         return requestAsyncOp.webRequest.downloadHandler.text;
     }
 
-    public void DisposeRequestAsyncOps()
+    /// <summary>
+    /// Extracts the token from the given response string.
+    private string TrimTokenResponse(string tokenResponse)
     {
-        var ops = new [] { _getRequestAsyncOp, _postRequestAsyncOp, _deleteRequestAsyncOp, _putRequestAsyncOp };
-        foreach (var op in ops)
-        {
-            if (op != null && op.isDone)
-            {
-                op.webRequest.Dispose();
-            }
-        }
+        return tokenResponse.Trim()
+            .Replace("User registered.", "")
+            .Replace("Logged in.", "")
+            .Replace(" Your authorization token is '", "")
+            .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
+                + "subsequent requests.", "");
     }
 
     public override string ToString()
