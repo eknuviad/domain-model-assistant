@@ -47,7 +47,11 @@ public class User
     private string GetToken()
     {
         var response = PutRequest(UserRegisterEndpoint, AuthCreds, setAuthBearer: false);
-        return TrimTokenResponse(response);
+        if (ValidResponse(response))
+        {
+            return TrimTokenResponse(response);
+        }
+        return ""; // should not happen
     }
 
     /// <summary>
@@ -56,9 +60,13 @@ public class User
     public bool Login()
     {
         var response = PostRequest(UserLoginEndpoint, AuthCreds, setAuthBearer: true);
-        _token = TrimTokenResponse(response);
-        LoggedIn = true;
-        return true;
+        if (ValidResponse(response))
+        {
+            _token = TrimTokenResponse(response);
+            LoggedIn = true;
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -66,10 +74,14 @@ public class User
     /// </summary>
     public bool Logout()
     {
-        PostRequest(UserLogoutEndpoint);
-        _token = null;
-        LoggedIn = false;
-        return true;
+        var response = PostRequest(UserLogoutEndpoint);
+        if (ValidResponse(response))
+        {
+            _token = null;
+            LoggedIn = false;
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -95,7 +107,7 @@ public class User
         webRequest.timeout = RequestTimeoutSeconds;
         var requestAsyncOp = webRequest.SendWebRequest();
         while (!requestAsyncOp.isDone) {} // wait for the request to complete
-        return RequestTextOrShowError(requestAsyncOp);
+        return RequestTextOrError(requestAsyncOp);
     }
 
     /// <summary>
@@ -114,7 +126,7 @@ public class User
         using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
         var requestAsyncOp = webRequest.SendWebRequest();
         while (!requestAsyncOp.isDone) {} // wait for the request to complete
-        return RequestTextOrShowError(requestAsyncOp);
+        return RequestTextOrError(requestAsyncOp);
     }
 
     /// <summary>
@@ -130,7 +142,7 @@ public class User
         }
         var requestAsyncOp = webRequest.SendWebRequest();
         while (!requestAsyncOp.isDone) {} // wait for the request to complete
-        return RequestTextOrShowError(requestAsyncOp);
+        return RequestTextOrError(requestAsyncOp);
     }
 
     /// <summary>
@@ -149,22 +161,24 @@ public class User
     }
 
     /// <summary>
-    /// Returns the request's text if successful, otherwise shows an error message.
+    /// Returns the request's text if successful, otherwise shows and returns an error message.
     /// </summary>
-    private string RequestTextOrShowError(UnityWebRequestAsyncOperation requestAsyncOp)
+    private string RequestTextOrError(UnityWebRequestAsyncOperation requestAsyncOp)
     {
         if (requestAsyncOp.webRequest.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("UnityWebRequest Error in User class: " + requestAsyncOp.webRequest.error
+            var error = "UnityWebRequest Error in User class: " + requestAsyncOp.webRequest.error
                 + "\nResult type: " + requestAsyncOp.webRequest.result
-                + "\nResponse: " + requestAsyncOp.webRequest.downloadHandler.text);
-            return "";
+                + "\nResponse: " + requestAsyncOp.webRequest.downloadHandler.text;
+            Debug.LogError(error);    
+            return error;
         }
         return requestAsyncOp.webRequest.downloadHandler.text;
     }
 
     /// <summary>
     /// Extracts the token from the given response string.
+    /// </summary>
     private string TrimTokenResponse(string tokenResponse)
     {
         return tokenResponse.Trim()
@@ -173,6 +187,14 @@ public class User
             .Replace(" Your authorization token is '", "")
             .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
                 + "subsequent requests.", "");
+    }
+
+    /// <summary>
+    /// Returns true if the response string is valid, ie, if it does not contain an error message.
+    /// </summary>
+    protected bool ValidResponse(string response)
+    {
+        return !response.StartsWith("UnityWebRequest Error");
     }
 
     public override string ToString()

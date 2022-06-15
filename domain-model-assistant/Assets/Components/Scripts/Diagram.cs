@@ -584,11 +584,11 @@ public class Diagram : MonoBehaviour
         // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
         //   .text = "Rabbit";
         var user = User.CreateRandom();
-        Debug.Log(user);
-        user.Login();
-        Debug.Log(user.LoggedIn);
-        user.Logout();
-        Debug.Log(user.LoggedIn);
+        Debug.Log("user: " + user);
+        Debug.Log("user.Login(): " + user.Login());
+        Debug.Log("user.LoggedIn: " + user.LoggedIn);
+        Debug.Log("user.Logout(): " + user.Logout());
+        Debug.Log("user.LoggedIn: " + user.LoggedIn);
     }
 
     public Dictionary<string, string> getAttrTypeIdsToTypes()
