@@ -49,12 +49,7 @@ public class User
     /// </summary>
     private string GetToken()
     {
-        var request = UnityWebRequest.Put(UserRegisterEndpoint, AuthCreds);
-        request.SetRequestHeader("Content-Type", "application/json");
-        var _putRequestAsyncOp = request.SendWebRequest();
-        while (!_putRequestAsyncOp.isDone) {} // Wait for the request to complete.
-        var response = _putRequestAsyncOp.webRequest.downloadHandler.text;
-        _putRequestAsyncOp.webRequest.Dispose();
+        var response = PutRequest(UserRegisterEndpoint, AuthCreds, setAuthBearer: false);
         return response.Trim().Replace("User registered. Your authorization token is '", "")
             .Replace("'. Please embed this token in the header as 'Authorization : Bearer <token>' for the "
                 + "subsequent requests.", "");
@@ -126,12 +121,13 @@ public class User
     /// <summary>
     /// Sends a GET request to the server. The response is stored in _getResult.
     /// </summary>
-    protected void GetRequest(string uri)
+    protected string GetRequest(string uri)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
         webRequest.timeout = 1;
         _getRequestAsyncOp = webRequest.SendWebRequest();
         //_updateNeeded = true;
+        return "";
     }
 
     /// <summary>
@@ -153,21 +149,31 @@ public class User
     }
 
     /// <summary>
-    /// Sends a PUT request to the server.
+    /// Sends a PUT request to the server and returns its response.
     /// </summary>
-    protected void PutRequest(string uri, string data = "")
+    protected string PutRequest(string uri, string data = "", bool setAuthBearer = true)
     {
-        using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
+        using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
         _putRequestAsyncOp = webRequest.SendWebRequest();
+        while (!_putRequestAsyncOp.isDone) {} // wait for the request to complete
+        if (_putRequestAsyncOp.webRequest.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Error: " + _putRequestAsyncOp.webRequest.error);
+            return "";
+        }
+        return _putRequestAsyncOp.webRequest.downloadHandler.text;
     }
 
     /// <summary>
     /// Wraps a UnityWebRequest with the user's authorization header.
     /// </summary>
-    private UnityWebRequest WrapRequest(UnityWebRequest request)
+    private UnityWebRequest WrapRequest(UnityWebRequest request, bool setAuthBearer = true)
     {
         request.SetRequestHeader("Content-Type", "application/json");
-        request.SetRequestHeader("Authorization", "Bearer " + _token);
+        if (setAuthBearer)
+        {
+            request.SetRequestHeader("Authorization", "Bearer " + _token);
+        }
         request.disposeDownloadHandlerOnDispose = false;
         return request;
     }
