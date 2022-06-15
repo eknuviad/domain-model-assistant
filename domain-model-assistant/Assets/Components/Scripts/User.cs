@@ -17,6 +17,8 @@ public class User
 
     private const int UsernamePrefixLength = 8;
 
+    private const int RequestTimeoutSeconds = 1; // s
+
     public string Name { get; set; }
 
     private string _password;
@@ -87,21 +89,10 @@ public class User
     /// </summary>
     public bool Logout()
     {
-        var result = false;
-        using (var request = WrapRequest(UnityWebRequest.Post(UserLogoutEndpoint, "")))
-        {
-            var _postRequestAsyncOp = request.SendWebRequest();
-            while (!_postRequestAsyncOp.isDone) {} // Wait for the request to complete.
-            if (_postRequestAsyncOp.webRequest.result == UnityWebRequest.Result.ConnectionError)
-            {
-                Debug.LogError("Network error: " + _postRequestAsyncOp.webRequest.error);
-                return false;
-            }
-            _token = null;
-            LoggedIn = false;
-            result = true;
-        }
-        return result;
+        PostRequest(UserLogoutEndpoint);
+        _token = null;
+        LoggedIn = false;
+        return true;
     }
 
     /// <summary>
@@ -119,24 +110,23 @@ public class User
     }
 
     /// <summary>
-    /// Sends a GET request to the server. The response is stored in _getResult.
+    /// Sends a GET request to the server and returns the response.
     /// </summary>
     protected string GetRequest(string uri)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
-        webRequest.timeout = 1;
-        _getRequestAsyncOp = webRequest.SendWebRequest();
-        //_updateNeeded = true;
-        return "";
+        webRequest.timeout = RequestTimeoutSeconds;
+        var requestAsyncOp = webRequest.SendWebRequest();
+        while (!requestAsyncOp.isDone) {} // wait for the request to complete
+        return RequestTextOrShowError(requestAsyncOp);
     }
 
     /// <summary>
-    /// Sends a POST request to the server.
+    /// Sends a POST request to the server and returns its response.
     /// </summary>
-    protected void PostRequest(string uri, string data)
+    protected string PostRequest(string uri, string data = "", bool setAuthBearer = true)
     {
-        using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data));
-        _postRequestAsyncOp = webRequest.SendWebRequest();
+        return PutRequest(uri, data, setAuthBearer, usePostMethod: true);
     }
 
     /// <summary>
@@ -151,17 +141,17 @@ public class User
     /// <summary>
     /// Sends a PUT request to the server and returns its response.
     /// </summary>
-    protected string PutRequest(string uri, string data = "", bool setAuthBearer = true)
+    protected string PutRequest(string uri, string data = "", bool setAuthBearer = true, bool usePostMethod = false)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
-        _putRequestAsyncOp = webRequest.SendWebRequest();
-        while (!_putRequestAsyncOp.isDone) {} // wait for the request to complete
-        if (_putRequestAsyncOp.webRequest.result != UnityWebRequest.Result.Success)
+        // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
+        if (usePostMethod)
         {
-            Debug.LogError("Error: " + _putRequestAsyncOp.webRequest.error);
-            return "";
+            webRequest.method = UnityWebRequest.kHttpVerbPOST;
         }
-        return _putRequestAsyncOp.webRequest.downloadHandler.text;
+        var requestAsyncOp = webRequest.SendWebRequest();
+        while (!requestAsyncOp.isDone) {} // wait for the request to complete
+        return RequestTextOrShowError(requestAsyncOp);
     }
 
     /// <summary>
@@ -176,6 +166,21 @@ public class User
         }
         request.disposeDownloadHandlerOnDispose = false;
         return request;
+    }
+
+    /// <summary>
+    /// Returns the request's text if successful, otherwise shows an error message.
+    /// </summary>
+    private string RequestTextOrShowError(UnityWebRequestAsyncOperation requestAsyncOp)
+    {
+        if (requestAsyncOp.webRequest.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("UnityWebRequest Error in User class: " + requestAsyncOp.webRequest.error
+                + "\nResult type: " + requestAsyncOp.webRequest.result
+                + "\nResponse: " + requestAsyncOp.webRequest.downloadHandler.text);
+            return "";
+        }
+        return requestAsyncOp.webRequest.downloadHandler.text;
     }
 
     public void DisposeRequestAsyncOps()
