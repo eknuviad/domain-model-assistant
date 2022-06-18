@@ -9,19 +9,13 @@ public class Section : MonoBehaviour
     public GameObject compRect;
     public const int UpdatePositionConst = -10;
     public GameObject textbox;
-    public List<GameObject> textboxes = new List<GameObject>();
+    public List<GameObject> textboxes = new();
 
     // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    void Start() {}
 
     // Update is called once per frame
-    void Update()
-    {
-
-    }
+    void Update() {}
 
     // ************ UI model Methods for Section ****************//
 
@@ -48,7 +42,7 @@ public class Section : MonoBehaviour
             return false;
         }
         textboxes.Add(textbox);
-        textbox.GetComponent<TextBox>().SetSection(this.gameObject);
+        textbox.GetComponent<TextBox>().Section = this.gameObject;
         return true;
     }
 

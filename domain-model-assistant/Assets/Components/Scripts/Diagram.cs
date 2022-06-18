@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Dynamic;
-using System.Linq;
 using System.Runtime.InteropServices;
 //using System.Text.Json; // TODO Use JsonSerializer.Serialize when Unity moves to .NET 6
 using UnityEngine;
@@ -49,13 +47,13 @@ public class Diagram : MonoBehaviour
 
     GraphicRaycaster raycaster;
 
-    Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
+    Dictionary<string, GameObject> _namesToRects = new();
 
-    Dictionary<string, List<Attribute>> classIdToAttributes = new Dictionary<string, List<Attribute>>();
+    Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    Dictionary<string, string> attrTypeIdsToTypes = new Dictionary<string, string>();
+    Dictionary<string, string> attrTypeIdsToTypes = new();
 
-    List<string> createdAttributeIds = new List<string>();
+    List<string> createdAttributeIds = new();
 
 
     enum CanvasMode
@@ -212,7 +210,7 @@ public class Diagram : MonoBehaviour
         {
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
-            string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1).Replace("CD", "").ToLower();
+            string res = type.eClass[(type.eClass.LastIndexOf('/') + 1)..].Replace("CD", "").ToLower();
             if (!attrTypeIdsToTypes.ContainsKey(type._id))
             {
                 this.attrTypeIdsToTypes[type._id] = res;
@@ -248,7 +246,7 @@ public class Diagram : MonoBehaviour
     public void AddAttributesToSection(GameObject section)
     {
         var compId = section.GetComponent<Section>().GetCompartmentedRectangle()
-                        .GetComponent<CompartmentedRectangle>().ID;
+            .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
@@ -262,7 +260,7 @@ public class Diagram : MonoBehaviour
     {
         if (UseWebcore)
         {
-            CreateJson info = new CreateJson();
+            CreateJson info = new();
             info.x = position.x;
             info.y = position.y;
             info.className = name;
@@ -316,7 +314,8 @@ public class Diagram : MonoBehaviour
     {
         foreach (var nameRectPair in _namesToRects)
         {
-            nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = nameRectPair.Key;
+            nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text =
+                nameRectPair.Key;
         }
         _namesUpToDate = true;
     }
@@ -328,9 +327,9 @@ public class Diagram : MonoBehaviour
     {
         if (UseWebcore)
         {
-            Section section = textbox.GetComponent<TextBox>().GetSection().GetComponent<Section>();
+            Section section = textbox.GetComponent<TextBox>().Section.GetComponent<Section>();
             CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
-                                .GetComponent<CompartmentedRectangle>();
+                .GetComponent<CompartmentedRectangle>();
             List<GameObject> attributes = section.GetTextBoxList();
             string _id = compRect.ID;
             int rankIndex = -1;
@@ -341,8 +340,8 @@ public class Diagram : MonoBehaviour
                 if (attributes[i] == textbox)
                 {
                     rankIndex = i;
-                    name = textbox.GetComponent<TextBox>().GetName();
-                    typeId = textbox.GetComponent<TextBox>().GetTypeId();
+                    name = textbox.GetComponent<TextBox>().Name;
+                    typeId = textbox.GetComponent<TextBox>().TypeId;
                     break;
                 }
             }
@@ -407,7 +406,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
     {
-        var compRect = Instantiate(compartmentedRectangle, this.transform);
+        var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
@@ -500,7 +499,8 @@ public class Diagram : MonoBehaviour
                 targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
             }
         }
-        CanvasScaler.scaleFactor = Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
+        CanvasScaler.scaleFactor =
+            Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
     }
 
     // ************ UI model Methods for Canvas/Diagram ****************//
@@ -591,7 +591,7 @@ public class Diagram : MonoBehaviour
         Debug.Log("user.LoggedIn: " + user.LoggedIn);
     }
 
-    public Dictionary<string, string> getAttrTypeIdsToTypes()
+    public Dictionary<string, string> GetAttrTypeIdsToTypes()
     {
         return attrTypeIdsToTypes;
     }
