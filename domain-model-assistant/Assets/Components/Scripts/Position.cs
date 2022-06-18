@@ -15,7 +15,7 @@ public class Position
     }
 }
 
-public class CreateJson
+public class AddClassDTO
 {
     public string className;
 
@@ -40,9 +40,9 @@ public class AddAttributeBody
     
     public AddAttributeBody(int rIndex, int aTypeId, string name)
     {
-        this.rankIndex = rIndex;
-        this.typeId = aTypeId;
-        this.attributeName = name;
+        rankIndex = rIndex;
+        typeId = aTypeId;
+        attributeName = name;
     }
 
 }

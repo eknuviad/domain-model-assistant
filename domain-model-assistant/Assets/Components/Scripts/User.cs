@@ -101,7 +101,7 @@ public class User
     /// <summary>
     /// Sends a GET request to the server and returns the response.
     /// </summary>
-    protected string GetRequest(string uri)
+    public string GetRequest(string uri)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
         webRequest.timeout = RequestTimeoutSeconds;
@@ -113,7 +113,7 @@ public class User
     /// <summary>
     /// Sends a POST request to the server and returns its response.
     /// </summary>
-    protected string PostRequest(string uri, string data = "", bool setAuthBearer = true)
+    public string PostRequest(string uri, string data = "", bool setAuthBearer = true)
     {
         return PutRequest(uri, data, setAuthBearer, usePostMethod: true);
     }
@@ -121,7 +121,7 @@ public class User
     /// <summary>
     /// Sends a DELETE request to the server.
     /// </summary>
-    protected string DeleteRequest(string uri)
+    public string DeleteRequest(string uri)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
         var requestAsyncOp = webRequest.SendWebRequest();
@@ -132,7 +132,7 @@ public class User
     /// <summary>
     /// Sends a PUT request to the server and returns its response.
     /// </summary>
-    protected string PutRequest(string uri, string data = "", bool setAuthBearer = true, bool usePostMethod = false)
+    public string PutRequest(string uri, string data = "", bool setAuthBearer = true, bool usePostMethod = false)
     {
         using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
         // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds

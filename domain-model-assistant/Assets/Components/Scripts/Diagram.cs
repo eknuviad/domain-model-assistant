@@ -27,31 +27,21 @@ public class Diagram : MonoBehaviour
 
     public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
 
-    public const string WebcoreEndpoint = "http://localhost:8080/";
+    public const string WebcoreEndpoint = "http://localhost:8080";
 
-    public const string cdmName = "MULTIPLE_CLASSES"; // TODO Remove this once API is updated
+    public string cdmName = "FerrySystem";
 
-    public const string GetCdmEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName;
-
-    public const string AddClassEndpoint = GetCdmEndpoint + "/class";
-
-    public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
-
-    public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
-
-    public const string AddAttributeEndpoint = GetCdmEndpoint; // +/{classId}/attribute
-
-    public const string DeleteAttributeEndpoint = GetCdmEndpoint + "/class/attributes";
+    public User user;
 
     private ClassDiagramDTO classDTO;
 
     GraphicRaycaster raycaster;
 
-    Dictionary<string, GameObject> _namesToRects = new();
+    readonly Dictionary<string, GameObject> _namesToRects = new();
 
-    Dictionary<string, List<Attribute>> classIdToAttributes = new();
+    readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    Dictionary<string, string> attrTypeIdsToTypes = new();
+    readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
     List<string> createdAttributeIds = new();
 
@@ -81,18 +71,9 @@ public class Diagram : MonoBehaviour
     // true if app is run in browser, false if run in Unity editor
     private bool _isWebGl = false;
 
-    private UnityWebRequestAsyncOperation _getRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _postRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _putRequestAsyncOp;
-
     private string _getResult = "";
 
-    public string ID
-    { get; set; }
+    public string ID { get; set; }
 
     bool reGetRequest = false;
 
@@ -103,16 +84,19 @@ public class Diagram : MonoBehaviour
         {
             _isWebGl = true;
         }
+        user = User.CreateRandom(); // for now, just create a random user
+        user.Login();
+        user.PutRequest(CdmEndpoint()); // create the CDM
+        Debug.Log("Initialized class diagram with user: " + user);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
+        CanvasScaler = gameObject.GetComponent<CanvasScaler>();
         targetOrtho = CanvasScaler.scaleFactor;
-        this.raycaster = GetComponent<GraphicRaycaster>();
-        GetRequest(GetCdmEndpoint);
-
+        raycaster = GetComponent<GraphicRaycaster>();
+        RefreshCdm();
 
         /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
         // LoadData();
@@ -134,44 +118,13 @@ public class Diagram : MonoBehaviour
 
         if (UseWebcore && _updateNeeded)
         {
-            if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+            // resend get request for frames where json data is not updated in time
+            // reGetRequest is true after AddClass
+            if (reGetRequest)
             {
-                var req = _getRequestAsyncOp.webRequest;
-                if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-                {
-                    //store GET query response in tmp&newResult
-                    var tmp = req.downloadHandler.text;
-                    if (tmp != null && tmp != "")
-                    {
-                        var newResult = tmp;
-                        //resend get request for frames where json data is not updated in time
-                        //reGetRequest is true after AddClass
-                        if (reGetRequest)
-                        {
-                            reGetRequest = false;
-                            GetRequest(GetCdmEndpoint);
-                        }
-                        else if (newResult != _getResult)
-                        {
-                            LoadJson(newResult);
-                            _getResult = newResult;
-                        }
-                    }
-                }
-                req.Dispose();
+                reGetRequest = false;
+                RefreshCdm();
             }
-        }
-        if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-        {
-            _postRequestAsyncOp.webRequest.Dispose();
-        }
-        if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-        {
-            _deleteRequestAsyncOp.webRequest.Dispose();
-        }
-        if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-        {
-            _putRequestAsyncOp.webRequest.Dispose();
         }
     }
 
@@ -213,14 +166,20 @@ public class Diagram : MonoBehaviour
             string res = type.eClass[(type.eClass.LastIndexOf('/') + 1)..].Replace("CD", "").ToLower();
             if (!attrTypeIdsToTypes.ContainsKey(type._id))
             {
-                this.attrTypeIdsToTypes[type._id] = res;
+                attrTypeIdsToTypes[type._id] = res;
             }
         });
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
 
         classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
-        classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
+        Debug.Log(classDiagram);
+        classDiagram
+            .layout
+            .containers
+            [0]
+            .value
+            .ForEach(contVal =>
         {
             if (idsToClassesAndLayouts.ContainsKey(contVal.key))
             {
@@ -260,14 +219,15 @@ public class Diagram : MonoBehaviour
     {
         if (UseWebcore)
         {
-            CreateJson info = new();
-            info.x = position.x;
-            info.y = position.y;
-            info.className = name;
-            string jsonData = JsonUtility.ToJson(info);
-            PostRequest(AddClassEndpoint, jsonData);
+            string jsonData = JsonUtility.ToJson(new AddClassDTO()
+            {
+                x = position.x,
+                y = position.y,
+                className = name
+            });
+            user.PostRequest(AddClassEndpoint(), jsonData);
             reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
+            RefreshCdm();
         }
         else
         {
@@ -280,9 +240,9 @@ public class Diagram : MonoBehaviour
         if (UseWebcore)
         {
             string _id = node.GetComponent<CompartmentedRectangle>().ID;
-            DeleteRequest(DeleteClassEndpoint, _id);
+            user.DeleteRequest(DeleteClassEndpoint(_id));
             reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
+            RefreshCdm();
             // No need to remove or destroy the node here since entire class diagram is recreated
         }
         else
@@ -292,7 +252,7 @@ public class Diagram : MonoBehaviour
         }
     }
 
-    public void UpdateClass(GameObject header, GameObject node)
+    public void UpdateClassPosition(GameObject header, GameObject node)
     {
         if (UseWebcore)
         {
@@ -300,10 +260,10 @@ public class Diagram : MonoBehaviour
             string clsName = header.GetComponent<InputField>().text;
             Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
             //JSON body. Create new serializable JSON object.
-            Position pInfo = new Position(newPosition.x, newPosition.y);
-            string jsonData = JsonUtility.ToJson(pInfo);
+            var positionInfo = new Position(newPosition.x, newPosition.y);
+            string jsonData = JsonUtility.ToJson(positionInfo);
             //send updated position via PUT request
-            PutRequest(UpdateClassEndpoint, jsonData, _id);
+            user.PutRequest(UpdateClassPositionEndpoint(_id), jsonData);
         }
     }
 
@@ -345,14 +305,13 @@ public class Diagram : MonoBehaviour
                     break;
                 }
             }
-            AddAttributeBody info = new AddAttributeBody(rankIndex, typeId, name);
+            var info = new AddAttributeBody(rankIndex, typeId, name);
             string jsonData = JsonUtility.ToJson(info);
             Debug.Log(jsonData);
             // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            PostRequest(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute", jsonData);
-            Debug.Log(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute");
+            user.PostRequest(AddAttributeEndpoint(_id), jsonData);
             reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
+            RefreshCdm();
         }
     }
 
@@ -364,10 +323,10 @@ public class Diagram : MonoBehaviour
         if (UseWebcore)
         {
             string _id = textBox.GetComponent<TextBox>().ID;
-            DeleteRequest(DeleteAttributeEndpoint, _id);
+            user.DeleteRequest(DeleteAttributeEndpoint(_id));
             reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
-            // No need to remove or destroy the node here since entire class diagram is recreated
+            RefreshCdm();
+            // No need to remove or destroy the attribute here since entire class diagram is recreated
         }
     }
 
@@ -412,58 +371,6 @@ public class Diagram : MonoBehaviour
         compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
         AddNode(compRect);
         return compRect;
-    }
-
-    /// <summary>
-    /// Sends a GET request to the server. The response is the class diagram JSON and is stored in _getResult.
-    /// </summary>
-    public void GetRequest(string uri)
-    {
-        // TODO Check if a `using` block can be used here, to auto-dispose the web request
-        var webRequest = UnityWebRequest.Get(uri);
-        webRequest.method = "GET";
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.timeout = 1;
-        _getRequestAsyncOp = webRequest.SendWebRequest();
-        _updateNeeded = true;
-    }
-
-    /// <summary>
-    /// Sends a POST request to the server to modify the class diagram.
-    /// </summary>
-    public void PostRequest(string uri, string data)
-    {
-        var webRequest = UnityWebRequest.Put(uri, data);
-        webRequest.method = "POST";
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        _postRequestAsyncOp = webRequest.SendWebRequest();
-    }
-
-
-    /// <summary>
-    /// Sends a DELETE request to the server to remove an item from the class diagram.
-    /// </summary>
-    public void DeleteRequest(string uri, string _id)
-    {
-        Debug.Log(uri + "/" + _id); // check if reaching
-        var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
-        webRequest.method = "DELETE";
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        _deleteRequestAsyncOp = webRequest.SendWebRequest();
-        Debug.Log("Deleting done"); // check if reaching
-
-    }
-
-    public void PutRequest(string uri, string data, string _id)
-    {
-        var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
-        webRequest.method = "PUT";
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        _putRequestAsyncOp = webRequest.SendWebRequest();
     }
 
     /// <summary>
@@ -535,6 +442,69 @@ public class Diagram : MonoBehaviour
     public List<GameObject> GetCompartmentedRectangles()
     {
         return compartmentedRectangles;
+    }
+
+    /// <summary>
+    /// Returns the class diagram endpoint URL.
+    /// </summary>
+    public string CdmEndpoint()
+    {
+        return WebcoreEndpoint + "/" + user.Name + "/classdiagram/" + cdmName;
+    }
+
+    /// <summary>
+    /// Returns the add class endpoint URL.
+    /// </summary>
+    public string AddClassEndpoint()
+    {
+        return CdmEndpoint() + "/class";
+    }
+
+    /// <summary>
+    /// Returns the delete class endpoint URL for the given class _id.
+    /// </summary>
+    public string DeleteClassEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId;
+    }
+
+    /// <summary>
+    /// Returns the update class endpoint URL for the given class _id.
+    /// </summary>
+    public string UpdateClassPositionEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId + "/position"; // TODO Double check
+    }
+
+    /// <summary>
+    /// Returns the add attribute endpoint URL for the given class _id.
+    /// </summary>
+    public string AddAttributeEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId + "/attribute";
+    }
+
+    /// <summary>
+    /// Returns the delete attribute endpoint URL for the given class _id.
+    /// </summary>
+    public string DeleteAttributeEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId + "/attributes"; // TODO Double check
+    }
+
+    /// <summary>
+    /// Refreshes the class diagram by sending a GET request to the server.
+    /// </summary>
+    private bool RefreshCdm()
+    {
+        var result = user.GetRequest(CdmEndpoint());
+        if (result != _getResult)
+        {
+            LoadJson(result);
+            _getResult = result;
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
