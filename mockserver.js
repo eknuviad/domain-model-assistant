@@ -28,104 +28,106 @@ app.use(cors(corsOptions)); // Use this after the variable declaration
 const SUCCESS = 200;
 const PORT = 8080;
 
-const CDM_NAME = "MULTIPLE_CLASSES";
+const CDM_NAME = "FerrySystem";
 
 var classDiagram = {
-  "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//ClassDiagram",
-  "_id": "100",
-  "name": CDM_NAME,
-  "classes": [
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
-      "_id": "1",
-      "name": "Class1",
-      "attributes": [{
-        "_id": "1",   // id = "1" as first ID, part of counterAttributeID implementation
-        "name": "year",
-        "type": "6"
-      }, {
-        "_id": "2",   // id = "2" as second ID, part of counterAttributeID implementation
-        "name": "month",
-        "type": "8"
-      }]
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
-      "_id": "2",
-      "name": "Class2",
-      "attributes": []
-    }
-  ],
-  "types": [
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDVoid",
-      "_id": "2"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDAny",
-      "_id": "3"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDBoolean",
-      "_id": "4"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDDouble",
-      "_id": "5"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDInt",
-      "_id": "6"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDLong",
-      "_id": "7"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDString",
-      "_id": "8"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDByte",
-      "_id": "9"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDFloat",
-      "_id": "10"
-    },
-    {
-      "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDChar",
-      "_id": "11"
-    }
-  ],
-  "layout": {
-    "_id": "12",
-    "containers": [
+  "classDiagram" : {
+    "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//ClassDiagram",
+    "_id": "100",
+    "name": CDM_NAME,
+    "classes": [
       {
-        "_id": "13",
-        "key": "null",
-        "value": [ // TODO Change to "values" when WebCORE is updated
-          {
-            "_id": "14",
-            "key": "1", // is the same as the class id
-            "value": {
-              "_id": "15",
-              "x": 365.5,
-              "y": 300.0
-            }
-          },
-          {
-            "_id": "15",
-            "key": "2",
-            "value": {
-              "_id": "105",
-              "x": 565.5,
-              "y": 180.0
-            }
-          }
-        ]
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
+        "_id": "1",
+        "name": "Class1",
+        "attributes": [{
+          "_id": "1",   // id = "1" as first ID, part of counterAttributeID implementation
+          "name": "year",
+          "type": "6"
+        }, {
+          "_id": "2",   // id = "2" as second ID, part of counterAttributeID implementation
+          "name": "month",
+          "type": "8"
+        }]
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
+        "_id": "2",
+        "name": "Class2",
+        "attributes": []
       }
-    ]
+    ],
+    "types": [
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDVoid",
+        "_id": "2"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDAny",
+        "_id": "3"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDBoolean",
+        "_id": "4"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDDouble",
+        "_id": "5"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDInt",
+        "_id": "6"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDLong",
+        "_id": "7"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDString",
+        "_id": "8"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDByte",
+        "_id": "9"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDFloat",
+        "_id": "10"
+      },
+      {
+        "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//CDChar",
+        "_id": "11"
+      }
+    ],
+    "layout": {
+      "_id": "12",
+      "containers": [
+        {
+          "_id": "13",
+          "key": "null",
+          "value": [ // TODO Change to "values" when WebCORE is updated
+            {
+              "_id": "14",
+              "key": "1", // is the same as the class id
+              "value": {
+                "_id": "15",
+                "x": 365.5,
+                "y": 300.0
+              }
+            },
+            {
+              "_id": "15",
+              "key": "2",
+              "value": {
+                "_id": "105",
+                "x": 565.5,
+                "y": 180.0
+              }
+            }
+          ]
+        }
+      ]
+    }
   }
 };
 
@@ -135,7 +137,7 @@ var valueValueId = 106;
 var counterAttributeId = 3; // counter for ading attributes, for having unique IDs for each attribute
 
 // GET class diagram
-app.get('/classdiagram/:cdmName', (req, res) => {
+app.get('/:username/classdiagram/:cdmName', (req, res) => {
   //console.log(classDiagram);
   console.log(JSON.stringify(classDiagram, null, 4));
   res.json(classDiagram); // TODO change
@@ -143,22 +145,22 @@ app.get('/classdiagram/:cdmName', (req, res) => {
 });
 
 // Add class
-app.post('/classdiagram/:cdmName/class', (req, res) => {
+app.post('/:username/classdiagram/:cdmName/class', (req, res) => {
   const className = req.body.className;
   const xPos = req.body.x;
   const yPos = req.body.y;
 
-  const allClassIds = classDiagram.classes.map(c => c._id);
+  const allClassIds = classDiagram.classDiagram.classes.map(c => c._id);
   const newClassId = (parseInt(allClassIds[allClassIds.length - 1]) + 1).toString();
 
-  classDiagram.classes.push({
+  classDiagram.classDiagram.classes.push({
     "eClass": "http://cs.mcgill.ca/sel/cdm/1.0#//Class",
     "_id": newClassId,
     "name": className,
     "attributes": []
   })
 
-  classDiagram.layout.containers[0].value.push({
+  classDiagram.classDiagram.layout.containers[0].value.push({
     "_id": valueId,
     "key": newClassId,
     "value": {
@@ -177,17 +179,17 @@ app.post('/classdiagram/:cdmName/class', (req, res) => {
 });
 
 //Update class position
-app.put('/classdiagram/:cdmName/:classId/position', (req, res) => {
+app.put('/:username/classdiagram/:cdmName/:classId/position', (req, res) => {
   const classId = req.params.classId;
-  var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
+  var values = classDiagram.classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
   // retrieve name of class with updated position
-  const allClassIds = classDiagram.classes.map(c => c._id);
+  const allClassIds = classDiagram.classDiagram.classes.map(c => c._id);
   var classIndex = allClassIds.indexOf(classId);
-  var className = classDiagram.classes[classIndex].name;
+  var className = classDiagram.classDiagram.classes[classIndex].name;
   //update position details
   const allLayoutIds = values.map(c => c.key);
   var index = allLayoutIds.indexOf(classId);
-  var value = classDiagram.layout.containers[0].value[index].value;
+  var value = classDiagram.classDiagram.layout.containers[0].value[index].value;
   value.x = req.body.xPosition;
   value.y = req.body.yPosition;
   console.log(`>>> Updated ${className} position = x: ${value.x}, y: ${value.y}`);
@@ -195,15 +197,15 @@ app.put('/classdiagram/:cdmName/:classId/position', (req, res) => {
 });
 
 // Delete class
-app.delete('/classdiagram/:cdmName/class/:class_id', (req, res) => {
+app.delete('/:username/classdiagram/:cdmName/class/:class_id', (req, res) => {
   const classId = req.params.class_id;
-  const allClassIds = classDiagram.classes.map(c => c._id);
+  const allClassIds = classDiagram.classDiagram.classes.map(c => c._id);
   var indexToRemove = allClassIds.indexOf(classId);
   if (indexToRemove > -1) {
-    classDiagram.classes.splice(indexToRemove, 1);
+    classDiagram.classDiagram.classes.splice(indexToRemove, 1);
   }
 
-  var values = classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
+  var values = classDiagram.classDiagram.layout.containers[0].value;
   const allLayoutIds = values.map(c => c.key);
   var indexToRemove2 = allLayoutIds.indexOf(classId);
   if (indexToRemove2 > -1) {
@@ -215,34 +217,34 @@ app.delete('/classdiagram/:cdmName/class/:class_id', (req, res) => {
 });
 
 // Delete Attribute
-app.delete('/classdiagram/:cdmName/class/attributes/:attributeId', (req,res) => {
+app.delete('/:username/classdiagram/:cdmName/class/attributes/:attributeId', (req,res) => {
   const AttributeId = req.params.attributeId;
   
-  for (var i = 0; i < classDiagram.classes.length; i++) {
-    for (var j = 0; j < classDiagram.classes[i].attributes.length; j++) {
-      if (classDiagram.classes[i].attributes[j]._id == AttributeId) {
-        classDiagram.classes[i].attributes.splice(j, 1)
+  for (var i = 0; i < classDiagram.classDiagram.classes.length; i++) {
+    for (var j = 0; j < classDiagram.classDiagram.classes[i].attributes.length; j++) {
+      if (classDiagram.classDiagram.classes[i].attributes[j]._id == AttributeId) {
+        classDiagram.classDiagram.classes[i].attributes.splice(j, 1)
       }
     }
   }
 
-  //console.log(">>> Attributes at ClassOne: " + classDiagram.classes.attributes[0]);
+  //console.log(">>> Attributes at ClassOne: " + classDiagram.classDiagram.classes.attributes[0]);
   // util.inspect()
   res.sendStatus(SUCCESS);
 });
 
 // Add attribute
-app.post('/classdiagram/:cdmName/class/:classId/attribute', (req, res) => {
-  //console.log("HEHFJHFJEHFKJEHFKEJKFJEKFJEKFJEKFJEKFJJKFEJF");
+app.post('/:username/classdiagram/:cdmName/class/:classId/attribute', (req, res) => {
+  //console.log("Add attribute called");
   const classId = req.params.classId;
   const attributeName = req.body.attributeName;
   const rankIndex = req.body.rankIndex;
   const typeId = req.body.typeId;
   // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
   
-  for (var i = 0; i < classDiagram.classes.length; i++) {
-    if (classDiagram.classes[i]._id == classId) {
-      classDiagram.classes[i].attributes.push({
+  for (var i = 0; i < classDiagram.classDiagram.classes.length; i++) {
+    if (classDiagram.classDiagram.classes[i]._id == classId) {
+      classDiagram.classDiagram.classes[i].attributes.push({
         "_id": counterAttributeId.toString(),
          "name": attributeName,
          "type": typeId,
@@ -257,7 +259,7 @@ app.post('/classdiagram/:cdmName/class/:classId/attribute', (req, res) => {
 });
 
 // Give feedback (work in progress)
-app.get("/classdiagram/:cdmName/feedback", (req, res) => {
+app.get("/:username/classdiagram/:cdmName/feedback", (req, res) => {
 
 });
 
