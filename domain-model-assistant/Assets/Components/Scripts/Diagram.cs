@@ -33,8 +33,6 @@ public class Diagram : MonoBehaviour
 
     public User user;
 
-    private ClassDiagramDTO classDTO;
-
     GraphicRaycaster raycaster;
 
     readonly Dictionary<string, GameObject> _namesToRects = new();
@@ -154,12 +152,12 @@ public class Diagram : MonoBehaviour
     {
         ResetDiagram();
         //Debug.Log(cdmJson);
-        var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
         //store attributes of class in a dictionary
-        classDiagram.classes.ForEach(cls => this.classIdToAttributes[cls._id] = cls.attributes);
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
         //store attribute types. Map type id to eclass tye
-        classDiagram.types.ForEach(type =>
+        cdmDto.classDiagram.types.ForEach(type =>
         {
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
@@ -172,14 +170,21 @@ public class Diagram : MonoBehaviour
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
 
-        classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
-        Debug.Log(classDiagram);
-        classDiagram
-            .layout
-            .containers
-            [0]
-            .value
-            .ForEach(contVal =>
+        cdmDto.classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
+        Debug.Log("cdmJson: " + cdmJson);
+        // Debug.Log("classDiagram: " + classDiagram);
+        // Debug.Log("classDiagram.layout: " + classDiagram.layout);
+        // Debug.Log("JsonUtility.ToJson(classDiagram.layout): " + JsonUtility.ToJson(classDiagram.layout));
+        // Debug.Log("classDiagram.layout.containers: " + classDiagram.layout.containers);
+        if (cdmDto.classDiagram.layout.containers == null)
+        {
+            Debug.Log("classDiagram.layout.containers is null, so early return");
+            return;
+        }
+        Debug.Log("classDiagram.layout.containers.Count: " + cdmDto.classDiagram.layout.containers.Count); // NullReferenceException
+        Debug.Log("classDiagram.layout.containers[0]: " + cdmDto.classDiagram.layout.containers[0]);
+        Debug.Log("classDiagram.layout.containers[0].value: " + cdmDto.classDiagram.layout.containers[0].value);
+        cdmDto.classDiagram.layout.containers[0].value.ForEach(contVal =>
         {
             if (idsToClassesAndLayouts.ContainsKey(contVal.key))
             {
@@ -196,7 +201,6 @@ public class Diagram : MonoBehaviour
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
                 _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
-
         }
         _namesUpToDate = false;
         _updateNeeded = false;
