@@ -181,7 +181,7 @@ app.post('/:username/classdiagram/:cdmName/class', (req, res) => {
 //Update class position
 app.put('/:username/classdiagram/:cdmName/:classId/position', (req, res) => {
   const classId = req.params.classId;
-  var values = classDiagram.classDiagram.layout.containers[0].value/*s*/; // TODO Change to "values" later
+  var values = classDiagram.classDiagram.layout.containers[0].value;
   // retrieve name of class with updated position
   const allClassIds = classDiagram.classDiagram.classes.map(c => c._id);
   var classIndex = allClassIds.indexOf(classId);
