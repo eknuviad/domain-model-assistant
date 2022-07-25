@@ -7,6 +7,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+using Color = UnityEngine.Color;
+using Image = UnityEngine.UI.Image;
+
 public class CompartmentedRectangle : Node
 {
     public GameObject textbox; //this allows to instantiate textbox prefabs
