@@ -82,10 +82,10 @@ public class Diagram : MonoBehaviour
         {
             _isWebGl = true;
         }
-        user = User.CreateRandom(); // for now, just create a random user
-        user.Login();
-        user.PutRequest(CdmEndpoint()); // create the CDM
-        Debug.Log("Initialized class diagram with user: " + user);
+        // user = User.CreateRandom(); // for now, just create a random user
+        // user.Login();
+        // user.PutRequest(CdmEndpoint()); // create the CDM
+        // Debug.Log("Initialized class diagram with user: " + user);
     }
 
     // Start is called before the first frame update
@@ -341,7 +341,7 @@ public class Diagram : MonoBehaviour
     {
         foreach (var comp in compartmentedRectangles)
         {
-            // popup menu is destroyed in comp rect class when delete is called
+            // Pop-up menu is destroyed in comp rect class when delete is called
             // we only need to destroy the attributes.
             // get first section, loop through all attributes, destroy any attribute cross objects
             GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
@@ -501,13 +501,13 @@ public class Diagram : MonoBehaviour
     /// </summary>
     private bool RefreshCdm()
     {
-        var result = user.GetRequest(CdmEndpoint());
-        if (result != _getResult)
-        {
-            LoadJson(result);
-            _getResult = result;
-            return true;
-        }
+        // var result = user.GetRequest(CdmEndpoint());
+        // if (result != _getResult)
+        // {
+        //     LoadJson(result);
+        //     _getResult = result;
+        //     return true;
+        // }
         return false;
     }
 
@@ -557,7 +557,7 @@ public class Diagram : MonoBehaviour
         //LoadData();
         // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
         //   .text = "Rabbit";
-        var user = User.CreateRandom();
+        /*var*/ user = User.CreateRandom();
         Debug.Log("user: " + user);
         Debug.Log("user.Login(): " + user.Login());
         Debug.Log("user.LoggedIn: " + user.LoggedIn);
