@@ -57,6 +57,9 @@ public class Diagram : MonoBehaviour
     // References to the JavaScript functions defined in Assets/Plugins/cdmeditor.jslib
 
     [DllImport("__Internal")]
+    private static extern string GetRequest(string url);
+
+    [DllImport("__Internal")]
     private static extern void SetCursorToAddMode();
 
     [DllImport("__Internal")]
@@ -557,12 +560,15 @@ public class Diagram : MonoBehaviour
         //LoadData();
         // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
         //   .text = "Rabbit";
-        /*var*/ user = User.CreateRandom();
-        Debug.Log("user: " + user);
-        Debug.Log("user.Login(): " + user.Login());
-        Debug.Log("user.LoggedIn: " + user.LoggedIn);
-        Debug.Log("user.Logout(): " + user.Logout());
-        Debug.Log("user.LoggedIn: " + user.LoggedIn);
+
+        // /*var*/ user = User.CreateRandom();
+        // Debug.Log("user: " + user);
+        // Debug.Log("user.Login(): " + user.Login());
+        // Debug.Log("user.LoggedIn: " + user.LoggedIn);
+        // Debug.Log("user.Logout(): " + user.Logout());
+        // Debug.Log("user.LoggedIn: " + user.LoggedIn);
+
+        Debug.Log(GetRequest("http://localhost:8538/helloworld/younes"));
     }
 
     public Dictionary<string, string> GetAttrTypeIdsToTypes()
