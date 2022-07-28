@@ -22,7 +22,10 @@ public class User
     public string Name { get; set; }
 
     private string _password;
+    
     private string _token;
+
+    private string WebResponse { get; set; }
 
     public bool LoggedIn { get; private set; }
 
@@ -134,15 +137,25 @@ public class User
     /// </summary>
     public string PutRequest(string uri, string data = "", bool setAuthBearer = true, bool usePostMethod = false)
     {
-        using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
-        // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
-        if (usePostMethod)
-        {
-            webRequest.method = UnityWebRequest.kHttpVerbPOST;
-        }
+        // using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
+        // // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
+        // if (usePostMethod)
+        // {
+        //     webRequest.method = UnityWebRequest.kHttpVerbPOST;
+        // }
+        // StartCoroutine(ProcessRequest(webRequest));
+        // Debug.Log("Returning from PutRequest: " + WebResponse);
+        // return WebResponse;
+        return WebRequest.PutRequest(uri, data, _token, usePostMethod);
+    }
+
+    IEnumerator<string> ProcessRequest(UnityWebRequest webRequest/*, Action<User> action = null*/)
+    {
         var requestAsyncOp = webRequest.SendWebRequest();
-        while (!requestAsyncOp.isDone) {} // wait for the request to complete
-        return RequestTextOrError(requestAsyncOp);
+        while (!requestAsyncOp.isDone) yield return null; // wait for the request to complete
+        var result = RequestTextOrError(requestAsyncOp);
+        WebResponse = result;
+        yield return result;
     }
 
     /// <summary>
@@ -161,7 +174,7 @@ public class User
     }
 
     /// <summary>
-    /// Returns the request's text if successful, otherwise shows and returns an error message.
+    /// Returns the request's text if successful, otherwise logs and returns an error message.
     /// </summary>
     private string RequestTextOrError(UnityWebRequestAsyncOperation requestAsyncOp)
     {
