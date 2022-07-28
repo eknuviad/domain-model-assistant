@@ -568,7 +568,7 @@ public class Diagram : MonoBehaviour
         // Debug.Log("user.Logout(): " + user.Logout());
         // Debug.Log("user.LoggedIn: " + user.LoggedIn);
 
-        Debug.Log(GetRequest("http://localhost:8538/helloworld/younes"));
+        Debug.Log("GetRequest result: " + GetRequest("http://localhost:8538/helloworld/younes"));
     }
 
     public Dictionary<string, string> GetAttrTypeIdsToTypes()

@@ -871,13 +871,15 @@ function unityFramework(Module) {
     return demangleAll(js)
   }
   async function _GetRequest(url) {
-    const response = await fetch(url);
+    const urlStr = UTF8ToString(url);
+    const response = await fetch(urlStr);
     const json = await response.json();
     const jsonStr = JSON.stringify(json);
-    var size = lengthBytesUTF8(jsonStr) + 1;
+    const size = lengthBytesUTF8(jsonStr) + 1;
     var ptr = _malloc(size);
     stringToUTF8(jsonStr, ptr, size);
-    return ptr
+    console.log(`_GetRequest(${urlStr}: ${typeof urlStr}) returning ${UTF8ToString(ptr)}`);
+    return UTF8ToString(ptr);
   }
   var JS_Accelerometer = null;
   var JS_Accelerometer_callback = 0;
