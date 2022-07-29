@@ -81,11 +81,19 @@
         console.log(get("http://localhost:8538/helloworld/younes"));
       }
 
-      async function get(url) {
-        const response = await fetch(url);
-        const json = await response.json();
-        const returnStr = JSON.stringify(json);
-        return returnStr;
+      function get(url) {
+        const request = new XMLHttpRequest();
+        // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
+        // Unity WebGL supports asynchronous requests
+        request.open("GET", url, false);
+        request.send(null);
+
+        if (request.status < 300) {
+          console.log(`Request succeeded with code ${request.status}: ${request.responseText}`);
+        } else {
+          console.error(`Request failed with error ${request.status}: ${request.responseText}`);
+        }
+        return request.responseText;
       }
 
       /** Shorthand for document.getElementById(). */

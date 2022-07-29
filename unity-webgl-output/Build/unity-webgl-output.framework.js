@@ -870,11 +870,20 @@ function unityFramework(Module) {
     if (Module["extraStackTrace"]) js += "\n" + Module["extraStackTrace"]();
     return demangleAll(js)
   }
-  async function _GetRequest(url) {
+  function _GetRequest(url) {
     const urlStr = UTF8ToString(url);
-    const response = await fetch(urlStr);
-    const json = await response.json();
-    const jsonStr = JSON.stringify(json);
+    
+    const request = new XMLHttpRequest();
+    // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
+    // Unity WebGL supports asynchronous requests
+    request.open("GET", urlStr, false);
+    request.send(null);
+    if (request.status < 300) {
+      console.log(`_GetRequest succeeded with code ${request.status}`);
+    } else {
+      console.error(`_GetRequest failed with error ${request.status}`);
+    }
+    const jsonStr = JSON.stringify(request.responseText);
     const size = lengthBytesUTF8(jsonStr) + 1;
     var ptr = _malloc(size);
     stringToUTF8(jsonStr, ptr, size);
