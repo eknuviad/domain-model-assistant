@@ -888,7 +888,7 @@ function unityFramework(Module) {
     var ptr = _malloc(size);
     stringToUTF8(jsonStr, ptr, size);
     console.log(`_GetRequest(${urlStr}: ${typeof urlStr}) returning ${UTF8ToString(ptr)}`);
-    return UTF8ToString(ptr);
+    return ptr;
   }
   var JS_Accelerometer = null;
   var JS_Accelerometer_callback = 0;
