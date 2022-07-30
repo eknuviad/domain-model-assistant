@@ -874,30 +874,23 @@ function unityFramework(Module) {
   function _HttpRequest(verb, url, headers, data) {
     const verbAllCaps = UTF8ToString(verb).toUpperCase();
     const urlStr = UTF8ToString(url);
-    const headersObj = JSON.parse(UTF8ToString(headers));
+    const headersArray = JSON.parse(UTF8ToString(headers));
     const dataStr = UTF8ToString(data);
     const request = new XMLHttpRequest();
     // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
     // Unity WebGL supports asynchronous requests
     request.open(verbAllCaps, urlStr, false);
-    for (var i = 0; i < headersObj.length; i++) {
+    for (var i = 0; i < headersArray.length; i++) {
       request.setRequestHeader(UTF8ToString(headers[i].name), UTF8ToString(headers[i].value));
     }
     request.send(dataStr);
-    if (request.status < 300) {
-      console.log(`${verbAllCaps} request succeeded with code ${request.status}`);
-    } else {
+    if (request.status >= 300) {
       console.error(`${verbAllCaps} request failed with error ${request.status}`);
     }
     const result = _ConvertToUnityString(request.responseText);
-    console.log(`_Request(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersObj)},\n` +
+    console.log(`_Request(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersArray)},\n` +
         `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
     return result;
-  }
-
-  function _GetRequest(url) {
-    // url is already a Unity string
-    return _HttpRequest(_ConvertToUnityString("GET"), url, _ConvertToUnityString("{}"), _ConvertToUnityString("{}"));
   }
 
   function _ConvertToUnityString(o) {

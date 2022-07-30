@@ -57,7 +57,7 @@ public class Diagram : MonoBehaviour
     // References to the JavaScript functions defined in Assets/Plugins/cdmeditor.jslib
 
     [DllImport("__Internal")]
-    private static extern string GetRequest(string url);
+    private static extern string HttpRequest(string verb, string url, string headers, string data);
 
     [DllImport("__Internal")]
     private static extern void SetCursorToAddMode();
@@ -71,8 +71,6 @@ public class Diagram : MonoBehaviour
 
     // true if app is run in browser, false if run in Unity editor
     private bool _isWebGl = false;
-
-    private string _getResult = "";
 
     public string ID { get; set; }
 
@@ -224,39 +222,23 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void AddClass(string name, Vector2 position)
     {
-        if (UseWebcore)
+        string jsonData = JsonUtility.ToJson(new AddClassDTO()
         {
-            string jsonData = JsonUtility.ToJson(new AddClassDTO()
-            {
-                x = position.x,
-                y = position.y,
-                className = name
-            });
-            user.PostRequest(AddClassEndpoint(), jsonData);
-            reGetRequest = true;
-            RefreshCdm();
-        }
-        else
-        {
-            CreateCompartmentedRectangle((compartmentedRectangles.Capacity + 1).ToString(), name, position);
-        }
+            x = position.x,
+            y = position.y,
+            className = name
+        });
+        user.PostRequest(AddClassEndpoint(), jsonData);
+        reGetRequest = true;
+        RefreshCdm();
     }
 
     public void DeleteClass(GameObject node)
     {
-        if (UseWebcore)
-        {
-            string _id = node.GetComponent<CompartmentedRectangle>().ID;
-            user.DeleteRequest(DeleteClassEndpoint(_id));
-            reGetRequest = true;
-            RefreshCdm();
-            // No need to remove or destroy the node here since entire class diagram is recreated
-        }
-        else
-        {
-            RemoveNode(node);
-            Destroy(node);
-        }
+        string _id = node.GetComponent<CompartmentedRectangle>().ID;
+        user.DeleteRequest(DeleteClassEndpoint(_id));
+        reGetRequest = true;
+        RefreshCdm(); // No need to remove or destroy the node here since entire class diagram is recreated
     }
 
     public void UpdateClassPosition(GameObject header, GameObject node)
@@ -561,14 +543,12 @@ public class Diagram : MonoBehaviour
         // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
         //   .text = "Rabbit";
 
-        // /*var*/ user = User.CreateRandom();
-        // Debug.Log("user: " + user);
-        // Debug.Log("user.Login(): " + user.Login());
-        // Debug.Log("user.LoggedIn: " + user.LoggedIn);
-        // Debug.Log("user.Logout(): " + user.Logout());
-        // Debug.Log("user.LoggedIn: " + user.LoggedIn);
-
-        Debug.Log("GetRequest result: " + GetRequest("http://localhost:8538/helloworld/younes"));
+        /*var*/ user = User.CreateRandom();
+        Debug.Log("user: " + user);
+        Debug.Log("user.Login(): " + user.Login());
+        Debug.Log("user.LoggedIn: " + user.LoggedIn);
+        Debug.Log("user.Logout(): " + user.Logout());
+        Debug.Log("user.LoggedIn: " + user.LoggedIn);
     }
 
     public Dictionary<string, string> GetAttrTypeIdsToTypes()

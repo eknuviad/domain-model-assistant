@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,7 +9,7 @@ using UnityEngine.Networking;
 /// <summary>
 /// Class to represent a user.
 /// </summary>
-public class User
+public class User : MonoBehaviour
 {
 
     public const string UserRegisterEndpoint = Constants.WebcoreEndpoint + "/user/public/register";
@@ -25,6 +26,8 @@ public class User
     
     private string _token;
 
+    private readonly bool _isWebGl = Application.platform == RuntimePlatform.WebGLPlayer;
+
     private string WebResponse { get; set; }
 
     public bool LoggedIn { get; private set; }
@@ -35,6 +38,9 @@ public class User
     /// The user's authorization credentials, as a JSON string.
     /// </summary>
     protected string AuthCreds => "{\"username\": \"" + Name + "\", \"password\": \"" + _password + "\"}";
+
+    [DllImport("__Internal")]
+    private static extern string HttpRequest(string verb, string url, string headers, string data);
     
     public User(string name, string password)
     {
@@ -106,11 +112,18 @@ public class User
     /// </summary>
     public string GetRequest(string uri)
     {
-        using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
-        webRequest.timeout = RequestTimeoutSeconds;
-        var requestAsyncOp = webRequest.SendWebRequest();
-        while (!requestAsyncOp.isDone) {} // wait for the request to complete
-        return RequestTextOrError(requestAsyncOp);
+        if (_isWebGl)
+        {
+            return HttpRequest("GET", uri, WebGlJsHeaders(), "");
+        }
+        else
+        {
+            using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
+            webRequest.timeout = RequestTimeoutSeconds;
+            var requestAsyncOp = webRequest.SendWebRequest();
+            while (!requestAsyncOp.isDone) {} // wait for the request to complete
+            return RequestTextOrError(requestAsyncOp);
+        }
     }
 
     /// <summary>
@@ -126,10 +139,17 @@ public class User
     /// </summary>
     public string DeleteRequest(string uri)
     {
-        using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
-        var requestAsyncOp = webRequest.SendWebRequest();
-        while (!requestAsyncOp.isDone) {} // wait for the request to complete
-        return RequestTextOrError(requestAsyncOp);
+        if (_isWebGl)
+        {
+            return HttpRequest("DELETE", uri, WebGlJsHeaders(), "");
+        }
+        else
+        {
+            using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
+            var requestAsyncOp = webRequest.SendWebRequest();
+            while (!requestAsyncOp.isDone) {} // wait for the request to complete
+            return RequestTextOrError(requestAsyncOp);
+        }
     }
 
     /// <summary>
@@ -137,25 +157,23 @@ public class User
     /// </summary>
     public string PutRequest(string uri, string data = "", bool setAuthBearer = true, bool usePostMethod = false)
     {
-        // using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
-        // // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
-        // if (usePostMethod)
-        // {
-        //     webRequest.method = UnityWebRequest.kHttpVerbPOST;
-        // }
-        // StartCoroutine(ProcessRequest(webRequest));
-        // Debug.Log("Returning from PutRequest: " + WebResponse);
-        // return WebResponse;
-        return WebRequest.PutRequest(uri, data, _token, usePostMethod);
-    }
-
-    IEnumerator<string> ProcessRequest(UnityWebRequest webRequest/*, Action<User> action = null*/)
-    {
-        var requestAsyncOp = webRequest.SendWebRequest();
-        while (!requestAsyncOp.isDone) yield return null; // wait for the request to complete
-        var result = RequestTextOrError(requestAsyncOp);
-        WebResponse = result;
-        yield return result;
+        if (_isWebGl)
+        {
+            var verb = usePostMethod ? "POST" : "PUT";
+            return HttpRequest(verb, uri, WebGlJsHeaders(setAuthBearer), data);
+        }
+        else
+        {
+            using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
+            // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
+            if (usePostMethod)
+            {
+                webRequest.method = UnityWebRequest.kHttpVerbPOST;
+            }
+            var requestAsyncOp = webRequest.SendWebRequest();
+            while (!requestAsyncOp.isDone) {} // wait for the request to complete
+            return RequestTextOrError(requestAsyncOp);
+        }
     }
 
     /// <summary>
@@ -171,6 +189,16 @@ public class User
         }
         request.disposeDownloadHandlerOnDispose = false;
         return request;
+    }
+
+    private string WebGlJsHeaders(bool setAuthBearer = true)
+    {
+        var headers = "[{\"name\": \"Content-Type\", \"value\": \"application/json\"}";
+        if (setAuthBearer)
+        {
+            headers += ", {\"name\": \"Authorization\", \"value\": \"Bearer " + _token + "\"}";
+        }
+        return headers + "]";
     }
 
     /// <summary>
