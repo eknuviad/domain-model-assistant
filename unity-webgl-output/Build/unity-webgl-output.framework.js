@@ -897,6 +897,22 @@ function unityFramework(Module) {
       `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
     return result
   }
+
+  function _ConvertToUnityString(o) {
+    var s = "";
+    if (o === null || o === undefined) {
+      s = "null";
+    } else if (typeof o === "object") {
+      s = JSON.stringify(o);
+    } else {
+      s = o.toString(); // handles numbers, booleans, etc
+    }
+    const size = lengthBytesUTF8(s) + 1;
+    var ptr = _malloc(size);
+    stringToUTF8(s, ptr, size);
+    return ptr;
+  }
+
   var JS_Accelerometer = null;
   var JS_Accelerometer_callback = 0;
 
