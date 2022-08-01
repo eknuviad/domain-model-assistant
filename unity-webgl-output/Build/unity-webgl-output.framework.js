@@ -877,25 +877,26 @@ function unityFramework(Module) {
     const headersStr = UTF8ToString(headers);
     const headersArray = headersStr ? JSON.parse(headersStr) : [];
     const dataStr = UTF8ToString(data);
-    const request = new XMLHttpRequest;
+    const request = new XMLHttpRequest();
     request.open(verbAllCaps, urlStr, false);
     request.setRequestHeader("Content-Type", "application/json");
+    console.log(headersArray);
     for (var i = 0; i < headersArray.length; i++) {
-      request.setRequestHeader(UTF8ToString(headers[i].name), UTF8ToString(headers[i].value))
+      request.setRequestHeader(headersArray[i].name, headersArray[i].value);
     }
     try {
-      request.send(dataStr)
+      request.send(dataStr);
     } catch (e) {
       console.error(`${verbAllCaps} request failed to send with error ${e}`);
-      return null
+      return null;
     }
     if (request.status >= 300) {
-      console.error(`${verbAllCaps} request status is error ${request.status}`)
+      console.error(`${verbAllCaps} request status is error ${request.status}`);
     }
     const result = _ConvertToUnityString(request.responseText);
     console.log(`_Request(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersArray)},\n` +
       `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
-    return result
+    return result;
   }
 
   function _ConvertToUnityString(o) {

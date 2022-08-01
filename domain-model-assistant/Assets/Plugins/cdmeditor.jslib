@@ -12,7 +12,7 @@ mergeInto(LibraryManager.library, {
     request.open(verbAllCaps, urlStr, false);
     request.setRequestHeader("Content-Type", "application/json");
     for (var i = 0; i < headersArray.length; i++) {
-      request.setRequestHeader(UTF8ToString(headers[i].name), UTF8ToString(headers[i].value));
+      request.setRequestHeader(headersArray[i].name, headersArray[i].value);
     }
     try {
       request.send(dataStr);
@@ -25,7 +25,7 @@ mergeInto(LibraryManager.library, {
     }
     const result = _ConvertToUnityString(request.responseText);
     console.log(`_Request(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersArray)},\n` +
-        `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
+      `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
     return result;
   },
 
