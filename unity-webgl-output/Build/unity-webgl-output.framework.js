@@ -792,10 +792,10 @@ function unityFramework(Module) {
   var tempDouble;
   var tempI64;
   var ASM_CONSTS = {
-    3290568: function() {
+    3290440: function() {
       return Module.webglContextAttributes.premultipliedAlpha
     },
-    3290629: function() {
+    3290501: function() {
       return Module.webglContextAttributes.preserveDrawingBuffer
     }
   };
@@ -874,40 +874,29 @@ function unityFramework(Module) {
   function _HttpRequest(verb, url, headers, data) {
     const verbAllCaps = UTF8ToString(verb).toUpperCase();
     const urlStr = UTF8ToString(url);
-    const headersArray = JSON.parse(UTF8ToString(headers));
+    const headersStr = UTF8ToString(headers);
+    const headersArray = headersStr ? JSON.parse(headersStr) : [];
     const dataStr = UTF8ToString(data);
-    const request = new XMLHttpRequest();
-    // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
-    // Unity WebGL supports asynchronous requests
+    const request = new XMLHttpRequest;
     request.open(verbAllCaps, urlStr, false);
+    request.setRequestHeader("Content-Type", "application/json");
     for (var i = 0; i < headersArray.length; i++) {
-      request.setRequestHeader(UTF8ToString(headers[i].name), UTF8ToString(headers[i].value));
+      request.setRequestHeader(UTF8ToString(headers[i].name), UTF8ToString(headers[i].value))
     }
-    request.send(dataStr);
+    try {
+      request.send(dataStr)
+    } catch (e) {
+      console.error(`${verbAllCaps} request failed to send with error ${e}`);
+      return null
+    }
     if (request.status >= 300) {
-      console.error(`${verbAllCaps} request failed with error ${request.status}`);
+      console.error(`${verbAllCaps} request status is error ${request.status}`)
     }
     const result = _ConvertToUnityString(request.responseText);
     console.log(`_Request(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersArray)},\n` +
-        `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
-    return result;
+      `  data=${dataStr}\n) => ${UTF8ToString(result)}`);
+    return result
   }
-
-  function _ConvertToUnityString(o) {
-    var s = "";
-    if (o === null || o === undefined) {
-      s = "null";
-    } else if (typeof o === "object") {
-      s = JSON.stringify(o);
-    } else {
-      s = o.toString(); // handles numbers, booleans, etc
-    }
-    const size = lengthBytesUTF8(s) + 1;
-    var ptr = _malloc(size);
-    stringToUTF8(s, ptr, size);
-    return ptr;
-  }
-
   var JS_Accelerometer = null;
   var JS_Accelerometer_callback = 0;
 
@@ -12314,7 +12303,7 @@ function unityFramework(Module) {
     return u8array
   }
   var asmLibraryArg = {
-    "Wg": _GetRequest,
+    "Wg": _HttpRequest,
     "ge": _JS_Accelerometer_IsRunning,
     "ub": _JS_Accelerometer_Start,
     "tb": _JS_Accelerometer_Stop,
