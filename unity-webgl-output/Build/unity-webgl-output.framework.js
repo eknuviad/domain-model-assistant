@@ -879,7 +879,9 @@ function unityFramework(Module) {
     const dataStr = UTF8ToString(data);
     const request = new XMLHttpRequest();
     request.open(verbAllCaps, urlStr, false);
-    request.setRequestHeader("Content-Type", "application/json");
+    if (!headersStr.includes('Content-Type')) {
+      request.setRequestHeader("Content-Type", "application/json");
+    }
     console.log(headersArray);
     for (var i = 0; i < headersArray.length; i++) {
       request.setRequestHeader(headersArray[i].name, headersArray[i].value);

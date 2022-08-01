@@ -10,7 +10,9 @@ mergeInto(LibraryManager.library, {
     // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
     // Unity WebGL supports asynchronous requests
     request.open(verbAllCaps, urlStr, false);
-    request.setRequestHeader("Content-Type", "application/json");
+    if (!headersStr.includes('Content-Type')) {
+      request.setRequestHeader("Content-Type", "application/json");
+    }
     for (var i = 0; i < headersArray.length; i++) {
       request.setRequestHeader(headersArray[i].name, headersArray[i].value);
     }
