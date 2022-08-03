@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 /// <summary>
 /// Class to represent a user.
 /// </summary>
-public class User : MonoBehaviour
+public class User
 {
 
     public const string UserRegisterEndpoint = Constants.WebcoreEndpoint + "/user/public/register";
@@ -18,13 +18,11 @@ public class User : MonoBehaviour
 
     private const int UsernamePrefixLength = 8;
 
-    private const int RequestTimeoutSeconds = 1; // s
-
     public string Name { get; set; }
 
     private string _password;
     
-    private string _token;
+    public string Token { get; set; }
 
     private readonly bool _isWebGl = Application.platform == RuntimePlatform.WebGLPlayer;
 
@@ -38,15 +36,12 @@ public class User : MonoBehaviour
     /// The user's authorization credentials, as a JSON string.
     /// </summary>
     protected string AuthCreds => "{\"username\": \"" + Name + "\", \"password\": \"" + _password + "\"}";
-
-    [DllImport("__Internal")]
-    private static extern string HttpRequest(string verb, string url, string headers, string data);
     
     public User(string name, string password)
     {
         Name = name;
         _password = password;
-        _token = GetToken();
+        Token = GetToken();
         LoggedIn = false;
     }
 
@@ -55,8 +50,8 @@ public class User : MonoBehaviour
     /// </summary>
     private string GetToken()
     {
-        var response = PutRequest(UserRegisterEndpoint, AuthCreds, setAuthBearer: false);
-        if (ValidResponse(response))
+        var response = WebRequest.PutRequest(UserRegisterEndpoint, AuthCreds);
+        if (WebRequest.ValidResponse(response))
         {
             return TrimTokenResponse(response);
         }
@@ -68,10 +63,10 @@ public class User : MonoBehaviour
     /// </summary>
     public bool Login()
     {
-        var response = PostRequest(UserLoginEndpoint, AuthCreds, setAuthBearer: true);
-        if (ValidResponse(response))
+        var response = WebRequest.PostRequest(UserLoginEndpoint, AuthCreds, Token);
+        if (WebRequest.ValidResponse(response))
         {
-            _token = TrimTokenResponse(response);
+            Token = TrimTokenResponse(response);
             LoggedIn = true;
             return true;
         }
@@ -83,10 +78,10 @@ public class User : MonoBehaviour
     /// </summary>
     public bool Logout()
     {
-        var response = PostRequest(UserLogoutEndpoint);
-        if (ValidResponse(response))
+        var response = WebRequest.PostRequest(UserLogoutEndpoint);
+        if (WebRequest.ValidResponse(response))
         {
-            _token = null;
+            Token = null;
             LoggedIn = false;
             return true;
         }
@@ -94,9 +89,9 @@ public class User : MonoBehaviour
     }
 
     /// <summary>
-    /// Create a user with a random name and password, useful for testing.
+    /// Returns a random (username, password) pair.
     /// </summary>
-    public static User CreateRandom()
+    public static (string, string) GetRandomCreds()
     {
         var usernameBytes = new byte[UsernamePrefixLength];
         var passwordBytes = new byte[2 * UsernamePrefixLength];
@@ -104,117 +99,16 @@ public class User : MonoBehaviour
         _random.GetBytes(passwordBytes);
         var username = usernameBytes.Select(b => b % 26 + 'a').Aggregate("", (s, c) => s + (char)c);
         var password = passwordBytes.Aggregate("", (acc, c) => acc + c);
+        return (username, password);
+    }
+
+    /// <summary>
+    /// Create a user with a random name and password, useful for testing.
+    /// </summary>
+    public static User CreateRandom()
+    {
+        var (username, password) = GetRandomCreds();
         return new User(username, password);
-    }
-
-    /// <summary>
-    /// Sends a GET request to the server and returns the response.
-    /// </summary>
-    public string GetRequest(string uri)
-    {
-        if (_isWebGl)
-        {
-            return HttpRequest("GET", uri, WebGlJsHeaders(), "");
-        }
-        else
-        {
-            using var webRequest = WrapRequest(UnityWebRequest.Get(uri));
-            webRequest.timeout = RequestTimeoutSeconds;
-            var requestAsyncOp = webRequest.SendWebRequest();
-            while (!requestAsyncOp.isDone) {} // wait for the request to complete
-            return RequestTextOrError(requestAsyncOp);
-        }
-    }
-
-    /// <summary>
-    /// Sends a POST request to the server and returns its response.
-    /// </summary>
-    public string PostRequest(string uri, string data = "", bool setAuthBearer = true)
-    {
-        return PutRequest(uri, data, setAuthBearer, usePostMethod: true);
-    }
-
-    /// <summary>
-    /// Sends a DELETE request to the server.
-    /// </summary>
-    public string DeleteRequest(string uri)
-    {
-        if (_isWebGl)
-        {
-            return HttpRequest("DELETE", uri, WebGlJsHeaders(), "");
-        }
-        else
-        {
-            using var webRequest = WrapRequest(UnityWebRequest.Delete(uri));
-            var requestAsyncOp = webRequest.SendWebRequest();
-            while (!requestAsyncOp.isDone) {} // wait for the request to complete
-            return RequestTextOrError(requestAsyncOp);
-        }
-    }
-
-    /// <summary>
-    /// Sends a PUT request to the server and returns its response.
-    /// </summary>
-    public string PutRequest(string uri, string data = "", bool setAuthBearer = true, bool usePostMethod = false)
-    {
-        if (_isWebGl)
-        {
-            var verb = usePostMethod ? "POST" : "PUT";
-            return HttpRequest(verb, uri, WebGlJsHeaders(setAuthBearer), data);
-        }
-        else
-        {
-            using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), setAuthBearer);
-            // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
-            if (usePostMethod)
-            {
-                webRequest.method = UnityWebRequest.kHttpVerbPOST;
-            }
-            var requestAsyncOp = webRequest.SendWebRequest();
-            while (!requestAsyncOp.isDone) {} // wait for the request to complete
-            return RequestTextOrError(requestAsyncOp);
-        }
-    }
-
-    /// <summary>
-    /// Wraps a UnityWebRequest with the necessary request headers, including user's authorization header if
-    /// setAuthBearer is set to true.
-    /// </summary>
-    private UnityWebRequest WrapRequest(UnityWebRequest request, bool setAuthBearer = true)
-    {
-        request.SetRequestHeader("Content-Type", "application/json");
-        if (setAuthBearer)
-        {
-            request.SetRequestHeader("Authorization", "Bearer " + _token);
-        }
-        request.disposeDownloadHandlerOnDispose = false;
-        return request;
-    }
-
-    private string WebGlJsHeaders(bool setAuthBearer = true)
-    {
-        var headers = "{\"Content-Type\": \"application/json\"";
-        if (setAuthBearer)
-        {
-            headers += ", \"Authorization\": \"Bearer " + _token + "\"";
-        }
-        return headers + "}";
-    }
-
-    /// <summary>
-    /// Returns the request's text if successful, otherwise logs and returns an error message.
-    /// </summary>
-    private string RequestTextOrError(UnityWebRequestAsyncOperation requestAsyncOp)
-    {
-        if (requestAsyncOp.webRequest.result != UnityWebRequest.Result.Success)
-        {
-            var error = "UnityWebRequest Error in User class: " + requestAsyncOp.webRequest.error
-                + "\nResult type: " + requestAsyncOp.webRequest.result
-                + "\nResponse: " + requestAsyncOp.webRequest.downloadHandler.text;
-            Debug.LogError(error);    
-            return error;
-        }
-        return requestAsyncOp.webRequest.downloadHandler.text;
     }
 
     /// <summary>
@@ -230,14 +124,6 @@ public class User : MonoBehaviour
                 + "subsequent requests.", "");
     }
 
-    /// <summary>
-    /// Returns true if the response string is valid, ie, if it does not contain an error message.
-    /// </summary>
-    protected bool ValidResponse(string response)
-    {
-        return !response.StartsWith("UnityWebRequest Error");
-    }
-
     public override string ToString()
     {
         return "User" + Description();
@@ -246,7 +132,7 @@ public class User : MonoBehaviour
     protected string Description()
     {
         // TODO token returned for debugging only, remove before release
-        return "(name=" + Name + ", token=" + _token + ")";
+        return "(name=" + Name + ", token=" + Token + ")";
     }
 
 }
@@ -262,7 +148,7 @@ public class Student : User
 
     public bool CreateCdm(string name)
     {
-        PutRequest(CdmEndpoint(name));
+        WebRequest.PutRequest(CdmEndpoint(name));
         return true;
     }
 
@@ -274,7 +160,8 @@ public class Student : User
     // Returns a new random student. The `new` keyword below indicates that this method hides User.CreateRandom().
     public static new Student CreateRandom()
     {
-        return (Student)User.CreateRandom();
+        var (username, password) = GetRandomCreds();
+        return new Student(username, password);
     }
 
 }

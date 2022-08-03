@@ -892,30 +892,33 @@ function unityFramework(Module) {
     const headersStr = headers ? UTF8ToString(headers) : "";
     const headersObj = headersStr ? JSON.parse(headersStr) : {};
     const dataStr = UTF8ToString(data);
-    console.log(
-      `Sending HttpRequest(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersObj)},\n  data=${dataStr||""}\n)`
-      );
-    const request = new XMLHttpRequest;
+
+    console.log(`Sending HttpRequest(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersObj)
+        },\n  data=${dataStr || ""}\n)`);
+
+    const request = new XMLHttpRequest();
+    // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
+    // Unity WebGL supports asynchronous requests
     request.open(verbAllCaps, urlStr, false);
     if (!("Content-Type" in headersObj)) {
-      request.setRequestHeader("Content-Type", "application/json")
+      request.setRequestHeader("Content-Type", "application/json");
     }
     Object.entries(headersObj).forEach(([name, value]) => request.setRequestHeader(name, value));
     try {
-      request.send(dataStr)
+      request.send(dataStr);
     } catch (e) {
-      console.error(
-        `${verbAllCaps} request failed to send with error ${e}\nResponse headers: ${JSON.stringify(request.getAllResponseHeaders())}`
-        );
-      return null
+      console.error(`${verbAllCaps} request failed to send with error ${e}\nResponse headers: ${
+          JSON.stringify(request.getAllResponseHeaders())}`);
+      return null;
     }
     if (request.status >= 300) {
-      console.error(`${verbAllCaps} request status is error ${request.status}`)
+      console.error(`${verbAllCaps} request status is error ${request.status}`);
     }
     const result = _ConvertToUnityString(request.responseText);
     console.log(`HttpRequest() returning ${UTF8ToString(result)}`);
-    return result
+    return result;
   }
+
   var JS_Accelerometer = null;
   var JS_Accelerometer_callback = 0;
 

@@ -73,7 +73,9 @@ public class Diagram : MonoBehaviour
     private bool _namesUpToDate = false;
 
     // true if app is run in browser, false if run in Unity editor
-    private bool _isWebGl = false;
+    private static readonly bool _isWebGl = Application.platform == RuntimePlatform.WebGLPlayer;
+
+    private string _currCdmStr = "";
 
     public string ID { get; set; }
 
@@ -82,10 +84,6 @@ public class Diagram : MonoBehaviour
     // Awake is called once to initialize this game object
     void Awake()
     {
-        if (Application.platform == RuntimePlatform.WebGLPlayer)
-        {
-            _isWebGl = true;
-        }
         // user = User.CreateRandom(); // for now, just create a random user
         // user.Login();
         // user.PutRequest(CdmEndpoint()); // create the CDM
@@ -231,7 +229,7 @@ public class Diagram : MonoBehaviour
             y = position.y,
             className = name
         });
-        student.PostRequest(AddClassEndpoint(), jsonData);
+        WebRequest.PostRequest(AddClassEndpoint(), jsonData, student.Token);
         reGetRequest = true;
         RefreshCdm();
     }
@@ -239,7 +237,7 @@ public class Diagram : MonoBehaviour
     public void DeleteClass(GameObject node)
     {
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
-        student.DeleteRequest(DeleteClassEndpoint(_id));
+        WebRequest.DeleteRequest(DeleteClassEndpoint(_id), student.Token);
         reGetRequest = true;
         RefreshCdm(); // No need to remove or destroy the node here since entire class diagram is recreated
     }
@@ -255,7 +253,7 @@ public class Diagram : MonoBehaviour
             var positionInfo = new Position(newPosition.x, newPosition.y);
             string jsonData = JsonUtility.ToJson(positionInfo);
             //send updated position via PUT request
-            student.PutRequest(UpdateClassPositionEndpoint(_id), jsonData);
+            WebRequest.PutRequest(UpdateClassPositionEndpoint(_id), jsonData, student.Token);
         }
     }
 
@@ -301,7 +299,7 @@ public class Diagram : MonoBehaviour
             string jsonData = JsonUtility.ToJson(info);
             Debug.Log(jsonData);
             // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            student.PostRequest(AddAttributeEndpoint(_id), jsonData);
+            WebRequest.PostRequest(AddAttributeEndpoint(_id), jsonData, student.Token);
             reGetRequest = true;
             RefreshCdm();
         }
@@ -315,7 +313,7 @@ public class Diagram : MonoBehaviour
         if (UseWebcore)
         {
             string _id = textBox.GetComponent<TextBox>().ID;
-            student.DeleteRequest(DeleteAttributeEndpoint(_id));
+            WebRequest.DeleteRequest(DeleteAttributeEndpoint(_id), student.Token);
             reGetRequest = true;
             RefreshCdm();
             // No need to remove or destroy the attribute here since entire class diagram is recreated
@@ -489,13 +487,16 @@ public class Diagram : MonoBehaviour
     /// </summary>
     private bool RefreshCdm()
     {
-        // var result = user.GetRequest(CdmEndpoint());
-        // if (result != _getResult)
-        // {
-        //     LoadJson(result);
-        //     _getResult = result;
-        //     return true;
-        // }
+        if (student != null)
+        {
+            var result = WebRequest.GetRequest(CdmEndpoint(), student.Token);
+            if (result != _currCdmStr)
+            {
+                LoadJson(result);
+                _currCdmStr = result;
+                return true;
+            }
+        }
         return false;
     }
 
