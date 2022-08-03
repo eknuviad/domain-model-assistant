@@ -60,6 +60,9 @@ public class Diagram : MonoBehaviour
     private static extern string HttpRequest(string verb, string url, string headers, string data);
 
     [DllImport("__Internal")]
+    private static extern string ConvertToUnityString(object o);
+
+    [DllImport("__Internal")]
     private static extern void SetCursorToAddMode();
 
     [DllImport("__Internal")]
