@@ -31,7 +31,7 @@ public class Diagram : MonoBehaviour
 
     public string cdmName = "FerrySystem";
 
-    public User user;
+    public Student student;
 
     GraphicRaycaster raycaster;
 
@@ -228,7 +228,7 @@ public class Diagram : MonoBehaviour
             y = position.y,
             className = name
         });
-        user.PostRequest(AddClassEndpoint(), jsonData);
+        student.PostRequest(AddClassEndpoint(), jsonData);
         reGetRequest = true;
         RefreshCdm();
     }
@@ -236,7 +236,7 @@ public class Diagram : MonoBehaviour
     public void DeleteClass(GameObject node)
     {
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
-        user.DeleteRequest(DeleteClassEndpoint(_id));
+        student.DeleteRequest(DeleteClassEndpoint(_id));
         reGetRequest = true;
         RefreshCdm(); // No need to remove or destroy the node here since entire class diagram is recreated
     }
@@ -252,7 +252,7 @@ public class Diagram : MonoBehaviour
             var positionInfo = new Position(newPosition.x, newPosition.y);
             string jsonData = JsonUtility.ToJson(positionInfo);
             //send updated position via PUT request
-            user.PutRequest(UpdateClassPositionEndpoint(_id), jsonData);
+            student.PutRequest(UpdateClassPositionEndpoint(_id), jsonData);
         }
     }
 
@@ -298,7 +298,7 @@ public class Diagram : MonoBehaviour
             string jsonData = JsonUtility.ToJson(info);
             Debug.Log(jsonData);
             // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            user.PostRequest(AddAttributeEndpoint(_id), jsonData);
+            student.PostRequest(AddAttributeEndpoint(_id), jsonData);
             reGetRequest = true;
             RefreshCdm();
         }
@@ -312,7 +312,7 @@ public class Diagram : MonoBehaviour
         if (UseWebcore)
         {
             string _id = textBox.GetComponent<TextBox>().ID;
-            user.DeleteRequest(DeleteAttributeEndpoint(_id));
+            student.DeleteRequest(DeleteAttributeEndpoint(_id));
             reGetRequest = true;
             RefreshCdm();
             // No need to remove or destroy the attribute here since entire class diagram is recreated
@@ -438,7 +438,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public string CdmEndpoint()
     {
-        return WebcoreEndpoint + "/" + user.Name + "/classdiagram/" + cdmName;
+        return WebcoreEndpoint + "/" + student.Name + "/classdiagram/" + cdmName;
     }
 
     /// <summary>
@@ -543,12 +543,15 @@ public class Diagram : MonoBehaviour
         // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
         //   .text = "Rabbit";
 
-        /*var*/ user = User.CreateRandom();
-        Debug.Log("user: " + user);
-        Debug.Log("user.Login(): " + user.Login());
-        Debug.Log("user.LoggedIn: " + user.LoggedIn);
-        Debug.Log("user.Logout(): " + user.Logout());
-        Debug.Log("user.LoggedIn: " + user.LoggedIn);
+        /*var*/ student = Student.CreateRandom();
+        Debug.Log("student: " + student);
+        Debug.Log("student.Login(): " + student.Login());
+        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        Debug.Log("student.Logout(): " + student.Logout());
+        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        Debug.Log("student.Login() again: " + student.Login());
+        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        Debug.Log("student.CreateCdm(): " + student.CreateCdm(cdmName));
     }
 
     public Dictionary<string, string> GetAttrTypeIdsToTypes()

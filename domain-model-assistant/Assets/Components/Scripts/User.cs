@@ -193,12 +193,12 @@ public class User : MonoBehaviour
 
     private string WebGlJsHeaders(bool setAuthBearer = true)
     {
-        var headers = "[{\"name\": \"Content-Type\", \"value\": \"application/json\"}";
+        var headers = "{\"Content-Type\": \"application/json\"";
         if (setAuthBearer)
         {
-            headers += ", {\"name\": \"Authorization\", \"value\": \"Bearer " + _token + "\"}";
+            headers += ", \"Authorization\": \"Bearer " + _token + "\"";
         }
-        return headers + "]";
+        return headers + "}";
     }
 
     /// <summary>
@@ -255,7 +255,7 @@ public class User : MonoBehaviour
 /// <summary>
 /// A student who interacts with the application via the frontend.
 /// </summary>
-class Student : User
+public class Student : User
 {
 
     public Student(string name, string password) : base(name, password) {}
@@ -269,6 +269,12 @@ class Student : User
     private string CdmEndpoint(string cdmName)
     {
         return Constants.WebcoreEndpoint + "/" + Name + "/classdiagram/" + cdmName;
+    }
+    
+    // Returns a new random student. The `new` keyword below indicates that this method hides User.CreateRandom().
+    public static new Student CreateRandom()
+    {
+        return (Student)User.CreateRandom();
     }
 
 }

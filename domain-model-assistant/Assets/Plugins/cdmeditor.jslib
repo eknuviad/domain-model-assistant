@@ -4,20 +4,20 @@ mergeInto(LibraryManager.library, {
     const verbAllCaps = UTF8ToString(verb).toUpperCase();
     const urlStr = UTF8ToString(url);
     const headersStr = headers ? UTF8ToString(headers) : "";
-    const headersArray = headersStr ? JSON.parse(headersStr) : [];
+    const headersObj = headersStr ? JSON.parse(headersStr) : {};
     const dataStr = UTF8ToString(data);
+
+    console.log(`Sending HttpRequest(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersObj)
+        },\n  data=${dataStr || ""}\n)`);
+
     const request = new XMLHttpRequest();
     // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
     // Unity WebGL supports asynchronous requests
     request.open(verbAllCaps, urlStr, false);
-    if (!headersStr.includes("Content-Type")) {
+    if (!("Content-Type" in headersObj)) {
       request.setRequestHeader("Content-Type", "application/json");
     }
-    console.log(`Sending HttpRequest(\n  verb=${verbAllCaps},\n  url=${urlStr},\n  headers=${JSON.stringify(headersArray)
-        },\n  data=${dataStr}\n)`);
-    for (var i = 0; i < headersArray.length; i++) {
-      request.setRequestHeader(headersArray[i].name, headersArray[i].value);
-    }
+    Object.entries(headersObj).forEach(([name, value]) => request.setRequestHeader(name, value));
     try {
       request.send(dataStr);
     } catch (e) {
