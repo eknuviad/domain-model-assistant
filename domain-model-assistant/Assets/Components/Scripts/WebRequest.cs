@@ -15,7 +15,7 @@ public class WebRequest : MonoBehaviour
 
     private const int RequestTimeoutSeconds = 1; // s
 
-    public const string Logout = "logout";
+    public const string OmitContentType = "omit";
 
     [DllImport("__Internal")]
     private static extern string HttpRequest(string verb, string url, string headers, string data);
@@ -98,7 +98,7 @@ public class WebRequest : MonoBehaviour
     private static UnityWebRequest WrapRequest(UnityWebRequest request, string userToken = null,
                                                string contentType = "application/json")
     {
-        if (contentType.ToLower() != Logout)
+        if (contentType.ToLower() != OmitContentType)
         {
             request.SetRequestHeader("Content-Type", contentType);
         }
@@ -113,7 +113,7 @@ public class WebRequest : MonoBehaviour
     private static string WebGlJsHeaders(string userToken = null, string contentType = "application/json")
     {
         Dictionary<string, string> headers = new();
-        if (contentType.ToLower() != Logout)
+        if (contentType.ToLower() != OmitContentType)
         {
             headers["Content-Type"] = contentType;
         }
@@ -124,10 +124,10 @@ public class WebRequest : MonoBehaviour
         var json = "{";
         for (int i = 0; i < headers.Count; i++)
         {
-            json += "\"" + headers.ElementAt(i).Key + "\": \"" + headers.ElementAt(i).Value + "\"";
+            json += '"' + headers.ElementAt(i).Key + "\": \"" + headers.ElementAt(i).Value + '"';
             if (i < headers.Count - 1)
             {
-                json += ", ";
+                json += ", "; // JSON does not allow trailing commas
             }
         }
         return json + "}";

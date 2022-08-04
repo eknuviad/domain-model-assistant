@@ -136,6 +136,12 @@ var valueId = 16;
 var valueValueId = 106;
 var counterAttributeId = 3; // counter for ading attributes, for having unique IDs for each attribute
 
+// "Create" class diagram (does nothing except print debug info)
+app.put('/:username/classdiagram/:cdmName', (req, res) => {
+  console.log(`Create CDM request headers: ${JSON.stringify(req.headers)}`);
+  res.sendStatus(SUCCESS);
+});
+
 // GET class diagram
 app.get('/:username/classdiagram/:cdmName', (req, res) => {
   //console.log(classDiagram);

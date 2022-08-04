@@ -78,7 +78,7 @@ public class User
     /// </summary>
     public bool Logout()
     {
-        var response = WebRequest.PostRequest(UserLogoutEndpoint, userToken: Token, contentType: WebRequest.Logout);
+        var response = WebRequest.PostRequest(UserLogoutEndpoint, userToken: Token, contentType: WebRequest.OmitContentType);
         if (WebRequest.ValidResponse(response))
         {
             Token = null;
@@ -148,7 +148,7 @@ public class Student : User
 
     public bool CreateCdm(string name)
     {
-        WebRequest.PutRequest(CdmEndpoint(name));
+        WebRequest.PutRequest(CdmEndpoint(name), userToken: Token, contentType: WebRequest.OmitContentType);
         return true;
     }
 
