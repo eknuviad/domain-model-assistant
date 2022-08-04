@@ -792,10 +792,10 @@ function unityFramework(Module) {
   var tempDouble;
   var tempI64;
   var ASM_CONSTS = {
-    3291080: function() {
+    3291176: function() {
       return Module.webglContextAttributes.premultipliedAlpha
     },
-    3291141: function() {
+    3291237: function() {
       return Module.webglContextAttributes.preserveDrawingBuffer
     }
   };
@@ -12731,7 +12731,7 @@ function unityFramework(Module) {
     "zc": invoke_viiffi,
     "E": invoke_viifi,
     "$g": invoke_viifii,
-    "i": invoke_viii,
+    "j": invoke_viii,
     "eh": invoke_viiif,
     "tc": invoke_viiifi,
     "n": invoke_viiii,
@@ -12756,7 +12756,7 @@ function unityFramework(Module) {
     "qd": invoke_vji,
     "Zc": invoke_vjiiiii,
     "_c": invoke_vjjjiiii,
-    "j": _llvm_eh_typeid_for,
+    "i": _llvm_eh_typeid_for,
     "$a": _mktime,
     "B": _setTempRet0,
     "xa": _sigaction,

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -113,16 +112,25 @@ public class WebRequest : MonoBehaviour
 
     private static string WebGlJsHeaders(string userToken = null, string contentType = "application/json")
     {
-        var headers = "{";
+        Dictionary<string, string> headers = new();
         if (contentType.ToLower() != Logout)
         {
-            headers += "\"Content-Type\": \"" + contentType + "\"";
+            headers["Content-Type"] = contentType;
         }
         if (!string.IsNullOrEmpty(userToken))
         {
-            headers += ", \"Authorization\": \"Bearer " + userToken + "\"";
+            headers["Authorization"] = "Bearer " + userToken;
         }
-        return headers + "}";
+        var json = "{";
+        for (int i = 0; i < headers.Count; i++)
+        {
+            json += "\"" + headers.ElementAt(i).Key + "\": \"" + headers.ElementAt(i).Value + "\"";
+            if (i < headers.Count - 1)
+            {
+                json += ", ";
+            }
+        }
+        return json + "}";
     }
 
     /// <summary>
