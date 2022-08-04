@@ -78,7 +78,7 @@ public class User
     /// </summary>
     public bool Logout()
     {
-        var response = WebRequest.PostRequest(UserLogoutEndpoint);
+        var response = WebRequest.PostRequest(UserLogoutEndpoint, userToken: Token, contentType: WebRequest.Logout);
         if (WebRequest.ValidResponse(response))
         {
             Token = null;

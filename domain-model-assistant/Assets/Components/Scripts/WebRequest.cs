@@ -16,6 +16,8 @@ public class WebRequest : MonoBehaviour
 
     private const int RequestTimeoutSeconds = 1; // s
 
+    public const string Logout = "logout";
+
     [DllImport("__Internal")]
     private static extern string HttpRequest(string verb, string url, string headers, string data);
 
@@ -41,24 +43,26 @@ public class WebRequest : MonoBehaviour
     /// <summary>
     /// Sends a POST request to the server and returns its response.
     /// </summary>
-    public static string PostRequest(string uri, string data = "", string userToken = null)
+    public static string PostRequest(string uri, string data = "", string userToken = null,
+                                     string contentType = "application/json")
     {
-        return PutRequest(uri, data, userToken, usePostMethod: true);
+        return PutRequest(uri, data, userToken, usePostMethod: true, contentType);
     }
 
     /// <summary>
     /// Sends a PUT request to the server and returns its response.
     /// </summary>
-    public static string PutRequest(string uri, string data = "", string userToken = null, bool usePostMethod = false)
+    public static string PutRequest(string uri, string data = "", string userToken = null, bool usePostMethod = false,
+                                    string contentType = "application/json")
     {
         if (_isWebGl)
         {
             var verb = usePostMethod ? "POST" : "PUT";
-            return HttpRequest(verb, uri, WebGlJsHeaders(userToken), data);
+            return HttpRequest(verb, uri, WebGlJsHeaders(userToken, contentType), data);
         }
         else
         {
-            using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), userToken);
+            using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), userToken, contentType);
             // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
             if (usePostMethod)
             {
@@ -92,9 +96,13 @@ public class WebRequest : MonoBehaviour
     /// Wraps a UnityWebRequest with the necessary request headers, including user's authorization header if
     /// the user token is given.
     /// </summary>
-    private static UnityWebRequest WrapRequest(UnityWebRequest request, string userToken = null)
+    private static UnityWebRequest WrapRequest(UnityWebRequest request, string userToken = null,
+                                               string contentType = "application/json")
     {
-        request.SetRequestHeader("Content-Type", "application/json");
+        if (contentType.ToLower() != Logout)
+        {
+            request.SetRequestHeader("Content-Type", contentType);
+        }
         if (!string.IsNullOrEmpty(userToken))
         {
             request.SetRequestHeader("Authorization", "Bearer " + userToken);
@@ -103,9 +111,13 @@ public class WebRequest : MonoBehaviour
         return request;
     }
 
-    private static string WebGlJsHeaders(string userToken = null)
+    private static string WebGlJsHeaders(string userToken = null, string contentType = "application/json")
     {
-        var headers = "{\"Content-Type\": \"application/json\"";
+        var headers = "{";
+        if (contentType.ToLower() != Logout)
+        {
+            headers += "\"Content-Type\": \"" + contentType + "\"";
+        }
         if (!string.IsNullOrEmpty(userToken))
         {
             headers += ", \"Authorization\": \"Bearer " + userToken + "\"";
@@ -120,10 +132,15 @@ public class WebRequest : MonoBehaviour
     {
         if (requestAsyncOp.webRequest.result != UnityWebRequest.Result.Success)
         {
+            Dictionary<string, string> headers = new();
+            if (requestAsyncOp.webRequest.GetResponseHeaders() != null)
+            {
+                headers = requestAsyncOp.webRequest.GetResponseHeaders();
+            }
             var error = "UnityWebRequest Error in WebRequest class: " + requestAsyncOp.webRequest.error
                 + "\nResult type: " + requestAsyncOp.webRequest.result
-                + "\nResponse headers:\n  "
-                + string.Join(Environment.NewLine + "  ", requestAsyncOp.webRequest.GetResponseHeaders())
+                + "\nRequest URL: " + requestAsyncOp.webRequest.url
+                + "\nResponse headers:\n  " + string.Join(Environment.NewLine + "  ", headers)
                 + "\nResponse body: " + requestAsyncOp.webRequest.downloadHandler.text;
             Debug.LogError(error);    
             return error;
