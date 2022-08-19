@@ -792,10 +792,10 @@ function unityFramework(Module) {
   var tempDouble;
   var tempI64;
   var ASM_CONSTS = {
-    3291176: function() {
+    3291160: function() {
       return Module.webglContextAttributes.premultipliedAlpha
     },
-    3291237: function() {
+    3291221: function() {
       return Module.webglContextAttributes.preserveDrawingBuffer
     }
   };
@@ -897,7 +897,8 @@ function unityFramework(Module) {
       );
     const request = new XMLHttpRequest;
     request.open(verbAllCaps, urlStr, false);
-    if (!("Content-Type" in headersObj)) {
+    const creatingCdm = verbAllCaps === "PUT" && /https?:\/\/[^/]+\/[^/]+\/classdiagram\/[^/]+\/?$/.test(urlStr);
+    if (!("Content-Type" in headersObj) && !creatingCdm) {
       request.setRequestHeader("Content-Type", "application/json")
     }
     Object.entries(headersObj).forEach(([name, value]) => request.setRequestHeader(name, value));

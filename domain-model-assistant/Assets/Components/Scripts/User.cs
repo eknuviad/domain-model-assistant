@@ -148,8 +148,8 @@ public class Student : User
 
     public bool CreateCdm(string name)
     {
-        WebRequest.PutRequest(CdmEndpoint(name), userToken: Token, contentType: WebRequest.OmitContentType);
-        return true;
+        var resp = WebRequest.PutRequest(CdmEndpoint(name), userToken: Token, contentType: WebRequest.OmitContentType);
+        return WebRequest.ValidResponse(resp);
     }
 
     private string CdmEndpoint(string cdmName)

@@ -551,10 +551,11 @@ public class Diagram : MonoBehaviour
         Debug.Log("student: " + student);
         Debug.Log("student.Login(): " + student.Login());
         Debug.Log("student.LoggedIn: " + student.LoggedIn);
-        Debug.Log("student.Logout(): " + student.Logout());
-        Debug.Log("student.LoggedIn: " + student.LoggedIn);
-        Debug.Log("student.Login() again: " + student.Login());
-        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        // Logout logic is currently faulty, so uncommenting the lines below will cause the CreateCdm() call to fail
+        // Debug.Log("student.Logout(): " + student.Logout());
+        // Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        // Debug.Log("student.Login() again: " + student.Login());
+        // Debug.Log("student.LoggedIn: " + student.LoggedIn);
         Debug.Log("student.CreateCdm(): " + student.CreateCdm(cdmName));
     }
 

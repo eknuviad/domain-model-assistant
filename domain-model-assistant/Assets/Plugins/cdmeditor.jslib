@@ -14,7 +14,9 @@ mergeInto(LibraryManager.library, {
     // The `false` indicates that the request is synchronous, which is deprecated and should be replaced once
     // Unity WebGL supports asynchronous requests
     request.open(verbAllCaps, urlStr, false);
-    if (!("Content-Type" in headersObj)) {
+    // URL in form http[s]://server[:port]/username/classdiagram/cdmname
+    const creatingCdm = verbAllCaps === "PUT" && /https?:\/\/[^/]+\/[^/]+\/classdiagram\/[^/]+\/?$/.test(urlStr);
+    if (!("Content-Type" in headersObj) && !creatingCdm) {
       request.setRequestHeader("Content-Type", "application/json");
     }
     Object.entries(headersObj).forEach(([name, value]) => request.setRequestHeader(name, value));
