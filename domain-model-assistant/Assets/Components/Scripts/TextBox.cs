@@ -57,15 +57,15 @@ public class TextBox : MonoBehaviour
             {
                 Debug.Log(Section.GetComponent<Section>()
                     .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
-                _diagram.AddAttribute(this.gameObject);
+                _diagram.AddAttribute(gameObject);
             }
         }
 
-        if (this.hold2)
+        if (hold2)
         {
             OnBeginHoldTB();
         }
-        text = this.GetComponent<Text>();
+        text = GetComponent<Text>();
         if (IsHighlightedtext)
         {
             text.color = Color.red;
@@ -108,14 +108,14 @@ public class TextBox : MonoBehaviour
 
     public void OnBeginHoldTB()
     {
-        this.hold2 = true;
+        hold2 = true;
         holdTimer2 += Time.deltaTime;
     }
 
     public void OnEndHoldTB()
     {
         // TODO Don't spawn popup if class is being dragged
-        if (holdTimer2 > 2f /*&& Vector2.Distance(this.transform.position, _prevPosition) < 0.1f*/ )
+        if (holdTimer2 > 2f /*&& Vector2.Distance(transform.position, _prevPosition) < 0.1f*/ )
         {
             if (Section != null)
             {
@@ -126,29 +126,29 @@ public class TextBox : MonoBehaviour
 
     void SpawnAttributeCross()
     {
-        if (this.attributeCross.GetComponent<AttributeCross>().GetTextBox() == null)
+        if (attributeCross.GetComponent<AttributeCross>().GetTextBox() == null)
         {
-            this.attributeCross = GameObject.Instantiate(this.attributeCross);
-            this.attributeCross.transform.position = this.transform.position + new Vector3(UpdatePositionConst, 0, 0);
-            this.attributeCross.GetComponent<AttributeCross>().setTextBox(this);
-            this.attributeCross.GetComponent<AttributeCross>().Open();
+            attributeCross = GameObject.Instantiate(attributeCross);
+            attributeCross.transform.position = transform.position + new Vector3(UpdatePositionConst, 0, 0);
+            attributeCross.GetComponent<AttributeCross>().setTextBox(this);
+            attributeCross.GetComponent<AttributeCross>().Open();
         }
         else
         {
-            this.attributeCross.GetComponent<AttributeCross>().Open();
+            attributeCross.GetComponent<AttributeCross>().Open();
         }
     }
 
     public void Destroy()
     {
-        _diagram.DeleteAttribute(this.gameObject); //delete attribute from Diagram
-        this.attributeCross.GetComponent<AttributeCross>().Close();
-        Destroy(this.gameObject);
+        _diagram.DeleteAttribute(gameObject); //delete attribute from Diagram
+        attributeCross.GetComponent<AttributeCross>().Close();
+        Destroy(gameObject);
     }
 
     public GameObject GetAttributeCross()
     {
-        return this.attributeCross;
+        return attributeCross;
     }
 
 }
