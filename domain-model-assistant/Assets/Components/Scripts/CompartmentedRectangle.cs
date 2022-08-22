@@ -66,17 +66,19 @@ public class CompartmentedRectangle : Node
         CreateHeader();
         CreateSection();
         id = GetComponent<CompartmentedRectangle>().ID;
-        // Debug.Log(transform.GetChild(0));
-        // Debug.Log(transform.GetChild(1));
-        // Debug.Log(transform.GetChild(2));
-        // Debug.Log(transform.GetChild(3));
-       
-        GameObject childHeader;
-        GameObject childSection;
-        childHeader = transform.GetChild(0).gameObject;
-        headerColor = childHeader.GetComponent<Image>().color;
-        childSection = transform.GetChild(2).gameObject;
-        sectionColor = childSection.GetComponent<Image>().color;
+
+        // for (int i = 0; i < transform.childCount; i++)
+        // {
+        //     var img = transform.GetChild(i).GetComponent<Image>();
+        //     string color = img != null ? ("" + img.color) : "null";
+        //     Debug.Log("CompRect transform child " + i + ": " + transform.GetChild(i) + " with image " + img
+        //         + " and with color " + color);
+        // }
+
+        var headerIndex = transform.childCount - 4; // obtained by trial and error - make this more robust later
+        var sectionIndex = headerIndex + 2;
+        headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
+        sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
     }
 
     // Update is called once per frame

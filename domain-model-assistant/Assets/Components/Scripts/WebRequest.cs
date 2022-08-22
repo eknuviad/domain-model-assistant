@@ -145,11 +145,16 @@ public class WebRequest : MonoBehaviour
             {
                 headers = requestAsyncOp.webRequest.GetResponseHeaders();
             }
+            var responseBody = "No response received.";
+            if (requestAsyncOp.webRequest.downloadHandler != null)
+            {
+                responseBody = requestAsyncOp.webRequest.downloadHandler.text;
+            }
             var error = "UnityWebRequest Error in WebRequest class: " + requestAsyncOp.webRequest.error
                 + "\nResult type: " + requestAsyncOp.webRequest.result
                 + "\nRequest URL: " + requestAsyncOp.webRequest.url
                 + "\nResponse headers:\n  " + string.Join(Environment.NewLine + "  ", headers)
-                + "\nResponse body: " + requestAsyncOp.webRequest.downloadHandler.text;
+                + "\nResponse body: " + responseBody;
             Debug.LogError(error);    
             return error;
         }

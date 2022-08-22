@@ -479,7 +479,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public string DeleteAttributeEndpoint(string classId)
     {
-        return CdmEndpoint() + "/class/" + classId + "/attributes"; // TODO Double check
+        return CdmEndpoint() + "/class/" + classId + "/attribute";
     }
 
     /// <summary>
