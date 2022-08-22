@@ -25,7 +25,7 @@ fs.readFile(unityFrameworkJsFile, (err, data) => {
     console.error(err);
     return;
   }
-  fs.writeFile(unityFrameworkJsFile, deminify(data.toString()), (err) => {
+  fs.writeFile(unityFrameworkJsFile, deminify(data.toString()), err => {
     if (err) {
       console.error(err);
       return;

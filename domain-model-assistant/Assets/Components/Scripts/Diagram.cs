@@ -475,11 +475,11 @@ public class Diagram : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the delete attribute endpoint URL for the given class _id.
+    /// Returns the delete attribute endpoint URL for the given attribute _id.
     /// </summary>
-    public string DeleteAttributeEndpoint(string classId)
+    public string DeleteAttributeEndpoint(string attributeId)
     {
-        return CdmEndpoint() + "/class/" + classId + "/attribute";
+        return CdmEndpoint() + "/class/attribute/" + attributeId;
     }
 
     /// <summary>

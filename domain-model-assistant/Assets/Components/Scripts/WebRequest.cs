@@ -84,7 +84,7 @@ public class WebRequest : MonoBehaviour
         }
         else
         {
-            using var webRequest = WrapRequest(UnityWebRequest.Delete(uri), userToken);
+            using var webRequest = WrapRequest(UnityWebRequest.Delete(uri), userToken, contentType: OmitContentType);
             var requestAsyncOp = webRequest.SendWebRequest();
             while (!requestAsyncOp.isDone) {} // wait for the request to complete
             return RequestTextOrError(requestAsyncOp);
@@ -157,6 +157,10 @@ public class WebRequest : MonoBehaviour
                 + "\nResponse body: " + responseBody;
             Debug.LogError(error);    
             return error;
+        }
+        if (requestAsyncOp.webRequest.method == UnityWebRequest.kHttpVerbDELETE)
+        {
+            return ""; // DELETE requests don't return a body
         }
         return requestAsyncOp.webRequest.downloadHandler.text;
     }
