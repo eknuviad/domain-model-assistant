@@ -155,7 +155,7 @@ public class WebRequest : MonoBehaviour
                 + "\nRequest URL: " + requestAsyncOp.webRequest.url
                 + "\nResponse headers:\n  " + string.Join(Environment.NewLine + "  ", headers)
                 + "\nResponse body: " + responseBody;
-            Debug.LogError(error);    
+            Debug.LogError(error);
             return error;
         }
         if (requestAsyncOp.webRequest.method == UnityWebRequest.kHttpVerbDELETE)

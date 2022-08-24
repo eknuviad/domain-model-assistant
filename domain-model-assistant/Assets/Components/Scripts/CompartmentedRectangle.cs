@@ -132,7 +132,6 @@ public class CompartmentedRectangle : Node
         
         //update class position
         _diagram.UpdateClassPosition(textbox, gameObject);
-
     }
 
     void SpawnPopupMenu()

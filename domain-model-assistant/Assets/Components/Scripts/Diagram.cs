@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class Diagram : MonoBehaviour
 {
 
+    // These public fields are assigned in the editor
     public TextAsset jsonFile;
     public float zoomSpeed = 1;
     public CanvasScaler CanvasScaler;
@@ -20,10 +21,12 @@ public class Diagram : MonoBehaviour
     public float smoothSpeed = 2.0f;
     public float minOrtho = 0.0f;
     public float maxOrtho = 20.0f;
-    private Vector3 dragStartPos;
-    // private bool dragging = false;
     public GameObject compartmentedRectangle;
     public List<GameObject> compartmentedRectangles;
+    public InfoBox infoBox;
+
+    private Vector3 dragStartPos;
+    // private bool dragging = false;
 
     public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
 
@@ -32,6 +35,10 @@ public class Diagram : MonoBehaviour
     public string cdmName = "FerrySystem";
 
     public Student student;
+
+    // Temporary text used during application development
+    public const string InitialInfoBoxText = "Welcome to the Modeling Assistant! "
+        + "Please use the Debug button in the top right corner to login to a new random WebCORE account.";
 
     GraphicRaycaster raycaster;
 
@@ -42,7 +49,6 @@ public class Diagram : MonoBehaviour
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
     List<string> createdAttributeIds = new();
-
 
     enum CanvasMode
     {
@@ -96,6 +102,7 @@ public class Diagram : MonoBehaviour
         CanvasScaler = gameObject.GetComponent<CanvasScaler>();
         targetOrtho = CanvasScaler.scaleFactor;
         raycaster = GetComponent<GraphicRaycaster>();
+        infoBox.Value = InitialInfoBoxText;
         RefreshCdm();
 
         /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
@@ -551,6 +558,11 @@ public class Diagram : MonoBehaviour
         Debug.Log("student: " + student);
         Debug.Log("student.Login(): " + student.Login());
         Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        if (!student.LoggedIn)
+        {
+            infoBox.Red("Login failed! See console for exact error. (Hint: Double check that WebCORE is running.)");
+            return;
+        }
         // Logout logic is currently faulty, so uncommenting the lines below will cause the CreateCdm() call to fail
         // Debug.Log("student.Logout(): " + student.Logout());
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
