@@ -560,7 +560,7 @@ public class Diagram : MonoBehaviour
         Debug.Log("student.LoggedIn: " + student.LoggedIn);
         if (!student.LoggedIn)
         {
-            infoBox.Red("Login failed! See console for exact error. (Hint: Double check that WebCORE is running.)");
+            infoBox.Warn("Login failed! See console for exact error. (Hint: Double check that WebCORE is running.)");
             return;
         }
         // Logout logic is currently faulty, so uncommenting the lines below will cause the CreateCdm() call to fail
@@ -568,7 +568,16 @@ public class Diagram : MonoBehaviour
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
         // Debug.Log("student.Login() again: " + student.Login());
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
-        Debug.Log("student.CreateCdm(): " + student.CreateCdm(cdmName));
+        var cdmCreated = student.CreateCdm(cdmName);
+        Debug.Log("student.CreateCdm(): " + cdmCreated);
+        if (cdmCreated)
+        {
+            infoBox.Info("Blank class diagram created! You can now add class diagram elements using the diagram editor.");
+        }
+        else
+        {
+            infoBox.Warn("Class diagram creation failed! See console for exact error.");
+        }
     }
 
     public Dictionary<string, string> GetAttrTypeIdsToTypes()

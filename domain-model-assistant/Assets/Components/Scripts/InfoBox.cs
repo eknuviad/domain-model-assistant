@@ -52,4 +52,21 @@ public class InfoBox : MonoBehaviour
         TextColor = DarkGreen;
     }
 
+    public void Blue(string text)
+    {
+        Value = text;
+        TextColor = DarkBlue;
+    }
+
+    public void Info(string text)
+    {
+        Value = text;
+        TextColor = DefaultColor;
+    }
+
+    public void Warn(string text)
+    {
+        Red(text);
+    }
+
 }
