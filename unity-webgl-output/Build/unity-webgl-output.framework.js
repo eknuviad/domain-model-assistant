@@ -792,10 +792,10 @@ function unityFramework(Module) {
   var tempDouble;
   var tempI64;
   var ASM_CONSTS = {
-    3292728: function() {
+    3292952: function() {
       return Module.webglContextAttributes.premultipliedAlpha
     },
-    3292789: function() {
+    3293013: function() {
       return Module.webglContextAttributes.preserveDrawingBuffer
     }
   };
@@ -905,10 +905,11 @@ function unityFramework(Module) {
     try {
       request.send(dataStr)
     } catch (e) {
-      console.error(
-        `${verbAllCaps} request failed to send with error ${e}\nResponse headers: ${JSON.stringify(request.getAllResponseHeaders())}`
-        );
-      return null
+      const errorPrefix = "HttpRequest Error";
+      const error =
+        `${errorPrefix}: ${verbAllCaps} request failed to send with error ${e}\nResponse headers: ${JSON.stringify(request.getAllResponseHeaders())}`;
+      console.error(error);
+      return _ConvertToUnityString(error)
     }
     if (request.status >= 300) {
       console.error(`${verbAllCaps} request status is error ${request.status}`)

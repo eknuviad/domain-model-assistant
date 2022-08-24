@@ -23,9 +23,11 @@ mergeInto(LibraryManager.library, {
     try {
       request.send(dataStr);
     } catch (e) {
-      console.error(`${verbAllCaps} request failed to send with error ${e}\nResponse headers: ${
-          JSON.stringify(request.getAllResponseHeaders())}`);
-      return null;
+      const errorPrefix = "HttpRequest Error"; // this exact string is used in the calling C# code, do not edit
+      const error = `${errorPrefix}: ${verbAllCaps} request failed to send with error ${e}\nResponse headers: ${
+        JSON.stringify(request.getAllResponseHeaders())}`
+      console.error(error);
+      return _ConvertToUnityString(error); // cannot return null here since app crashes without any chance of recovery
     }
     if (request.status >= 300) {
       console.error(`${verbAllCaps} request status is error ${request.status}`);

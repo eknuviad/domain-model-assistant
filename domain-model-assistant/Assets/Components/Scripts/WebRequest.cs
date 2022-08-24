@@ -170,7 +170,8 @@ public class WebRequest : MonoBehaviour
     /// </summary>
     public static bool ValidResponse(string response)
     {
-        return !response.StartsWith("UnityWebRequest Error");
+        return !response.StartsWith("Error") && !response.StartsWith("UnityWebRequest Error")
+            && !response.StartsWith("HttpRequest Error");
     }
 
 }

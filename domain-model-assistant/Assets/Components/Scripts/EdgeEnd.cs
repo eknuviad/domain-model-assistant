@@ -53,7 +53,7 @@ public class EdgeEnd : MonoBehaviour
         aggregationIcon.GetComponent<AggregationIcon>().SetEdgeEnd(this);
         compositionIcon.GetComponent<CompositionIcon>().SetEdgeEnd(this);
 
-        Debug.Log("instatntiate");
+        Debug.Log("EdgeEnd instantiated");
     }
 
     void Update()
