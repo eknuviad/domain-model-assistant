@@ -81,9 +81,9 @@ public class WebCore
         instance.AddGeneralization_();
     }
 
-    public static void AddAssociation()
+    public static void AddAssociation(GameObject node1, GameObject node2)
     {
-        instance.AddAssociation_();
+        instance.AddAssociation_(node1, node2);
     }
 
     public static void UpdateRelationshipMultiplicities()
@@ -187,31 +187,35 @@ public class WebCore
     
     private void AddGeneralization_()
     {
-
+        Debug.Log("WebCore.AddGeneralization() called");
     }
     
     
-    private void AddAssociation_()
+    private void AddAssociation_(GameObject node1, GameObject node2)
     {
-
+        var id1 = node1.GetComponent<CompartmentedRectangle>().ID;
+        var id2 = node2.GetComponent<CompartmentedRectangle>().ID;
+        Debug.Log($"WebCore.AddAssociation({id1}, {id2}) called");
+        WebRequest.PostRequest(AddAssociationEndpoint(),
+            JsonUtility.ToJson(new { fromClassId = id1, toClassId = id2, bidirectional = true }), Student.Token);
     }
     
     
     private void UpdateRelationshipMultiplicities_()
     {
-
+        Debug.Log("WebCore.UpdateRelationshipMultiplicities() called");
     }
     
     
     private void UpdateRelationshipRoleNames_()
     {
-
+        Debug.Log("WebCore.UpdateRelationshipRoleNames() called");
     }
     
     
     private void UpdateRelationshipType_()
     {
-
+        Debug.Log("WebCore.UpdateRelationshipType() called");
     }
 
     // additional helper methods
@@ -266,6 +270,11 @@ public class WebCore
     public string DeleteAttributeEndpoint(string attributeId)
     {
         return CdmEndpoint() + "/class/attribute/" + attributeId;
+    }
+
+    public string AddAssociationEndpoint()
+    {
+        return $"{CdmEndpoint()}/association";
     }
 
 }

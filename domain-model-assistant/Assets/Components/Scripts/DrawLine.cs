@@ -55,15 +55,20 @@ public void createLine(){
 
 public void AddCompartmentedRectangle(GameObject compRect)
 {
-    if( obj1 == null){
+    if (obj1 == null)
+    {
         obj1 = compRect;
         Debug.Log("obj1 set");
     }
-    else if(obj1 != compRect){
+    else if (obj1 != compRect)
+    {
         obj2 = compRect;
         Debug.Log("obj2 set");
+        WebCore.AddAssociation(obj1, obj2);
         createLine();
-    }else{
+    }
+    else
+    {
         obj2 = null;
     }
     Debug.Log("Comp rect added: " + compRect.GetComponent<CompartmentedRectangle>().ID);
