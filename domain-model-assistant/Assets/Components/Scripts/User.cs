@@ -145,17 +145,6 @@ public class Student : User
 {
 
     public Student(string name, string password) : base(name, password) {}
-
-    public bool CreateCdm(string name)
-    {
-        var resp = WebRequest.PutRequest(CdmEndpoint(name), userToken: Token, contentType: WebRequest.OmitContentType);
-        return WebRequest.ValidResponse(resp);
-    }
-
-    private string CdmEndpoint(string cdmName)
-    {
-        return Constants.WebcoreEndpoint + "/" + Name + "/classdiagram/" + cdmName;
-    }
     
     // Returns a new random student. The `new` keyword below indicates that this method hides User.CreateRandom().
     public static new Student CreateRandom()

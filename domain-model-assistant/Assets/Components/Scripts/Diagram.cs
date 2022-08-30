@@ -437,11 +437,11 @@ public class Diagram : MonoBehaviour
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
         // Debug.Log("student.Login() again: " + student.Login());
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
-        var cdmCreated = student.CreateCdm(cdmName);
-        Debug.Log("student.CreateCdm(): " + cdmCreated);
+        var cdmCreated = WebCore.CreateCdm(cdmName);
+        Debug.Log("WebCore.CreateCdm(): " + cdmCreated);
         if (cdmCreated)
         {
-            infoBox.Info("Blank class diagram created! You can now add class diagram elements using the diagram editor.");
+            infoBox.Info("Class diagram created! You can now add class diagram elements with the diagram editor.");
         }
         else
         {

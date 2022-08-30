@@ -31,6 +31,11 @@ public class WebCore
         return instance;
     }
 
+    public static bool CreateCdm(string name)
+    {
+        return instance.CreateCdm_(name);
+    }
+
     /// <summary>
     /// Adds a class to the diagram with the given name and position.
     /// </summary>
@@ -71,7 +76,40 @@ public class WebCore
         instance.DeleteAttribute_(textBox);
     }
 
+    public static void AddGeneralization()
+    {
+        instance.AddGeneralization_();
+    }
+
+    public static void AddAssociation()
+    {
+        instance.AddAssociation_();
+    }
+
+    public static void UpdateRelationshipMultiplicities()
+    {
+        instance.UpdateRelationshipMultiplicities_();
+    }
+
+    public static void UpdateRelationshipRoleNames()
+    {
+        instance.UpdateRelationshipRoleNames_();
+    }
+
+    public static void UpdateRelationshipType()
+    {
+        instance.UpdateRelationshipType_();
+    }
+
+
     // private instance methods that act on the singleton instance
+
+    private bool CreateCdm_(string name)
+    {
+        var resp = WebRequest.PutRequest(CdmEndpoint(name), userToken: Student.Token,
+            contentType: WebRequest.OmitContentType);
+        return WebRequest.ValidResponse(resp);
+    }
 
     private void AddClass_(string name, Vector2 position)
     {
@@ -145,14 +183,49 @@ public class WebCore
         // No need to remove or destroy the attribute here since entire class diagram is recreated
     }
 
+    
+    
+    private void AddGeneralization_()
+    {
+
+    }
+    
+    
+    private void AddAssociation_()
+    {
+
+    }
+    
+    
+    private void UpdateRelationshipMultiplicities_()
+    {
+
+    }
+    
+    
+    private void UpdateRelationshipRoleNames_()
+    {
+
+    }
+    
+    
+    private void UpdateRelationshipType_()
+    {
+
+    }
+
     // additional helper methods
 
     /// <summary>
     /// Returns the class diagram endpoint URL.
     /// </summary>
-    public string CdmEndpoint()
+    public string CdmEndpoint(string name = "")
     {
-        return WebcoreEndpoint + "/" + Student.Name + "/classdiagram/" + _diagram.cdmName;
+        if (string.IsNullOrEmpty(name))
+        {
+            name = _diagram.cdmName;
+        }
+        return WebcoreEndpoint + "/" + Student.Name + "/classdiagram/" + name;
     }
 
     /// <summary>
