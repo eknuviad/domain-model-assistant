@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Newtonsoft.Json;
 
 public class WebCore
 {
@@ -196,8 +197,9 @@ public class WebCore
         var id1 = node1.GetComponent<CompartmentedRectangle>().ID;
         var id2 = node2.GetComponent<CompartmentedRectangle>().ID;
         Debug.Log($"WebCore.AddAssociation({id1}, {id2}) called");
+        Debug.Log(Json(new { fromClassId = id1, toClassId = id2, bidirectional = true }));
         WebRequest.PostRequest(AddAssociationEndpoint(),
-            JsonUtility.ToJson(new { fromClassId = id1, toClassId = id2, bidirectional = true }), Student.Token);
+            Json(new { fromClassId = id1, toClassId = id2, bidirectional = true }), Student.Token);
     }
     
     
@@ -275,6 +277,14 @@ public class WebCore
     public string AddAssociationEndpoint()
     {
         return $"{CdmEndpoint()}/association";
+    }
+
+    /// <summary>
+    /// Shorthand for JsonConvert.SerializeObject().
+    /// </summary>
+    private string Json(object o)
+    {
+        return JsonConvert.SerializeObject(o);
     }
 
 }
