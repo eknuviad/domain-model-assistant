@@ -131,14 +131,14 @@ public class CompartmentedRectangle : Node
         ToggleHighlight();
         
         //update class position
-        _diagram.UpdateClassPosition(textbox, gameObject);
+        WebCore.UpdateClassPosition(textbox, gameObject);
     }
 
     void SpawnPopupMenu()
     {
         if (popupMenu.GetComponent<PopupMenu>().GetCompartmentedRectangle() == null)
         {
-            popupMenu = GameObject.Instantiate(popupMenu);
+            popupMenu = Instantiate(popupMenu);
             popupMenu.transform.position = transform.position + new Vector3(popupMenuOffsetX, 0, 0);
             popupMenu.GetComponent<PopupMenu>().SetCompartmentedRectangle(this);
             popupMenu.GetComponent<PopupMenu>().Open();
@@ -154,7 +154,7 @@ public class CompartmentedRectangle : Node
     /// </summary>
     public void Destroy()
     {
-        _diagram.DeleteClass(gameObject);
+        WebCore.DeleteClass(gameObject);
         popupMenu.GetComponent<PopupMenu>().Destroy();
     }
 

@@ -231,29 +231,6 @@ public class Diagram : MonoBehaviour
         }
     }
 
-    public void DeleteClass(GameObject node)
-    {
-        string _id = node.GetComponent<CompartmentedRectangle>().ID;
-        WebRequest.DeleteRequest(DeleteClassEndpoint(_id), student.Token);
-        reGetRequest = true;
-        RefreshCdm(); // No need to remove or destroy the node here since entire class diagram is recreated
-    }
-
-    public void UpdateClassPosition(GameObject header, GameObject node)
-    {
-        if (UseWebcore)
-        {
-            string _id = node.GetComponent<CompartmentedRectangle>().ID;
-            string clsName = header.GetComponent<InputField>().text;
-            Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
-            //JSON body. Create new serializable JSON object.
-            var positionInfo = new Position(newPosition.x, newPosition.y);
-            string jsonData = JsonUtility.ToJson(positionInfo);
-            //send updated position via PUT request
-            WebRequest.PutRequest(UpdateClassPositionEndpoint(_id), jsonData, student.Token);
-        }
-    }
-
     /// <summary>
     /// Updates the names of the classes (otherwise, they all have the name of the most recently added class).
     /// </summary>
@@ -265,56 +242,6 @@ public class Diagram : MonoBehaviour
                 nameRectPair.Key;
         }
         _namesUpToDate = true;
-    }
-
-    /// <summary>
-    /// Add Attribute
-    /// </summary> 
-    public void AddAttribute(GameObject textbox)
-    {
-        if (UseWebcore)
-        {
-            Section section = textbox.GetComponent<TextBox>().Section.GetComponent<Section>();
-            CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
-                .GetComponent<CompartmentedRectangle>();
-            List<GameObject> attributes = section.GetTextBoxList();
-            string _id = compRect.ID;
-            int rankIndex = -1;
-            string name = null;
-            int typeId = -1;
-            for (int i = 0; i < attributes.Count; i++)
-            {
-                if (attributes[i] == textbox)
-                {
-                    rankIndex = i;
-                    name = textbox.GetComponent<TextBox>().Name;
-                    typeId = textbox.GetComponent<TextBox>().TypeId;
-                    break;
-                }
-            }
-            var info = new AddAttributeBody(rankIndex, typeId, name);
-            string jsonData = JsonUtility.ToJson(info);
-            Debug.Log(jsonData);
-            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            WebRequest.PostRequest(AddAttributeEndpoint(_id), jsonData, student.Token);
-            reGetRequest = true;
-            RefreshCdm();
-        }
-    }
-
-    /// <summary>
-    /// Deletes Attribute
-    /// </summary> 
-    public void DeleteAttribute(GameObject textBox)
-    {
-        if (UseWebcore)
-        {
-            string _id = textBox.GetComponent<TextBox>().ID;
-            WebRequest.DeleteRequest(DeleteAttributeEndpoint(_id), student.Token);
-            reGetRequest = true;
-            RefreshCdm();
-            // No need to remove or destroy the attribute here since entire class diagram is recreated
-        }
     }
 
     /// <summary>
@@ -432,53 +359,13 @@ public class Diagram : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the class diagram endpoint URL.
-    /// </summary>
-    public string CdmEndpoint()
-    {
-        return WebcoreEndpoint + "/" + student.Name + "/classdiagram/" + cdmName;
-    }
-
-    /// <summary>
-    /// Returns the delete class endpoint URL for the given class _id.
-    /// </summary>
-    public string DeleteClassEndpoint(string classId)
-    {
-        return CdmEndpoint() + "/class/" + classId;
-    }
-
-    /// <summary>
-    /// Returns the update class endpoint URL for the given class _id.
-    /// </summary>
-    public string UpdateClassPositionEndpoint(string classId)
-    {
-        return CdmEndpoint() + "/class/" + classId + "/position"; // TODO Double check
-    }
-
-    /// <summary>
-    /// Returns the add attribute endpoint URL for the given class _id.
-    /// </summary>
-    public string AddAttributeEndpoint(string classId)
-    {
-        return CdmEndpoint() + "/class/" + classId + "/attribute";
-    }
-
-    /// <summary>
-    /// Returns the delete attribute endpoint URL for the given attribute _id.
-    /// </summary>
-    public string DeleteAttributeEndpoint(string attributeId)
-    {
-        return CdmEndpoint() + "/class/attribute/" + attributeId;
-    }
-
-    /// <summary>
     /// Refreshes the class diagram by sending a GET request to the server.
     /// </summary>
     public bool RefreshCdm()
     {
         if (student != null)
         {
-            var result = WebRequest.GetRequest(CdmEndpoint(), student.Token);
+            var result = WebRequest.GetRequest(WebCore.CdmEndpoint(), student.Token);
             if (result != _currCdmStr)
             {
                 LoadJson(result);

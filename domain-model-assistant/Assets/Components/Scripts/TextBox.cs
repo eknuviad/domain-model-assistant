@@ -57,7 +57,7 @@ public class TextBox : MonoBehaviour
             {
                 Debug.Log(Section.GetComponent<Section>()
                     .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
-                _diagram.AddAttribute(gameObject);
+                WebCore.AddAttribute(gameObject);
             }
         }
 
@@ -141,7 +141,7 @@ public class TextBox : MonoBehaviour
 
     public void Destroy()
     {
-        _diagram.DeleteAttribute(gameObject); //delete attribute from Diagram
+        WebCore.DeleteAttribute(gameObject); //delete attribute from Diagram
         attributeCross.GetComponent<AttributeCross>().Close();
         Destroy(gameObject);
     }

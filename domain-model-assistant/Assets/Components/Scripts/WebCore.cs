@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WebCore
 {
@@ -16,6 +19,8 @@ public class WebCore
     {
         _diagram = diagram;
     }
+
+    // public static API methods
 
     public static WebCore GetInstance(Diagram diagram)
     {
@@ -34,6 +39,40 @@ public class WebCore
         instance.AddClass_(name, position);
     }
 
+    /// <summary>
+    /// Updates the class position.
+    /// </summary>
+    public static void UpdateClassPosition(GameObject header, GameObject node)
+    {
+        instance.UpdateClassPosition_(header, node);
+    }
+
+    /// <summary>
+    /// Deletes the given class.
+    /// </summary>
+    public static void DeleteClass(GameObject node)
+    {
+        instance.DeleteClass_(node);
+    }
+
+    /// <summary>
+    /// Adds an Attribute to the given textbox.
+    /// </summary>
+    public static void AddAttribute(GameObject textbox)
+    {
+        instance.AddAttribute_(textbox);
+    }
+
+    /// <summary>
+    /// Deletes the Attribute.
+    /// </summary> 
+    public static void DeleteAttribute(GameObject textBox)
+    {
+        instance.DeleteAttribute_(textBox);
+    }
+
+    // private instance methods that act on the singleton instance
+
     private void AddClass_(string name, Vector2 position)
     {
         string jsonData = JsonUtility.ToJson(new AddClassDTO()
@@ -46,6 +85,67 @@ public class WebCore
         _diagram.reGetRequest = true;
         _diagram.RefreshCdm();
     }
+
+    private void UpdateClassPosition_(GameObject header, GameObject node)
+    {
+        string _id = node.GetComponent<CompartmentedRectangle>().ID;
+        string clsName = header.GetComponent<InputField>().text;
+        Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
+        // JSON body. Create new serializable JSON object.
+        var positionInfo = new Position(newPosition.x, newPosition.y);
+        string jsonData = JsonUtility.ToJson(positionInfo);
+        // send updated position via PUT request
+        WebRequest.PutRequest(UpdateClassPositionEndpoint(_id), jsonData, Student.Token);
+    }
+
+    private void DeleteClass_(GameObject node)
+    {
+        string _id = node.GetComponent<CompartmentedRectangle>().ID;
+        WebRequest.DeleteRequest(DeleteClassEndpoint(_id), Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+
+    private void AddAttribute_(GameObject textbox)
+    {
+        Section section = textbox.GetComponent<TextBox>().Section.GetComponent<Section>();
+        CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
+            .GetComponent<CompartmentedRectangle>();
+        List<GameObject> attributes = section.GetTextBoxList();
+        string _id = compRect.ID;
+        int rankIndex = -1;
+        string name = null;
+        int typeId = -1;
+        for (int i = 0; i < attributes.Count; i++)
+        {
+            if (attributes[i] == textbox)
+            {
+                rankIndex = i;
+                name = textbox.GetComponent<TextBox>().Name;
+                typeId = textbox.GetComponent<TextBox>().TypeId;
+                break;
+            }
+        }
+        var info = new AddAttributeBody(rankIndex, typeId, name);
+        string jsonData = JsonUtility.ToJson(info);
+        Debug.Log(jsonData);
+        // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
+        WebRequest.PostRequest(AddAttributeEndpoint(_id), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+    }
+
+    private void DeleteAttribute_(GameObject textBox)
+    {
+        string _id = textBox.GetComponent<TextBox>().ID;
+        WebRequest.DeleteRequest(DeleteAttributeEndpoint(_id), Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the attribute here since entire class diagram is recreated
+    }
+
+    // additional helper methods
 
     /// <summary>
     /// Returns the class diagram endpoint URL.
@@ -61,6 +161,38 @@ public class WebCore
     public string AddClassEndpoint()
     {
         return CdmEndpoint() + "/class";
+    }
+
+    /// <summary>
+    /// Returns the delete class endpoint URL for the given class _id.
+    /// </summary>
+    public string DeleteClassEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId;
+    }
+
+    /// <summary>
+    /// Returns the update class endpoint URL for the given class _id.
+    /// </summary>
+    public string UpdateClassPositionEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId + "/position"; // TODO Double check
+    }
+
+    /// <summary>
+    /// Returns the add attribute endpoint URL for the given class _id.
+    /// </summary>
+    public string AddAttributeEndpoint(string classId)
+    {
+        return CdmEndpoint() + "/class/" + classId + "/attribute";
+    }
+
+    /// <summary>
+    /// Returns the delete attribute endpoint URL for the given attribute _id.
+    /// </summary>
+    public string DeleteAttributeEndpoint(string attributeId)
+    {
+        return CdmEndpoint() + "/class/attribute/" + attributeId;
     }
 
 }
