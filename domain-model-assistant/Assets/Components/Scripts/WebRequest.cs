@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Class to represent a web request.
@@ -42,7 +43,7 @@ public class WebRequest : MonoBehaviour
     /// <summary>
     /// Sends a POST request to the server and returns its response.
     /// </summary>
-    public static string PostRequest(string uri, string data = "", string userToken = null,
+    public static string PostRequest(string uri, object data = null, string userToken = null,
                                      string contentType = "application/json")
     {
         return PutRequest(uri, data, userToken, usePostMethod: true, contentType);
@@ -51,17 +52,18 @@ public class WebRequest : MonoBehaviour
     /// <summary>
     /// Sends a PUT request to the server and returns its response.
     /// </summary>
-    public static string PutRequest(string uri, string data = "", string userToken = null, bool usePostMethod = false,
+    public static string PutRequest(string uri, object data = null, string userToken = null, bool usePostMethod = false,
                                     string contentType = "application/json")
     {
+        var dataString = DataString(data);
         if (_isWebGl)
         {
             var verb = usePostMethod ? "POST" : "PUT";
-            return HttpRequest(verb, uri, WebGlJsHeaders(userToken, contentType), data);
+            return HttpRequest(verb, uri, WebGlJsHeaders(userToken, contentType), dataString);
         }
         else
         {
-            using var webRequest = WrapRequest(UnityWebRequest.Put(uri, data), userToken, contentType);
+            using var webRequest = WrapRequest(UnityWebRequest.Put(uri, dataString), userToken, contentType);
             // set method to POST here because built-in Post() does not support JSON, eg, AuthCreds
             if (usePostMethod)
             {
@@ -172,6 +174,20 @@ public class WebRequest : MonoBehaviour
     {
         return !response.StartsWith("Error") && !response.StartsWith("UnityWebRequest Error")
             && !response.StartsWith("HttpRequest Error");
+    }
+
+    /// <summary>
+    /// Converts the given data object into a string using JsonConvert.SerializeObject().
+    /// If it is already a string, returns it unchanged. A null input returns an empty string.
+    /// </summary>
+    private static string DataString(object data)
+    {
+        return data switch
+        {
+            string s => s,
+            null => "",
+            _ => JsonConvert.SerializeObject(data)
+        };
     }
 
 }
