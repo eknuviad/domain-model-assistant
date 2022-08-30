@@ -36,6 +36,8 @@ public class Diagram : MonoBehaviour
 
     public Student student;
 
+    public WebCore WebCore;
+
     // Temporary text used during application development
     public const string InitialInfoBoxText = "Welcome to the Modeling Assistant! "
         + "Please use the Debug button in the top right corner to login to a new random WebCORE account.";
@@ -85,7 +87,7 @@ public class Diagram : MonoBehaviour
 
     public string ID { get; set; }
 
-    bool reGetRequest = false;
+    public bool reGetRequest = false;
 
     // Awake is called once to initialize this game object
     void Awake()
@@ -103,6 +105,10 @@ public class Diagram : MonoBehaviour
         targetOrtho = CanvasScaler.scaleFactor;
         raycaster = GetComponent<GraphicRaycaster>();
         infoBox.Value = InitialInfoBoxText;
+        if (UseWebcore)
+        {
+            WebCore = WebCore.GetInstance(this);
+        }
         RefreshCdm();
 
         /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
@@ -117,7 +123,7 @@ public class Diagram : MonoBehaviour
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
             _updateNeeded = true;
-            AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
+            WebCore.AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
             ActivateDefaultMode();
         }
 
@@ -223,22 +229,6 @@ public class Diagram : MonoBehaviour
         {
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
         }
-    }
-
-    /// <summary>
-    /// Adds a class to the diagram with the given name and position.
-    /// </summary>
-    public void AddClass(string name, Vector2 position)
-    {
-        string jsonData = JsonUtility.ToJson(new AddClassDTO()
-        {
-            x = position.x,
-            y = position.y,
-            className = name
-        });
-        WebRequest.PostRequest(AddClassEndpoint(), jsonData, student.Token);
-        reGetRequest = true;
-        RefreshCdm();
     }
 
     public void DeleteClass(GameObject node)
@@ -450,14 +440,6 @@ public class Diagram : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the add class endpoint URL.
-    /// </summary>
-    public string AddClassEndpoint()
-    {
-        return CdmEndpoint() + "/class";
-    }
-
-    /// <summary>
     /// Returns the delete class endpoint URL for the given class _id.
     /// </summary>
     public string DeleteClassEndpoint(string classId)
@@ -492,7 +474,7 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Refreshes the class diagram by sending a GET request to the server.
     /// </summary>
-    private bool RefreshCdm()
+    public bool RefreshCdm()
     {
         if (student != null)
         {

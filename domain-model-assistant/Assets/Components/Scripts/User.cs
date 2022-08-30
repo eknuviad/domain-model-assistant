@@ -161,7 +161,9 @@ public class Student : User
     public static new Student CreateRandom()
     {
         var (username, password) = GetRandomCreds();
-        return new Student(username, password);
+        Student student = new(username, password);
+        WebCore.Student = student;
+        return student;
     }
 
 }
