@@ -205,19 +205,9 @@ public class Edge : MonoBehaviour
         return line.startWidth;
     }
 
-    public void setColor(int color)
+    public void SetColor(Color color)
     {
-        switch(color){
-            case 0:
-                line.material.color = Color.black;
-                break;
-            case 1:
-                line.material.color = Color.blue;
-                break;
-            case 2:
-                line.material.color = Color.magenta;
-                break;
-        }
+        line.material.color = color;
     }
 
     void Destroy()

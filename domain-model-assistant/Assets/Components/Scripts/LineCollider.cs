@@ -6,8 +6,8 @@ using UnityEngine;
 
 /// <summary>
 /// This script instantiates a polygonCollider2D with the same shape as the line renderer 
-/// object in edge, and move along with the edge. It detects mouse hovering, mouse exit and mouse clicks activities which allows
-/// highlighting upon left click and linePopupMenu spawning upon right click.
+/// object in edge, and move along with the edge. It detects mouse hovering, mouse exit and mouse clicks activities
+/// which allows highlighting upon left click and linePopupMenu spawning upon right click.
 /// </summary>
 [RequireComponent(typeof(Edge), typeof(PolygonCollider2D))]
 public class LineCollider : MonoBehaviour
@@ -20,11 +20,11 @@ public class LineCollider : MonoBehaviour
 
     LineRenderer highlightBox;
 
-    Boolean isSelected = false;
+    bool isSelected = false;
 
 
     //The points to draw a collision shape between
-    List<Vector2> colliderPoints = new List<Vector2>(); 
+    List<Vector2> colliderPoints = new(); 
 
     // Start is called before the first frame update
     void Start()
@@ -32,8 +32,6 @@ public class LineCollider : MonoBehaviour
         edge = GetComponent<Edge>();
         polygonCollider2D = GetComponent<PolygonCollider2D>();
     }
-
-
 
     // Update is called once per frame
     void Update()
@@ -43,19 +41,21 @@ public class LineCollider : MonoBehaviour
     }
 
     
-    //mouse hover, not clicked, set color to blue
+    // mouse hover, not clicked, set color to blue
     void OnMouseEnter()
     {  
         if (!isSelected)
         {
-            edge.setColor(1);
+            edge.SetColor(Color.blue);
         }
     }
-    //mouse exits, set color back to black
+
+    // mouse exits, set color back to black
     void OnMouseExit()
     {
-        if(!isSelected){
-            edge.setColor(0);
+        if (!isSelected)
+        {
+            edge.SetColor(Color.black);
         }
     }
 
@@ -64,11 +64,11 @@ public class LineCollider : MonoBehaviour
         if (isSelected)
         {
             isSelected = false;
-            edge.setColor(1);
+            edge.SetColor(Color.blue);
         }
         else
         {
-            edge.setColor(2);
+            edge.SetColor(Color.magenta);
             isSelected = true;
         }
         
@@ -85,26 +85,26 @@ public class LineCollider : MonoBehaviour
     
     private List<Vector2> CalculateColliderPoints() 
     {
-        //Get All positions on the line renderer
+        // Get all positions on the line renderer
         Vector3 linePos1 = edge.GetPosition1();
         Vector3 linePos2 = edge.GetPosition2();
 
-        //Get the Width of the Line
+        // Get the width of the line
         // float width = 0.5f;
         float width = 2f * edge.GetWidth();
 
-        //m = (y2 - y1) / (x2 - x1)
-        //slope for vertical lines are undefined
+        // m = (y2 - y1) / (x2 - x1)
+        // slope for vertical lines are undefined
         float slope = linePos2.x - linePos1.x !=0 ? (linePos2.y - linePos1.y) / (linePos2.x - linePos1.x) : 0;
         float deltaX = (width / 2f) * (slope / Mathf.Pow(slope * slope + 1, 0.5f));
         float deltaY = (width / 2f) * (1 / Mathf.Pow(1 + slope * slope, 0.5f));
 
-        //Calculate the Offset from each point to the collision vertex
+        // Calculate the Offset from each point to the collision vertex
         Vector3[] offsets = new Vector3[2];
         offsets[0] = new Vector3(-deltaX, deltaY);
         offsets[1] = new Vector3(deltaX, -deltaY);
 
-        //Generate the Colliders Vertices
+        // Generate the colliders vertices
         var colliderPositions = new List<Vector2> {
             linePos1 + offsets[0],
             linePos2 + offsets[0],

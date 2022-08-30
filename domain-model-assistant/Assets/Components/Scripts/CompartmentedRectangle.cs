@@ -242,8 +242,8 @@ public class CompartmentedRectangle : Node
             IsHighlighted = true;
             Color newHeader = headerColor;
             Color newSection = sectionColor;
-            newHeader = (newHeader + highlight)/2;
-            newSection = (newSection + highlight)/2;
+            newHeader = (newHeader + highlight) / 2;
+            newSection = (newSection + highlight) / 2;
             transform.GetChild(1).gameObject.GetComponent<Image>().color = newHeader;
             transform.GetChild(3).gameObject.GetComponent<Image>().color = newSection;
             transform.GetChild(4).gameObject.GetComponent<Image>().color = newSection;
