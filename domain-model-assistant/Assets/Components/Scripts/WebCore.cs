@@ -230,7 +230,7 @@ public class WebCore
         {
             name = _diagram.cdmName;
         }
-        return WebcoreEndpoint + "/" + Student.Name + "/classdiagram/" + name;
+        return $"{WebcoreEndpoint}/{Student.Name}/classdiagram/{name}";
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public class WebCore
     /// </summary>
     public string AddClassEndpoint()
     {
-        return CdmEndpoint() + "/class";
+        return $"{CdmEndpoint()}/class";
     }
 
     /// <summary>
@@ -246,7 +246,7 @@ public class WebCore
     /// </summary>
     public string DeleteClassEndpoint(string classId)
     {
-        return CdmEndpoint() + "/class/" + classId;
+        return $"{CdmEndpoint()}/class/{classId}";
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public class WebCore
     /// </summary>
     public string UpdateClassPositionEndpoint(string classId)
     {
-        return CdmEndpoint() + "/class/" + classId + "/position"; // TODO Double check
+        return $"{CdmEndpoint()}/class/{classId}/position"; // TODO Double check
     }
 
     /// <summary>
@@ -262,7 +262,7 @@ public class WebCore
     /// </summary>
     public string AddAttributeEndpoint(string classId)
     {
-        return CdmEndpoint() + "/class/" + classId + "/attribute";
+        return $"{CdmEndpoint()}/class/{classId}/attribute";
     }
 
     /// <summary>
@@ -270,7 +270,7 @@ public class WebCore
     /// </summary>
     public string DeleteAttributeEndpoint(string attributeId)
     {
-        return CdmEndpoint() + "/class/attribute/" + attributeId;
+        return $"{CdmEndpoint()}/class/attribute/{attributeId}";
     }
 
     public string AddAssociationEndpoint()
