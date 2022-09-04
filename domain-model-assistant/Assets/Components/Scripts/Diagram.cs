@@ -413,6 +413,11 @@ public class Diagram : MonoBehaviour
         }
     }
 
+    public void GetFeedbackButtonPressed()
+    {
+        Debug.Log("Getting feedback");
+    }
+
     /// <summary>
     /// Perform the debug action specified in the body upon the Debug button getting clicked.
     /// </summary>

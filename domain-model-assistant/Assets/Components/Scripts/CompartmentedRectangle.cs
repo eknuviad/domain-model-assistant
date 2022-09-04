@@ -20,7 +20,7 @@ public class CompartmentedRectangle : Node
     public GameObject popupMenu;
     public RectTransform rectangle;
     
-    public Color highlight = new(0.61f, 0.81f, 0.973f);
+    public Color highlight = new(0.61f, 0.81f, 0.973f); // light blue
     public Color headerColor; // = transform.GetChild(1).gameObject.GetComponent<Image>().color;
     public Color sectionColor;
     float holdTimer = 0;
