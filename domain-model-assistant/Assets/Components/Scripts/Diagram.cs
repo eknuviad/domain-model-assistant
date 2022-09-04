@@ -32,7 +32,7 @@ public class Diagram : MonoBehaviour
 
     public const string WebcoreEndpoint = "http://localhost:8080";
 
-    public string cdmName = "FerrySystem";
+    public string cdmName = "AirlineSystem"; // For now, use same name as the example in Modeling Assistant backend
 
     public Student student;
 
@@ -416,6 +416,7 @@ public class Diagram : MonoBehaviour
     public void GetFeedbackButtonPressed()
     {
         Debug.Log("Getting feedback");
+        WebCore.GetFeedback();
     }
 
     /// <summary>

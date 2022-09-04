@@ -102,6 +102,11 @@ public class WebCore
         instance.UpdateRelationshipType_();
     }
 
+    public static void GetFeedback()
+    {
+        instance.GetFeedback_();
+    }
+
 
     // private instance methods that act on the singleton instance
 
@@ -184,14 +189,11 @@ public class WebCore
         // No need to remove or destroy the attribute here since entire class diagram is recreated
     }
 
-    
-    
     private void AddGeneralization_()
     {
         Debug.Log("WebCore.AddGeneralization() called");
     }
-    
-    
+
     private void AddAssociation_(GameObject node1, GameObject node2)
     {
         var id1 = node1.GetComponent<CompartmentedRectangle>().ID;
@@ -199,24 +201,30 @@ public class WebCore
         Debug.Log($"WebCore.AddAssociation({id1}, {id2}) called");
         WebRequest.PostRequest(AddAssociationEndpoint(),
             new { fromClassId = id1, toClassId = id2, bidirectional = true }, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
     }
-    
-    
+
     private void UpdateRelationshipMultiplicities_()
     {
         Debug.Log("WebCore.UpdateRelationshipMultiplicities() called");
     }
-    
-    
+
     private void UpdateRelationshipRoleNames_()
     {
         Debug.Log("WebCore.UpdateRelationshipRoleNames() called");
     }
-    
-    
+
     private void UpdateRelationshipType_()
     {
         Debug.Log("WebCore.UpdateRelationshipType() called");
+    }
+
+    private void GetFeedback_()
+    {
+        Debug.Log("WebCore.GetFeedback() called");
+        string feedbackJson = WebRequest.GetRequest(GetFeedbackEndpoint(), Student.Token);
+        _diagram.infoBox.Info(feedbackJson);
     }
 
     // additional helper methods
@@ -276,6 +284,11 @@ public class WebCore
     public string AddAssociationEndpoint()
     {
         return $"{CdmEndpoint()}/association";
+    }
+
+    public string GetFeedbackEndpoint()
+    {
+        return $"{CdmEndpoint()}/feedback";
     }
 
 }
