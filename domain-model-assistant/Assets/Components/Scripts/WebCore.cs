@@ -224,7 +224,9 @@ public class WebCore
     {
         Debug.Log("WebCore.GetFeedback() called");
         string feedbackJson = WebRequest.GetRequest(GetFeedbackEndpoint(), Student.Token);
-        _diagram.infoBox.Info(feedbackJson);
+        Debug.Log($"Received Feedback JSON: {feedbackJson}");
+        var feedback = JsonConvert.DeserializeObject<Dictionary<string, object>>(feedbackJson);
+        _diagram.infoBox.Info(feedback["writtenFeedback"].ToString());
     }
 
     // additional helper methods

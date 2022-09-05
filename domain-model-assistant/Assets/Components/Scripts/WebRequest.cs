@@ -158,6 +158,10 @@ public class WebRequest : MonoBehaviour
                 + "\nResponse headers:\n  " + string.Join(Environment.NewLine + "  ", headers)
                 + "\nResponse body: " + responseBody;
             Debug.LogError(error);
+            if (!string.IsNullOrEmpty(responseBody))
+            {
+                return responseBody;
+            }
             return error;
         }
         if (requestAsyncOp.webRequest.method == UnityWebRequest.kHttpVerbDELETE)
