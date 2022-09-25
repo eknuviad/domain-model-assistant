@@ -226,7 +226,15 @@ public class WebCore
         string feedbackJson = WebRequest.GetRequest(GetFeedbackEndpoint(), Student.Token);
         Debug.Log($"Received Feedback JSON: {feedbackJson}");
         var feedback = JsonConvert.DeserializeObject<Dictionary<string, object>>(feedbackJson);
-        _diagram.infoBox.Info(feedback["writtenFeedback"].ToString());
+        if (feedback.ContainsKey("writtenFeedback"))
+        {
+            _diagram.infoBox.Info(feedback["writtenFeedback"].ToString());
+        }
+        else
+        {
+            _diagram.infoBox.Warn(
+                "No feedback is currently available from the Modeling Assistant. Please try again later.");
+        }
     }
 
     // additional helper methods
