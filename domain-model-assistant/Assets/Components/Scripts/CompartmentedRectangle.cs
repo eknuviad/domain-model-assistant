@@ -231,11 +231,7 @@ public class CompartmentedRectangle : Node
     {
         if (IsHighlighted)
         {
-            IsHighlighted = false;
-            transform.GetChild(1).gameObject.GetComponent<Image>().color = headerColor;
-            transform.GetChild(3).gameObject.GetComponent<Image>().color = sectionColor;
-            transform.GetChild(4).gameObject.GetComponent<Image>().color = sectionColor;
-            //restore color
+            ResetColor();
         }
         else
         {
@@ -248,6 +244,26 @@ public class CompartmentedRectangle : Node
             transform.GetChild(3).gameObject.GetComponent<Image>().color = newSection;
             transform.GetChild(4).gameObject.GetComponent<Image>().color = newSection;
         }
+    }
+
+    public void HighlightWith(Color color)
+    {
+        //IsHighlighted = true;
+        Color newHeader = headerColor;
+        Color newSection = sectionColor;
+        newHeader = (newHeader + color) / 2;
+        newSection = (newSection + color) / 2;
+        transform.GetChild(1).gameObject.GetComponent<Image>().color = newHeader;
+        transform.GetChild(3).gameObject.GetComponent<Image>().color = newSection;
+        transform.GetChild(4).gameObject.GetComponent<Image>().color = newSection;
+    }
+
+    public void ResetColor()
+    {
+        IsHighlighted = false;
+        transform.GetChild(1).gameObject.GetComponent<Image>().color = headerColor;
+        transform.GetChild(3).gameObject.GetComponent<Image>().color = sectionColor;
+        transform.GetChild(4).gameObject.GetComponent<Image>().color = sectionColor;
     }
     
     // ************ END UI model Methods for Compartmented Rectangle ****************//

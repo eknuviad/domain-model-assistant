@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 public class WebCore
 {
@@ -226,14 +227,45 @@ public class WebCore
         string feedbackJson = WebRequest.GetRequest(GetFeedbackEndpoint(), Student.Token);
         Debug.Log($"Received Feedback JSON: {feedbackJson}");
         var feedback = JsonConvert.DeserializeObject<Dictionary<string, object>>(feedbackJson);
+        foreach (var key in feedback.Keys)
+        {
+            Debug.Log($"Key: {key}, Value: {feedback[key]} of type {feedback[key].GetType()}");
+        }
+        foreach (var name in new List<string> {"solutionElements", "problemStatementElements"})
+        {
+            if (feedback.ContainsKey(name))
+            {
+                var elements = ((JObject)feedback[name]).ToObject<Dictionary<string, List<string>>>();
+                foreach (var color in elements.Keys)
+                {
+                    Color rgb1 = ColorUtility.TryParseHtmlString(color, out Color rgb) ? rgb : Color.red;
+                    foreach (var element in elements[color])
+                    {
+                        Debug.Log($"Highlight element {element} using color {color}");
+                        foreach (var rect in _diagram.GetCompartmentedRectangles())
+                        {
+                            if (rect.GetComponent<CompartmentedRectangle>().ID == element)
+                            {
+                                rect.GetComponent<CompartmentedRectangle>().HighlightWith(rgb1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        var message = "No feedback is currently available from the Modeling Assistant. Please try again later.";
         if (feedback.ContainsKey("writtenFeedback"))
         {
-            _diagram.infoBox.Info(feedback["writtenFeedback"].ToString());
+            message = feedback["writtenFeedback"].ToString();
+        }
+        if (message.StartsWith("No feedback"))
+        {
+            _diagram.infoBox.Warn(message);
         }
         else
         {
-            _diagram.infoBox.Warn(
-                "No feedback is currently available from the Modeling Assistant. Please try again later.");
+            _diagram.infoBox.Info(message);
         }
     }
 
