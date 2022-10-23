@@ -20,7 +20,7 @@ public class Edge : MonoBehaviour
     
     public List<string> nodesId = new List<string>();
 
-    public List<GameObject> edgeEnds = new List<GameObject>();
+    private List<GameObject> _edgeEnds = new List<GameObject>();
 
     public GameObject[] classes;
     public GameObject edgeEnd;
@@ -29,7 +29,8 @@ public class Edge : MonoBehaviour
     bool hold = false;
 
     public GameObject diagram;
-    private Diagram _diagram;
+    private GameObject _diagram;
+    private List<GameObject> edgeEnds = new List<GameObject>();
     public Vector3 mousePos;
     public Vector3 linePosition1;
     public Vector3 linePosition2;
@@ -389,6 +390,89 @@ public class Edge : MonoBehaviour
             popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
     }
+
+    //------------------------
+    // INTERFACE
+    //------------------------
+
+    public GameObject GetDiagram()
+    {
+        return _diagram;
+    }
+
+    public bool HasDiagram()
+    {
+        bool has = _diagram != null;
+        return has;
+    }
+
+    public static int MinimumNumberOfEdgeEnd()
+    {
+        return 2;
+    }
+
+    public GameObject GetEdgeEnd(int index)
+    {
+        GameObject aEdgeEnd = _edgeEnds[index];
+        return aEdgeEnd;
+    }
+
+    public IList<GameObject> GetEdgeEnds()
+    {
+        IList<GameObject> newEdgeEnds = _edgeEnds.AsReadOnly();
+        return newEdgeEnds;
+    }
+
+    public int NumberOfEdgeEnds()
+    {
+        int number = _edgeEnds.Count;
+        return number;
+    }
+
+    public bool HasEdgeEnds()
+    {
+        bool has = _edgeEnds.Count > 0;
+        return has;
+    }
+
+    public bool RemoveEdgeEnd(GameObject aEdgeEnd)
+    {
+        bool wasRemoved = false;
+        if (gameObject.Equals(aEdgeEnd.GetComponent<EdgeEnd>().GetEdge()))
+        {
+            return wasRemoved;
+        }
+
+        if (NumberOfEdgeEnds() <= MinimumNumberOfEdgeEnd())
+        {
+            return wasRemoved;
+        }
+        _edgeEnds.Remove(aEdgeEnd);
+        wasRemoved = true;
+        return wasRemoved;
+    }
+
+    public bool SetDiagram(GameObject aDiagram)
+    {
+        bool wasSet = false;
+        GameObject existingDiagram = _diagram;
+        _diagram = aDiagram;
+        if (existingDiagram != null && !existingDiagram.Equals(aDiagram))
+        {
+            existingDiagram.GetComponent<Diagram>().RemoveEdge(gameObject);
+        }
+        if (aDiagram != null)
+        {
+            aDiagram.GetComponent<Diagram>().AddEdge(gameObject);
+        }
+        wasSet = true;
+        return wasSet;
+    }
+
+
+    //------------------------
+    // Helper Methods
+    //------------------------
 
     /// <summary> This function takes two lists of connection points Vec2 coordinates 
     /// and returns the indices of each lists as an array of int such that the pairwise 

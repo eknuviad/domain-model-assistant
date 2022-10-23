@@ -152,7 +152,7 @@ public class CompartmentedRectangle : Node
     /// <summary>
     /// Destroy class when click on delete class.
     /// </summary>
-    public void Destroy()
+    public override void Destroy()
     {
         WebCore.DeleteClass(gameObject);
         popupMenu.GetComponent<PopupMenu>().Destroy();

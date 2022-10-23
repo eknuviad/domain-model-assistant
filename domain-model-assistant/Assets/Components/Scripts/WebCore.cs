@@ -88,9 +88,9 @@ public class WebCore
         instance.AddAssociation_(node1, node2);
     }
 
-    public static void UpdateRelationshipMultiplicities()
+    public static void UpdateRelationshipMultiplicities(GameObject textbox)
     {
-        instance.UpdateRelationshipMultiplicities_();
+        instance.UpdateRelationshipMultiplicities_(textbox);
     }
 
     public static void UpdateRelationshipRoleNames()
@@ -145,6 +145,7 @@ public class WebCore
 
     private void DeleteClass_(GameObject node)
     {
+        Debug.Log("WebCore.DeleteClass() called");
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
         WebRequest.DeleteRequest(DeleteClassEndpoint(_id), Student.Token);
         _diagram.reGetRequest = true;
@@ -154,7 +155,7 @@ public class WebCore
 
     private void AddAttribute_(GameObject textbox)
     {
-        Section section = textbox.GetComponent<TextBox>().Section.GetComponent<Section>();
+        Section section = textbox.GetComponent<AttributeTextBox>().Section.GetComponent<Section>();
         CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
             .GetComponent<CompartmentedRectangle>();
         List<GameObject> attributes = section.GetTextBoxList();
@@ -167,8 +168,8 @@ public class WebCore
             if (attributes[i] == textbox)
             {
                 rankIndex = i;
-                name = textbox.GetComponent<TextBox>().Name;
-                typeId = textbox.GetComponent<TextBox>().TypeId;
+                name = textbox.GetComponent<AttributeTextBox>().Name;
+                typeId = textbox.GetComponent<AttributeTextBox>().TypeId;
                 break;
             }
         }
@@ -206,14 +207,33 @@ public class WebCore
         _diagram.RefreshCdm();
     }
 
-    private void UpdateRelationshipMultiplicities_()
+    private void UpdateRelationshipMultiplicities_(GameObject textBox)
     {
-        Debug.Log("WebCore.UpdateRelationshipMultiplicities() called");
+        var multiplicityTextBox = textBox.GetComponent<MultiplicityTextBox>();
+        string id = multiplicityTextBox.GetNumberOwner().GetComponent<EdgeEnd>().ID;
+        
+        Debug.Log($"WebCore.UpdateRelationshipMultiplicities({id}, called");
+
+        int uBound = multiplicityTextBox.UpperBound;
+        int lBound = multiplicityTextBox.LowerBound;
+
+        WebRequest.PutRequest(AddRelationshipMultiplicitiesEndpoint("1"), 
+            new { lowerBound = lBound, upperBound = uBound}, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
     }
 
     private void UpdateRelationshipRoleNames_()
     {
-        Debug.Log("WebCore.UpdateRelationshipRoleNames() called");
+        // var roleNameTextBox = textBox.GetComponent<RoleNameTextBox>();
+        // string id = multiplicityTextBox.EdgeEnd.GetComponent<EdgeEnd>().ID;
+        
+        // Debug.Log($"WebCore.UpdateRelationshipRoleNames_({id}, called");
+
+        // WebRequest.PutRequest(AddRelationshipMultiplicitiesEndpoint("1"), 
+        //     new { lowerBound = lBound, upperBound = uBound}, Student.Token);
+        // _diagram.reGetRequest = true;
+        // _diagram.RefreshCdm();
     }
 
     private void UpdateRelationshipType_()
@@ -242,7 +262,7 @@ public class WebCore
                     foreach (var element in elements[color])
                     {
                         Debug.Log($"Highlight element {element} using color {color}");
-                        foreach (var rect in _diagram.GetCompartmentedRectangles())
+                        foreach (var rect in _diagram.GetNode())
                         {
                             if (rect.GetComponent<CompartmentedRectangle>().ID == element)
                             {
@@ -326,6 +346,11 @@ public class WebCore
     public string AddAssociationEndpoint()
     {
         return $"{CdmEndpoint()}/association";
+    }
+
+    public string AddRelationshipMultiplicitiesEndpoint(string associationEndId)
+    {
+        return $"{CdmEndpoint()}/association/end/{associationEndId}/multiplicity";
     }
 
     public string GetFeedbackEndpoint()

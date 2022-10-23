@@ -42,7 +42,7 @@ public class Section : MonoBehaviour
             return false;
         }
         textboxes.Add(textbox);
-        textbox.GetComponent<TextBox>().Section = this.gameObject;
+        textbox.GetComponent<AttributeTextBox>().Section = this.gameObject;
         return true;
     }
 

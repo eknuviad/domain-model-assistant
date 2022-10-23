@@ -16,16 +16,17 @@ public class EdgeEnd : MonoBehaviour
     public Vector2 Position
     { get; set; }
 
+    private GameObject _edgeEndTitle;
+    private GameObject _edgeEndNumber;
     public GameObject edgeEndTitle;
     public GameObject edgeEndNumber;
-    public GameObject textbox;
-
     public bool isUpper = true;
     public bool isLeft = true;
     public static Vector2 TitleVerticalOffset = new Vector2(0, 40);
     public static Vector2 TitleHorizontalOffset = new Vector2(80, 0);
     public static Vector2 NumberTitleOffset = new Vector2(0, -20);
-    private GameObject edge;
+    private GameObject _edge;
+    private GameObject _node;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject generalizationIcon;
@@ -35,12 +36,17 @@ public class EdgeEnd : MonoBehaviour
     void Start()
     {
         gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-        edgeEndTitle = GameObject.Instantiate(textbox, transform);
-        edgeEndTitle.GetComponent<InputField>().text = "Enter Text ...";
-        edgeEndTitle.transform.position = Position + new Vector2(0, 40);
-        edgeEndNumber = GameObject.Instantiate(textbox, transform);
-        edgeEndNumber.GetComponent<InputField>().text = "*";
-        edgeEndNumber.transform.position = Position + new Vector2(85, -20);
+        SetEdgeEndTitle(GameObject.Instantiate(edgeEndTitle, transform));
+        _edgeEndTitle.GetComponent<RoleNameTextBox>().SetTitleOwner(this.gameObject);
+        _edgeEndTitle.GetComponent<InputField>().text = "Enter Text ...";
+        _edgeEndTitle.transform.position = Position + new Vector2(0, 40);
+        _edgeEndNumber = GameObject.Instantiate(edgeEndNumber, transform);
+        
+        _edgeEndNumber.GetComponent<MultiplicityTextBox>().SetNumberOwner(this.gameObject);
+        Debug.Log(this.ID);
+
+        _edgeEndNumber.GetComponent<InputField>().text = "*";
+        _edgeEndNumber.transform.position = Position + new Vector2(85, -20);
 
         generalizationIcon = GameObject.Instantiate(generalizationIcon);
         aggregationIcon = GameObject.Instantiate(aggregationIcon);
@@ -87,8 +93,8 @@ public class EdgeEnd : MonoBehaviour
 
         numberPos = titlePos + NumberTitleOffset;
 
-        edgeEndTitle.transform.position = titlePos;
-        edgeEndNumber.transform.position = numberPos;
+        _edgeEndTitle.transform.position = titlePos;
+        _edgeEndNumber.transform.position = numberPos;
 
         compositionIcon.transform.position = Position;
         aggregationIcon.transform.position = Position;
@@ -100,9 +106,113 @@ public class EdgeEnd : MonoBehaviour
         Destroy(gameObject);
     }
 
+    //------------------------
+    // INTERFACE
+    //------------------------
+
     public GameObject GetEdge()
     {
-        return edge;
+        return _edge;
+    }
+
+    public GameObject GetNode()
+    {
+        return _node;
+    }
+
+    public GameObject GetEdgeEndTitle()
+    {
+        return _edgeEndTitle;
+    }
+
+    public GameObject GetEdgeEndNumber()
+    {
+        return _edgeEndNumber;
+    }
+
+    public bool SetEdgeEndTitle(GameObject aNewEdgeEndTitle)
+    {
+        bool wasSet = false;
+        if (aNewEdgeEndTitle == null)
+        {
+            GameObject existingEdgeEndTitle = _edgeEndTitle;
+            _edgeEndTitle = null;
+
+            if (existingEdgeEndTitle != null && existingEdgeEndTitle.GetComponent<RoleNameTextBox>().GetTitleOwner() != null)
+            {
+                existingEdgeEndTitle.GetComponent<RoleNameTextBox>().SetTitleOwner(null);
+            }
+            wasSet = true;
+            return wasSet;
+        }
+
+        GameObject currentEdgeEndTitle = GetEdgeEndTitle();
+        if (currentEdgeEndTitle != null && !currentEdgeEndTitle.Equals(aNewEdgeEndTitle))
+        {
+            currentEdgeEndTitle.GetComponent<RoleNameTextBox>().SetTitleOwner(null);
+        }
+
+        _edgeEndTitle = aNewEdgeEndTitle;
+        GameObject existingTitleOwner = aNewEdgeEndTitle.GetComponent<RoleNameTextBox>().GetTitleOwner();
+
+        if (!Equals(existingTitleOwner))
+        {
+            aNewEdgeEndTitle.GetComponent<RoleNameTextBox>().SetTitleOwner(gameObject);
+        }
+        wasSet = true;
+        return wasSet;
+    }
+
+    public bool SetEdgeEndNumber(GameObject aNewEdgeEndNumber)
+    {
+        bool wasSet = false;
+        if (aNewEdgeEndNumber == null)
+        {
+            GameObject existingEdgeEndNumber = _edgeEndNumber;
+            _edgeEndNumber = null;
+
+            if (existingEdgeEndNumber != null && existingEdgeEndNumber.GetComponent<MultiplicityTextBox>().GetNumberOwner() != null)
+            {
+                existingEdgeEndNumber.GetComponent<MultiplicityTextBox>().SetNumberOwner(null);
+            }
+            wasSet = true;
+            return wasSet;
+        }
+
+        GameObject currentEdgeEndNumber = GetEdgeEndNumber();
+        if (currentEdgeEndNumber != null && !currentEdgeEndNumber.Equals(aNewEdgeEndNumber))
+        {
+            currentEdgeEndNumber.GetComponent<MultiplicityTextBox>().SetNumberOwner(null);
+        }
+
+        _edgeEndNumber = aNewEdgeEndNumber;
+        GameObject existingNumberOwner = aNewEdgeEndNumber.GetComponent<MultiplicityTextBox>().GetNumberOwner();
+
+        if (!Equals(existingNumberOwner))
+        {
+            aNewEdgeEndNumber.GetComponent<MultiplicityTextBox>().SetNumberOwner(gameObject);
+        }
+        wasSet = true;
+        return wasSet;
+    }
+
+    public bool SetNode(GameObject aNode)
+    {
+        bool wasSet = false;
+        if (aNode == null)
+        {
+            return wasSet;
+        }
+
+        GameObject existingNode = _node;
+        _node = aNode;
+        if (existingNode != null && !existingNode.Equals(aNode))
+        {
+            existingNode.GetComponent<Node>().RemoveEdgeEnd(gameObject);
+        }
+        _node.GetComponent<Node>().AddEdgeEnd(gameObject);
+        wasSet = true;
+        return wasSet;
     }
 
     public bool SetEdge(GameObject aEdge)
@@ -119,12 +229,20 @@ public class EdgeEnd : MonoBehaviour
             return wasSet;
         }
         // Check if edge has already been set
-        if (edge != null)
+        GameObject existingEdge = _edge;
+        _edge = aEdge;
+        if (existingEdge != null && !existingEdge.Equals(aEdge)) 
         {
+            bool didRemove = existingEdge.GetComponent<Edge>().RemoveEdgeEnd(gameObject);
+            if (!didRemove)
+            {
+                _edge = existingEdge;
+                return wasSet;
+            } 
             return wasSet;
         }
-        edge = aEdge;
-        edge.GetComponent<Edge>().AddEdgeEnd(gameObject);
+        _edge = aEdge;
+        _edge.GetComponent<Edge>().AddEdgeEnd(gameObject);
         wasSet = true;
         Debug.Log("Edge end: Edge set");
         return wasSet;

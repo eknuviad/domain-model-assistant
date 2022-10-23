@@ -22,7 +22,8 @@ public class Diagram : MonoBehaviour
     public float minOrtho = 0.0f;
     public float maxOrtho = 20.0f;
     public GameObject compartmentedRectangle;
-    public List<GameObject> compartmentedRectangles;
+    private List<GameObject> _nodes = new List<GameObject>();
+    private List<GameObject> _edges = new List<GameObject>();
     public InfoBox infoBox;
 
     private Vector3 dragStartPos;
@@ -123,7 +124,7 @@ public class Diagram : MonoBehaviour
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
             _updateNeeded = true;
-            WebCore.AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
+            WebCore.AddClass("Class" + (_nodes.Count + 1), Input.mousePosition);
             ActivateDefaultMode();
         }
 
@@ -249,29 +250,37 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public void ResetDiagram()
     {
-        foreach (var comp in compartmentedRectangles)
+        Debug.Log("Reset Diagram called");
+        foreach (var node in _nodes)
         {
+            Debug.Log("Reset Diagram: Node" + node.GetComponent<CompartmentedRectangle>().ID);
             // Pop-up menu is destroyed in comp rect class when delete is called
             // we only need to destroy the attributes.
             // get first section, loop through all attributes, destroy any attribute cross objects
-            GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
+            // TODO: May need to generalize Compartmented Rectangle to node, keep for now
+            if(node.GetComponent<CompartmentedRectangle>() == null)
+            {
+                Debug.Log("No Compartmented Rectangle");
+            }
+            GameObject section = node.GetComponent<CompartmentedRectangle>().GetSection(0);
+            var li = section.GetComponent<Section>().GetTextBoxList();
             foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
             {
                 if (attr)
                 {
-                    if (attr.GetComponent<TextBox>())
+                    if (attr.GetComponent<AttributeTextBox>())
                     {
-                        if (attr.GetComponent<TextBox>().GetAttributeCross() != null)
+                        if (attr.GetComponent<AttributeTextBox>().GetAttributeCross() != null)
                         {
                             //TODO: Destroy instance instead
-                            attr.GetComponent<TextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
+                            attr.GetComponent<AttributeTextBox>().GetAttributeCross().GetComponent<AttributeCross>().Close();
                         }
                     }
                 }
             }
         }
-        compartmentedRectangles.ForEach(Destroy);
-        compartmentedRectangles.Clear();
+        _nodes.ForEach(Destroy);
+        _nodes.Clear();
     }
 
     /// <summary>
@@ -279,11 +288,15 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
     {
+        Debug.Log("CreateCompartmentedRectangle");
         var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
-        AddNode(compRect);
+        if (!AddNode(compRect))
+        {
+            Debug.Log("Fail to add node");
+        }
         return compRect;
     }
 
@@ -324,39 +337,9 @@ public class Diagram : MonoBehaviour
             Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
     }
 
-    // ************ UI model Methods for Canvas/Diagram ****************//
-
-    /// <summary>
-    /// Adds a node to the diagram.
-    /// </summary>
-    public bool AddNode(GameObject node)
-    {
-        if (compartmentedRectangles.Contains(node))
-        {
-            return false;
-        }
-        compartmentedRectangles.Add(node);
-        node.GetComponent<CompartmentedRectangle>().SetDiagram(this.gameObject);
-        return true;
-    }
-
-    public bool RemoveNode(GameObject node)
-    {
-        if (compartmentedRectangles.Contains(node))
-        {
-            compartmentedRectangles.Remove(node);
-            return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Returns the list of compartmented rectangles.
-    /// </summary>
-    public List<GameObject> GetCompartmentedRectangles()
-    {
-        return compartmentedRectangles;
-    }
+    //------------------------
+    // UI model Methods for Canvas/Diagram
+    //------------------------
 
     /// <summary>
     /// Refreshes the class diagram by sending a GET request to the server.
@@ -464,6 +447,156 @@ public class Diagram : MonoBehaviour
     public void CloseMenus()
     {
         // TODO
+    }
+
+    //------------------------
+    // INTERFACE
+    //------------------------
+
+    /// <summary>
+    /// Returns the list of nodes as a read-only list.
+    /// </summary>
+    public IList<GameObject> GetNode()
+    {
+        IList<GameObject> newNodes = _nodes.AsReadOnly();
+        return newNodes;
+    }
+
+    /// <summary>
+    /// Returns the number of nodes in the diagram.
+    /// </summary>
+    public int NumberOfNodes()
+    {
+        int number = _nodes.Count;
+        return number;
+    }
+
+    /// <summary>
+    /// Check if the diagram has at least one node.
+    /// </summary>
+    public bool HasNodes()
+    {
+        bool has = _nodes.Count > 0;
+        return has;
+    }
+
+    /// <summary>
+    /// Returns the list of edges as a read-only list.
+    /// </summary>
+    public IList<GameObject> GetEdges()
+    {
+        IList<GameObject> newEdges = _edges.AsReadOnly();
+        return newEdges;
+    }
+
+    /// <summary>
+    /// Returns the number of edges in the diagram.
+    /// </summary>
+    public int NumberOfEdges()
+    {
+        int number = _edges.Count;
+        return number;
+    }
+
+    /// <summary>
+    /// Check if the diagram has at least one edge.
+    /// </summary>
+    public bool HasEdges()
+    {
+        bool has = _edges.Count > 0;
+        return has;
+    }
+
+    /// <summary>
+    /// Adds a node to the diagram.
+    /// </summary>
+    public bool AddNode(GameObject aNode)
+    {
+        Debug.Log("Add Node called");
+        bool wasAdded = false;
+        if (_nodes.Contains(aNode))
+        {
+            return false;
+        }
+        Node node = aNode.GetComponent<Node>();
+        GameObject existingDiagram = node.GetDiagram();
+        if (existingDiagram == null)
+        {
+            Debug.Log("Diagram null");
+            node.SetDiagram(gameObject);
+        }
+        else if (!gameObject.Equals(existingDiagram))
+        {
+            existingDiagram.GetComponent<Diagram>().RemoveNode(aNode);
+            AddNode(aNode);
+        }
+        else
+        {
+            _nodes.Add(aNode);
+            Debug.Log("Node added to list");
+            aNode.GetComponent<CompartmentedRectangle>().SetDiagram(gameObject);
+        }
+        wasAdded = true;
+        return wasAdded;
+    }
+
+    /// <summary>
+    /// Remove a node from the diagram.
+    /// </summary>
+    public bool RemoveNode(GameObject aNode)
+    {
+        bool wasRemoved = false;
+        if (_nodes.Contains(aNode))
+        {
+            _nodes.Remove(aNode);
+            aNode.GetComponent<Node>().SetDiagram(null);
+            wasRemoved = true;
+        }
+        return wasRemoved;
+    }
+
+    /// <summary>
+    /// Adds an edge to the diagram.
+    /// </summary>
+    public bool AddEdge(GameObject aEdge)
+    {
+        bool wasAdded = false;
+        if (_edges.Contains(aEdge))
+        {
+            return false;
+        }
+        Edge edge = aEdge.GetComponent<Edge>();
+        GameObject existingDiagram = edge.GetDiagram();
+        if (existingDiagram == null)
+        {
+            edge.SetDiagram(gameObject);
+        }
+        else if (!this.Equals(existingDiagram))
+        {
+            existingDiagram.GetComponent<Diagram>().RemoveEdge(aEdge);
+            AddEdge(aEdge);
+        }
+        else
+        {
+            _edges.Add(aEdge);
+        }
+        wasAdded = true;
+        return wasAdded;
+    }
+
+    /// <summary>
+    /// Remove a node from the diagram.
+    /// </summary>
+    public bool RemoveEdge(GameObject aEdge)
+    {
+        bool wasRemoved = false;
+        if (_edges.Contains(aEdge))
+        {
+            _edges.Remove(aEdge);
+            aEdge.GetComponent<Edge>().SetDiagram(null);
+            wasRemoved = true;
+        }
+        return wasRemoved;
     }
 
 }

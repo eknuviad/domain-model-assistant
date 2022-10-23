@@ -32,6 +32,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -154,5 +155,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   compRect: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
     type: 3}
-  textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
+  textbox: {fileID: 5633685818171654614, guid: be57e3827332241508d2375b1f920feb, type: 3}
   textboxes: []

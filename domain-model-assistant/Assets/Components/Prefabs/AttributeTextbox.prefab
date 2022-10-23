@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6164206989483138962}
   - component: {fileID: -7634711185766664062}
   m_Layer: 5
-  m_Name: Textbox
+  m_Name: AttributeTextbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,14 +32,15 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -112.8, y: 40}
-  m_SizeDelta: {x: 160, y: 20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5633685818171654611
 CanvasRenderer:
@@ -92,11 +93,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5633685818171654614}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41484c546806a8d47bcd64c32164fd90, type: 3}
+  m_Script: {fileID: 11500000, guid: f69546c83a6f6486dab119f7f2798a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 0}
-  section: {fileID: 0}
   attributeCross: {fileID: 3222643647847603311, guid: 16ef25d540df641169fa84b0e0c0763b,
     type: 3}
 --- !u!114 &8079727894406178735
@@ -150,10 +150,10 @@ MonoBehaviour:
   m_HideMobileInput: 0
   m_CharacterValidation: 0
   m_CharacterLimit: 0
-  m_OnEndEdit:
+  m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
-  m_OnSubmit:
+  m_OnDidEndEdit:
     m_PersistentCalls:
       m_Calls: []
   m_OnValueChanged:
