@@ -31,7 +31,7 @@ public class AttributeTextBox : TextBox
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return)&&GetComponent<InputField>().isFocused)
         {
             Debug.Log("TextBox: Enter button pressed");
             string _id = ID;
@@ -40,6 +40,7 @@ public class AttributeTextBox : TextBox
                 Debug.Log(Section.GetComponent<Section>()
                     .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
                 WebCore.AddAttribute(gameObject);
+                _diagram.getInfoBox().green("attribute added");
             }
         }
 

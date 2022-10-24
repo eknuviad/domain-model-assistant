@@ -228,6 +228,9 @@ public class Diagram : MonoBehaviour
             .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
+            Debug.Log("attribute id:"+attr._id);
+            Debug.Log("attribute name:"+attr.name);
+            Debug.Log("attribute type:"+attr.type);
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
         }
     }
@@ -441,6 +444,10 @@ public class Diagram : MonoBehaviour
     public Dictionary<string, string> GetAttrTypeIdsToTypes()
     {
         return attrTypeIdsToTypes;
+    }
+
+    public InfoBox getInfoBox(){
+        return this.infoBox;
     }
 
     //When pressing on canvas close popumenu and attributeclosebuttons
