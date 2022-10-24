@@ -31,18 +31,46 @@ public class AttributeTextBox : TextBox
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return)&&GetComponent<InputField>().isFocused)
+
+        /*if(GetComponent<InputField>().isFocused){
+                Debug.Log("is focused");
+            }
+            if(Input.GetKeyDown(KeyCode.Return)){
+                Debug.Log("TextBox: Enter button pressed， intextbox");}
+        */
+
+        if (Input.GetKey(KeyCode.Return)&&GetComponent<InputField>().isFocused)
         {
-            Debug.Log("TextBox: Enter button pressed");
+            Debug.Log("TextBox: Enter button pressed， intextbox");
             string _id = ID;
-            if (IsValid() && "-1".Equals(_id))
+            if (IsValid() )//&& "-1".Equals(_id))
             {
                 Debug.Log(Section.GetComponent<Section>()
                     .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
                 WebCore.AddAttribute(gameObject);
-                _diagram.getInfoBox().green("attribute added");
+                _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("Attribute added");
+                //WebCore.AddOperation(gameObject);
+            }else{
+                _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("Attribute format error, example: int age");
+                GetComponent<InputField>().text = " ";
             }
         }
+            //Debug.Log("TextBox: Enter button pressed， intextbox");
+            /*
+            string _id = ID;
+            if (IsValid() )//&& "-1".Equals(_id))
+            {
+                Debug.Log(Section.GetComponent<Section>()
+                    .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
+                WebCore.AddAttribute(gameObject);
+                _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("Attribute added");
+                //WebCore.AddOperation(gameObject);
+            }else{
+                _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("Attribute format error, example: int age");
+                GetComponent<InputField>().text = " ";
+            }*/
+        
+
 
         if (hold2)
         {

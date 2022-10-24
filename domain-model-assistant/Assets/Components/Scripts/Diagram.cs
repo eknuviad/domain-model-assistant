@@ -446,9 +446,11 @@ public class Diagram : MonoBehaviour
         return attrTypeIdsToTypes;
     }
 
-    public InfoBox getInfoBox(){
-        return this.infoBox;
+    public InfoBox GetInfoBox()
+    {
+        return infoBox;
     }
+
 
     //When pressing on canvas close popumenu and attributeclosebuttons
     public void CloseMenus()
