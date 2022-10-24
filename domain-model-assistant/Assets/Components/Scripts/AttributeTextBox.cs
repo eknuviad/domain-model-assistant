@@ -27,7 +27,17 @@ public class AttributeTextBox : TextBox
         _diagram = GetComponentInParent<Diagram>();
     }
 
-    void Start() {}
+    void Start() {
+        GetComponent<InputField>().onSubmit.AddListener(e =>
+    {
+        if (GetComponent<InputField>().isFocused)
+        {
+            addAttribute();
+        }
+
+    });
+
+    }
 
     void Update()
     {
@@ -39,7 +49,7 @@ public class AttributeTextBox : TextBox
                 Debug.Log("TextBox: Enter button pressed， intextbox");}
         */
 
-        if (Input.GetKey(KeyCode.Return)&&GetComponent<InputField>().isFocused)
+        /*if (Input.GetKeyDown(KeyCode.Return)&&GetComponent<InputField>().isFocused)
         {
             Debug.Log("TextBox: Enter button pressed， intextbox");
             string _id = ID;
@@ -54,7 +64,7 @@ public class AttributeTextBox : TextBox
                 _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("Attribute format error, example: int age");
                 GetComponent<InputField>().text = " ";
             }
-        }
+        }*/
             //Debug.Log("TextBox: Enter button pressed， intextbox");
             /*
             string _id = ID;
@@ -82,6 +92,7 @@ public class AttributeTextBox : TextBox
             text.color = Color.red;
         }
     }
+
 
     public override bool IsValid()
     {
@@ -115,6 +126,24 @@ public class AttributeTextBox : TextBox
                 break;
             }
         }
+    }
+
+    public void addAttribute(){
+        
+            Debug.Log("TextBox: Enter button pressed， intextbox");
+            string _id = ID;
+            if (IsValid() )//&& "-1".Equals(_id))
+            {
+                Debug.Log(Section.GetComponent<Section>()
+                    .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
+                WebCore.AddAttribute(gameObject);
+                _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("Attribute added");
+                //WebCore.AddOperation(gameObject);
+            }else{
+                _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("Attribute format error, example: int age");
+                GetComponent<InputField>().text = " ";
+            }
+        
     }
 
     public override void OnEndHoldTB()
