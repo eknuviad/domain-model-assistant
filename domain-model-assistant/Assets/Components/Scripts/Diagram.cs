@@ -228,7 +228,8 @@ public class Diagram : MonoBehaviour
             .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
-            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
+            var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
+            section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr_type_title_case);
         }
     }
 
@@ -264,6 +265,10 @@ public class Diagram : MonoBehaviour
             }
             GameObject section = node.GetComponent<CompartmentedRectangle>().GetSection(0);
             var li = section.GetComponent<Section>().GetTextBoxList();
+            if(section.GetComponent<Section>() == null)
+            {
+                Debug.Log("No section");
+            }
             foreach (var attr in section.GetComponent<Section>().GetTextBoxList())
             {
                 if (attr)
@@ -597,6 +602,20 @@ public class Diagram : MonoBehaviour
             wasRemoved = true;
         }
         return wasRemoved;
+    }
+
+    private string FirstCharacterUpper(string value)
+    {
+    if (value == null || value.Length == 0)
+    {
+        return string.Empty;
+    }
+    if (value.Length == 1)
+    {
+        return value.ToUpper();
+    }
+    var firstChar = value.Substring(0, 1).ToUpper();
+    return firstChar + value.Substring(1, value.Length - 1);
     }
 
 }

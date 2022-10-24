@@ -168,7 +168,7 @@ public class WebCore
             if (attributes[i] == textbox)
             {
                 rankIndex = i;
-                name = textbox.GetComponent<AttributeTextBox>().Name;
+                name = textbox.GetComponent<AttributeTextBox>().Name.ToLower();
                 typeId = textbox.GetComponent<AttributeTextBox>().TypeId;
                 break;
             }
