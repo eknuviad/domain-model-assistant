@@ -103,7 +103,7 @@ public class AttributeTextBox : TextBox
         if (values.Length == 2 && !string.IsNullOrWhiteSpace(values[1]))
         {
             Debug.Log("second element is: " + values[1]);
-            SetTypeId(values[0]);
+            SetTypeId(values[0].ToLower());
             Name = values[1];
             return true;
         }
