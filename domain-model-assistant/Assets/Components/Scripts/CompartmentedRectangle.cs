@@ -77,6 +77,14 @@ public class CompartmentedRectangle : Node
 
         var headerIndex = transform.childCount - 4; // obtained by trial and error - make this more robust later
         var sectionIndex = headerIndex + 2;
+
+        // the following changes header background to horizontal stretch middle anchor preset
+        RectTransform headerBackground = (RectTransform) transform.GetChild(headerIndex);
+        headerBackground.anchorMin = new Vector2(0, 0.5f);
+        headerBackground.anchorMax = new Vector2(1, 0.5f);
+        headerBackground.anchoredPosition = new Vector2(0, 73);
+        headerBackground.sizeDelta = new Vector2 (0, 34);
+        
         headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
         sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
     }
