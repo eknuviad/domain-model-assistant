@@ -42,7 +42,7 @@ public class Section : MonoBehaviour
             return false;
         }
         textboxes.Add(textbox);
-        textbox.GetComponent<TextBox>().Section = this.gameObject;
+        textbox.GetComponent<AttributeTextBox>().Section = this.gameObject;
         return true;
     }
 
@@ -67,9 +67,10 @@ public class Section : MonoBehaviour
     public void AddAttribute()
     {
         // cap (hardcode) the number of attributes that can be added to a class to be 4
-        if (textboxes.Count >= 4)
+        if (textboxes.Count >= 1)
         {
-            return;
+            EnlargeCompRectAndRepositionSections();
+            Canvas.ForceUpdateCanvases();
         }
         var TB = GameObject.Instantiate(textbox, this.transform);
         TB.GetComponent<TextBox>().ID = "-1";
@@ -77,7 +78,7 @@ public class Section : MonoBehaviour
         TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
         // Update size of class depending on number of textboxes(attributes)
         // enlarge the section by 0.1*number of textboxes
-        TB.transform.localScale += new Vector3(0, 0.1F * textboxes.Count, 0);
+        // TB.transform.localScale += new Vector3(0, 0.1F * textboxes.Count, 0);
         // the code commented below can automatically enlarge the section as we create more attributes, 
         // but it would cause the new textboxes created become blured/disappeared as more than 4 attribute are created
         //this.GetCompartmentedRectangle().transform.localScale += new Vector3((float)0.2,(float)0.5, 0);
@@ -94,11 +95,27 @@ public class Section : MonoBehaviour
     // Used when creating attribute after reading JSON from the WebCORE server
     public void AddAttribute(string _id, string name, string type)
     {
+        if (textboxes.Count >= 1)
+        {
+            EnlargeCompRectAndRepositionSections();
+            Canvas.ForceUpdateCanvases();
+        }
         var TB = GameObject.Instantiate(textbox, this.transform);
         TB.GetComponent<TextBox>().ID = _id;
         TB.GetComponent<InputField>().text = type + " " + name;
         TB.transform.position = this.transform.position + new Vector3(0, UpdatePositionConst, 0) * textboxes.Count;
         this.AddTextBox(TB);
+    }
+
+    private void EnlargeCompRectAndRepositionSections()
+    {
+        RectTransform rt_sec0 = (RectTransform) gameObject.GetComponent<Section>().transform;
+        rt_sec0.sizeDelta = new Vector2 (rt_sec0.sizeDelta.x, rt_sec0.sizeDelta.y+20);
+        rt_sec0.anchoredPosition = rt_sec0.anchoredPosition + new Vector2(0, -10);
+        RectTransform rt_sec1 = (RectTransform) compRect.GetComponent<CompartmentedRectangle>().GetSection(1).GetComponent<Section>().transform;
+        rt_sec1.anchoredPosition = rt_sec1.anchoredPosition + new Vector2(0, -20);
+        RectTransform compRect_rt = (RectTransform) compRect.GetComponent<CompartmentedRectangle>().transform;
+        compRect_rt.sizeDelta = new Vector2 (compRect_rt.sizeDelta.x, compRect_rt.sizeDelta.y+20);
     }
 
 }
