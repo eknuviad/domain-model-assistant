@@ -31,6 +31,12 @@ public class AttributeCross : MonoBehaviour
         this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(attribute.Destroy);
     }
 
+    public void setTextBox(LiteralTextbox literal)
+    {
+        this.textbox = literal.gameObject;
+        this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(literal.Destroy);
+    }
+
     public GameObject GetTextBox()
     {
         return this.textbox;

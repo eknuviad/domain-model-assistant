@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿
+using System.Drawing;
 //using System.Diagnostics;
 //using System.Diagnostics;
 using System.Collections;
@@ -14,10 +15,12 @@ public class CompartmentedRectangle : Node
 {
     public GameObject textbox; //this allows to instantiate textbox prefabs
     public GameObject section;
+    public GameObject enumSign;
     public List<GameObject> sections = new();
     public TextBox text;
     // popup menu variables
     public GameObject popupMenu;
+    public GameObject popupMenuEnum;
     public RectTransform rectangle;
     
     public Color highlight = new(0.61f, 0.81f, 0.973f); // light blue
@@ -33,10 +36,19 @@ public class CompartmentedRectangle : Node
     private Vector2 _prevPosition;
     private float rectHeight;
     private float rectWidth;
+
     private int headerOffsetX = -31;
     private int headerOffsetY = 70;
+
+    private int enumHeaderOffsetY = 63;
+
+    private int enumSignOffsetX = -62;
+    private int enumSignOffsetY = 84;
+
     private int sectionOffsetY = -71;
     private int popupMenuOffsetX = 138;
+
+    public bool isEnum = false;
 
     public bool IsHighlighted { get; set; }
 
@@ -64,7 +76,7 @@ public class CompartmentedRectangle : Node
         rectHeight = rectangle.rect.height;
         rectWidth = rectangle.rect.width;
         CreateHeader();
-        CreateSection();
+        //CreateSection();
         id = GetComponent<CompartmentedRectangle>().ID;
 
         // for (int i = 0; i < transform.childCount; i++)
@@ -77,16 +89,20 @@ public class CompartmentedRectangle : Node
 
         var headerIndex = transform.childCount - 4; // obtained by trial and error - make this more robust later
         var sectionIndex = headerIndex + 2;
-
+/*
         // the following changes header background to horizontal stretch middle anchor preset
         RectTransform headerBackground = (RectTransform) transform.GetChild(headerIndex);
         headerBackground.anchorMin = new Vector2(0, 0.5f);
         headerBackground.anchorMax = new Vector2(1, 0.5f);
         headerBackground.anchoredPosition = new Vector2(0, 73);
         headerBackground.sizeDelta = new Vector2 (0, 34);
-        
+        */
+        //transform.childCount
+        Debug.Log("transform.childCount:"+transform.childCount);
+        Debug.Log("headerIndex:"+headerIndex);
+        headerIndex = 1;
         headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
-        sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
+        //sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
     }
 
     // Update is called once per frame
@@ -132,11 +148,16 @@ public class CompartmentedRectangle : Node
     {
         if (holdTimer > 1f - 5 && state == State.Default)
         {
-            SpawnPopupMenu();
+            if(isEnum){
+                SpawnEnumPopupMenu();
+            }else{
+                SpawnPopupMenu();
+            }
+            
         }
         holdTimer = 0;
         hold = false;
-        ToggleHighlight();
+        //ToggleHighlight();
         
         //update class position
         WebCore.UpdateClassPosition(textbox, gameObject);
@@ -157,13 +178,35 @@ public class CompartmentedRectangle : Node
         }
     }
 
+    void SpawnEnumPopupMenu()
+    {
+        if (popupMenuEnum.GetComponent<PopupMenuEnum>().GetCompartmentedRectangle() == null)
+        {
+            popupMenuEnum = Instantiate(popupMenuEnum);
+            popupMenuEnum.transform.position = transform.position + new Vector3(popupMenuOffsetX, 0, 0);
+            popupMenuEnum.GetComponent<PopupMenuEnum>().SetCompartmentedRectangle(this);
+            popupMenuEnum.GetComponent<PopupMenuEnum>().Open();
+        }
+        else
+        {
+            popupMenuEnum.GetComponent<PopupMenuEnum>().Open();
+        }
+    }
+
     /// <summary>
     /// Destroy class when click on delete class.
     /// </summary>
     public override void Destroy()
     {
-        WebCore.DeleteClass(gameObject);
-        popupMenu.GetComponent<PopupMenu>().Destroy();
+        if(isEnum){
+            WebCore.DeleteEnum(gameObject);
+            popupMenuEnum.GetComponent<PopupMenuEnum>().Destroy();
+        }else{
+            WebCore.DeleteClass(gameObject);
+            popupMenu.GetComponent<PopupMenu>().Destroy();
+        }
+        
+        
     }
 
     // ************ END Controller Methods for Compartmented Rectangle ****************//
@@ -227,6 +270,11 @@ public class CompartmentedRectangle : Node
     {
         return popupMenu;
     }
+
+    public GameObject GetPopUpMenuEnum()
+    {
+        return popupMenuEnum;
+    }
     
     public void SetLine()
     {
@@ -248,10 +296,14 @@ public class CompartmentedRectangle : Node
             Color newSection = sectionColor;
             newHeader = (newHeader + highlight) / 2;
             newSection = (newSection + highlight) / 2;
+            Debug.Log("child count:"+transform.childCount);
             transform.GetChild(1).gameObject.GetComponent<Image>().color = newHeader;
-            transform.GetChild(3).gameObject.GetComponent<Image>().color = newSection;
-            transform.GetChild(4).gameObject.GetComponent<Image>().color = newSection;
-        }
+            //transform.GetChild(3).gameObject.GetComponent<Image>().color = newSection;
+            if(!isEnum){
+                //transform.GetChild(4).gameObject.GetComponent<Image>().color = newSection;
+
+            }
+                    }
     }
 
     public void HighlightWith(Color color)
@@ -272,6 +324,40 @@ public class CompartmentedRectangle : Node
         transform.GetChild(1).gameObject.GetComponent<Image>().color = headerColor;
         transform.GetChild(3).gameObject.GetComponent<Image>().color = sectionColor;
         transform.GetChild(4).gameObject.GetComponent<Image>().color = sectionColor;
+    }
+
+    public void setSectionCount(int num){
+        if(num == 2){
+            //regular class
+            isEnum = false;
+            Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+            for (int i = 0; i < 2; i++) /*loop for a class with 2 sections*/
+            {
+                var sect = GameObject.Instantiate(section, transform);
+                sect.transform.position = oldPosition + new Vector3(0, sectionOffsetY, 0) * sections.Count;
+                AddSection(sect);
+        }
+            _diagram.AddAttributesToSection(GetSection(0));//add atrributes to first section
+
+        }
+        if(num == 1){
+            //enum class
+            isEnum = true;
+            var sign = GameObject.Instantiate(enumSign, transform);
+            sign.GetComponent<InputField>().text = "<<Enumeration>>";
+            sign.transform.position = transform.position + new Vector3(enumSignOffsetX, enumSignOffsetY, 0);
+            Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
+            GetHeader().GetComponent<AttributeTextBox>().transform.position = transform.position + new Vector3(headerOffsetX, enumHeaderOffsetY, 0);
+            Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
+            Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+            var sect = GameObject.Instantiate(section, transform);
+            sect.GetComponent<RectTransform>().sizeDelta = new Vector2(176, 140);
+            sect.transform.position = oldPosition+ new Vector3(0, -36, 0) ;//* sections.Count;
+                AddSection(sect);
+            _diagram.AddLiteralsToSection(GetSection(0));
+            //header.GetComponent<RectTransform>().sizeDelta = new Vector2(176, 140);
+
+        }
     }
     
     // ************ END UI model Methods for Compartmented Rectangle ****************//

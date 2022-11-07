@@ -28,6 +28,14 @@ public class AddClassDTO
     public float y; 
 }
 
+public class AddEnumClassDTO
+{
+    public string enumName;
+
+    public float x;
+
+    public float y; 
+}
 
 public class AddAttributeBody
 {
@@ -43,6 +51,21 @@ public class AddAttributeBody
         rankIndex = rIndex;
         typeId = aTypeId;
         attributeName = name;
+    }
+
+}
+
+public class AddLiteralBody
+{
+    public int rankIndex;
+
+    public string literalName;
+
+    
+    public AddLiteralBody(int rIndex, string name)
+    {
+        rankIndex = rIndex;
+        literalName = name;
     }
 
 }

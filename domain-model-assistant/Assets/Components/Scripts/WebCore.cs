@@ -47,6 +47,30 @@ public class WebCore
     }
 
     /// <summary>
+    /// Adds an enum class to the diagram with the given name and position.
+    /// </summary>
+    public static void AddEnumClass(string name, Vector2 position)
+    {
+        instance.AddEnumClass_(name, position);
+    }
+
+    /// <summary>
+    /// Deletes the given enum.
+    /// </summary>
+    public static void DeleteEnum(GameObject node)
+    {
+        instance.DeleteEnum_(node);
+    }
+
+    /// <summary>
+    /// Adds a literal to the enum class in the diagram with the given name.
+    /// </summary>
+    public static void AddLiteral(GameObject textbox)
+    {
+        instance.AddLiteral_(textbox);
+    }
+
+    /// <summary>
     /// Updates the class position.
     /// </summary>
     public static void UpdateClassPosition(GameObject header, GameObject node)
@@ -289,6 +313,60 @@ public class WebCore
         }
     }
 
+    private void AddEnumClass_(string name, Vector2 position)
+    {
+        string jsonData = JsonUtility.ToJson(new AddEnumClassDTO()
+        {
+            x = position.x,
+            y = position.y,
+            enumName = name
+        });
+        WebRequest.PostRequest(AddEnumClassEndpoint(), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+    }
+
+    private void AddLiteral_(GameObject textbox)
+    {
+        Section section = textbox.GetComponent<LiteralTextbox>().Section.GetComponent<Section>();
+        CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
+            .GetComponent<CompartmentedRectangle>();
+        List<GameObject> literals = section.GetTextBoxList();
+        string _id = compRect.ID;
+        int rankIndex = -1;
+        string name = null;
+        int typeId = -1;
+        Debug.Log("name: "+textbox.GetComponent<LiteralTextbox>().Name);
+        for (int i = 0; i < literals.Count; i++)
+        {
+            if (literals[i] == textbox)
+            {
+                rankIndex = i;
+                name = textbox.GetComponent<LiteralTextbox>().Name.ToLower();
+                //typeId = textbox.GetComponent<LiteralTextBox>().TypeId;
+                break;
+            }
+        }
+        var info = new AddLiteralBody(rankIndex, name);
+        string jsonData = JsonUtility.ToJson(info);
+        Debug.Log(jsonData);
+        // @param TO {"rankIndex": Integer, "literalName": String}
+        WebRequest.PostRequest(AddLiteralEndpoint(_id), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        
+    }
+
+    private void DeleteEnum_(GameObject node)
+    {
+        Debug.Log("WebCore.DeleteClass() called");
+        string _id = node.GetComponent<CompartmentedRectangle>().ID;
+        WebRequest.DeleteRequest(DeleteEnumEndpoint(_id), Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+
     // additional helper methods
 
     /// <summary>
@@ -356,6 +434,30 @@ public class WebCore
     public string GetFeedbackEndpoint()
     {
         return $"{CdmEndpoint()}/feedback";
+    }
+
+    /// <summary>
+    /// Returns the add enum class endpoint URL.
+    /// </summary>
+    public string AddEnumClassEndpoint()
+    {
+        return $"{CdmEndpoint()}/enum";
+    }
+
+    /// <summary>
+    /// Returns the delete enum endpoint URL for the given class _id.
+    /// </summary>
+    public string DeleteEnumEndpoint(string enumId)
+    {
+        return $"{CdmEndpoint()}/enum/{enumId}";
+    }
+
+    /// <summary>
+    /// Returns the add literal endpoint URL.
+    /// </summary>
+    public string AddLiteralEndpoint(string enumId)
+    {
+        return $"{CdmEndpoint()}/enum/{enumId}/literal";
     }
 
 }

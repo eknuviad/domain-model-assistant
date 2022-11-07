@@ -33,6 +33,8 @@ public class CDType
 {
     public string eClass;
     public string _id;
+    public string name;
+    public List<Literal> literals;
 }
 
 [System.Serializable]
@@ -48,6 +50,13 @@ public class Attribute
     public string _id;
     public string name;
     public string type;
+}
+
+[System.Serializable]
+public class Literal
+{
+    public string _id;
+    public string name;
 }
 
 [System.Serializable]

@@ -35,11 +35,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 562.8508, y: 171.15512}
+  m_AnchoredPosition: {x: 553.2, y: 173.9}
   m_SizeDelta: {x: 176, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8699455690723162220
@@ -156,4 +156,6 @@ MonoBehaviour:
   compRect: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
     type: 3}
   textbox: {fileID: 5633685818171654614, guid: be57e3827332241508d2375b1f920feb, type: 3}
+  LiteralTextbox: {fileID: 5633685818171654614, guid: 893c31d840437484a88f58a292b15bcf,
+    type: 3}
   textboxes: []
