@@ -25,7 +25,7 @@ public class AttributeCross : MonoBehaviour
         }
     }
 
-    public void setTextBox(TextBox attribute)
+    public void setTextBox(AttributeTextBox attribute)
     {
         this.textbox = attribute.gameObject;
         this.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(attribute.Destroy);

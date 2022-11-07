@@ -44,9 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 460a0e5fcdea6594fb9bf8328e8ca6f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  edgeEndTitle: {fileID: 0}
-  edgeEndNumber: {fileID: 0}
-  textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
+  edgeEndTitle: {fileID: 5633685818171654614, guid: 1162bf21129794f2897550eba2cb2f89,
+    type: 3}
+  edgeEndNumber: {fileID: 5633685818171654614, guid: fa89b04219c8f474984bdc013ff6493e,
+    type: 3}
   isUpper: 1
   isLeft: 1
   compositionIcon: {fileID: 7379804065855290417, guid: e74df07acc15e48678f08944db4e60b4,
@@ -55,3 +56,6 @@ MonoBehaviour:
     type: 3}
   generalizationIcon: {fileID: 6277014932869243938, guid: 330d2a622effd4b11aceaa648a868eef,
     type: 3}
+  arrowHeadIcon: {fileID: 6277014932869243938, guid: 4410d463b4f74422589494e830987827,
+    type: 3}
+  hasActiveIcon: 0

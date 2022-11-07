@@ -11,9 +11,9 @@ public abstract class Node: MonoBehaviour
 
     // renamed textbox as header to avoid parent and child
     // from having the same serializable field
-    public GameObject header;
-
-    private List<GameObject> connections = new List<GameObject>();
+    private GameObject _header;
+    // private List<GameObject> _connections = new List<GameObject>();
+    private List<GameObject> _edgeEnds = new List<GameObject>();
 
     protected int NumOfConnectionPoints
     { get; set; } 
@@ -28,19 +28,27 @@ public abstract class Node: MonoBehaviour
         return canvas;
     }
 
-    public bool SetDiagram(GameObject aCanvas)
+    public bool SetDiagram(GameObject aDiagram)
     {
-        if (aCanvas == null)
+        bool wasSet = false;
+        GameObject existingDiagram = canvas;
+        canvas = aDiagram;
+        if (existingDiagram != null && !existingDiagram.Equals(aDiagram))
         {
-            return false;
+            existingDiagram.GetComponent<Diagram>().RemoveNode(gameObject);
         }
-        canvas = aCanvas;
-        return true;
+        if (aDiagram != null)
+        {
+            Debug.Log("Set Diagram not null");
+            aDiagram.GetComponent<Diagram>().AddNode(gameObject);
+        }
+        wasSet = true;
+        return wasSet;
     }
 
     public GameObject GetHeader()
     {
-        return header;
+        return _header;
     }
 
     public bool AddHeader(GameObject aHeader)
@@ -49,52 +57,52 @@ public abstract class Node: MonoBehaviour
         {
             return false;
         }
-        header = aHeader;
+        _header = aHeader;
         return true;
     }
 
-    public int IndexOfConnection(GameObject aEdge)
-    {
-        int index = connections.IndexOf(aEdge);
-        return index;
-    }
+    // public int IndexOfConnection(GameObject aEdge)
+    // {
+    //     int index = _connections.IndexOf(aEdge);
+    //     return index;
+    // }
 
-    public ReadOnlyCollection<GameObject> GetConnections()
-    {
-        return connections.AsReadOnly();
-    }
+    // public ReadOnlyCollection<GameObject> GetConnections()
+    // {
+    //     return _connections.AsReadOnly();
+    // }
 
-    public bool AddConnection(GameObject aEdge)
-    {
-        bool wasAdded =  false;
-        if (connections.Contains(aEdge))
-        {
-            return wasAdded;
-        }   
+    // public bool AddConnection(GameObject aEdge)
+    // {
+    //     bool wasAdded =  false;
+    //     if (_connections.Contains(aEdge))
+    //     {
+    //         return wasAdded;
+    //     }   
 
-        connections.Add(aEdge);
+    //     _connections.Add(aEdge);
 
-        if (aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject) != -1)
-        {
-            var index = aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject);
-            wasAdded = true;
-        }
-        else
-        {
-            wasAdded = aEdge.GetComponent<Edge>().AddNode(this.gameObject);
-            if (!wasAdded)
-            {
-                connections.Remove(aEdge);
-            }
-        }
+    //     if (aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject) != -1)
+    //     {
+    //         var index = aEdge.GetComponent<Edge>().IndexOfNode(this.gameObject);
+    //         wasAdded = true;
+    //     }
+    //     else
+    //     {
+    //         wasAdded = aEdge.GetComponent<Edge>().AddNode(this.gameObject);
+    //         if (!wasAdded)
+    //         {
+    //             _connections.Remove(aEdge);
+    //         }
+    //     }
             
-        // print log for debugging
-        if (wasAdded)
-        {
-            Debug.Log("Edge added");
-        }
-        return wasAdded;
-    }
+    //     // print log for debugging
+    //     if (wasAdded)
+    //     {
+    //         Debug.Log("Edge added");
+    //     }
+    //     return wasAdded;
+    // }
 
     public abstract List<Vector2> GetConnectionPointsLocations();
 
@@ -127,5 +135,42 @@ public abstract class Node: MonoBehaviour
         }
         return count;
     }
+
+    public bool AddEdgeEnd(GameObject aEdgeEnd)
+    {
+        bool wasAdded = false;
+        if (_edgeEnds.Contains(aEdgeEnd)) 
+        {
+            return false; 
+        }
+        GameObject existingNode = aEdgeEnd.GetComponent<EdgeEnd>().GetNode();
+        bool isNewNode = existingNode != null && !gameObject.Equals(existingNode);
+        if (isNewNode)
+        {
+            aEdgeEnd.GetComponent<EdgeEnd>().SetNode(gameObject);
+        }
+        else
+        {
+            _edgeEnds.Add(aEdgeEnd);
+        }
+        if (existingNode == null){
+            aEdgeEnd.GetComponent<EdgeEnd>().SetNode(gameObject);
+        }
+        wasAdded = true;
+        return wasAdded;
+    }
+
+    public bool RemoveEdgeEnd(GameObject aEdgeEnd)
+    {
+        bool wasRemoved = false;
+        if (!gameObject.Equals(aEdgeEnd.GetComponent<EdgeEnd>().GetNode()))
+        {
+            _edgeEnds.Remove(aEdgeEnd);
+            wasRemoved = true;
+        }
+        return wasRemoved;
+    }
+
+    public abstract void Destroy();
 
 }
