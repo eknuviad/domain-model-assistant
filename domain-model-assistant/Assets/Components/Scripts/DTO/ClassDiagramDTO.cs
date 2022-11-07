@@ -16,6 +16,7 @@ public class ClassDiagram
     public string name;
     public List<Class> classes;
     public List<CDType> types;
+    public List<Association> associations;
     public Layout layout;
 }
 
@@ -26,6 +27,7 @@ public class Class
     public string _id;
     public string name;
     public List<Attribute> attributes;
+    public List<AssociationEnd> associationEnds;
 }
 
 [System.Serializable]
@@ -48,6 +50,24 @@ public class Attribute
     public string _id;
     public string name;
     public string type;
+}
+
+[System.Serializable]
+public class AssociationEnd
+{
+    public string _id;
+    public string name;
+    public string assoc;
+    public string lowerBound;
+    public string upperBound;
+}
+
+[System.Serializable]
+public class Association
+{
+    public string _id;
+    public string name;
+    public List<string> ends;
 }
 
 [System.Serializable]

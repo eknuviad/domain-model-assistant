@@ -11,9 +11,7 @@ public class DrawLine: MonoBehaviour
 
     // private List<GameObject> nodes;
     public GameObject edge;
-
     public GameObject line;
-
 
     private Vector3 mousePos;
 

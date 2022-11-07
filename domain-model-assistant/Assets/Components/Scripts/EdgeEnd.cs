@@ -107,7 +107,7 @@ public class EdgeEnd : MonoBehaviour
         aggregationIcon.transform.position = Position;
         generalizationIcon.transform.position = Position;
 
-        Debug.Log("Angle: " + Angle);
+        // Debug.Log("Angle: " + Angle);
         arrowHeadIcon.transform.eulerAngles = Vector3.forward * -Angle;
     }
 
