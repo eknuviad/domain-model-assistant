@@ -48,9 +48,9 @@ public class DrawLine: MonoBehaviour
         compRec1.GetComponent<CompartmentedRectangle>().AddEdgeEnd(end1); 
         compRec2.GetComponent<CompartmentedRectangle>().AddEdgeEnd(end2);
 
-        if (end1.GetComponent<EdgeEnd>().GetNode() == null) {
-            Debug.Log("testing testing: ");
-        }
+        // if (end1.GetComponent<EdgeEnd>().GetNode() == null) {
+        //     Debug.Log("testing testing: ");
+        // }
             // obj1.GetComponent<CompartmentedRectangle>().AddConnection(line); 
             // obj2.GetComponent<CompartmentedRectangle>().AddConnection(line);
         compRec1 = null;

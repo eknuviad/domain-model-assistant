@@ -39,6 +39,9 @@ public class EdgeEnd : MonoBehaviour
     void Start()
     {
         gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+
+        ID = "-1";
+
         SetEdgeEndTitle(GameObject.Instantiate(edgeEndTitle, transform));
         _edgeEndTitle.GetComponent<RoleNameTextBox>().SetTitleOwner(this.gameObject);
         _edgeEndTitle.GetComponent<InputField>().text = "Enter Text ...";
@@ -366,7 +369,7 @@ public class EdgeEnd : MonoBehaviour
                 SetNode(comp);
             }
         }
-        if(_node==null){
+        if (_node==null){
             Destroy();
         }
     }

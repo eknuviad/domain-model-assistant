@@ -49,6 +49,8 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
+    readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
+
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
     List<string> createdAttributeIds = new();
@@ -183,6 +185,7 @@ public class Diagram : MonoBehaviour
                 attrTypeIdsToTypes[type._id] = res;
             }
         });
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
 
