@@ -7,7 +7,6 @@
         {
             "name": "Unity Editor",
             "type": "unity",
-            "path": "/C:/Users/Koshi/git/domain-model-assistant/Library/EditorInstance.json",
             "request": "launch"
         },
         {

@@ -22,24 +22,25 @@ public class EdgeEnd : MonoBehaviour
 
     public bool isUpper = true;
     public bool isLeft = true;
-    public static Vector2 TitleVerticalOffset = new Vector2(0,40);
-    public static Vector2 TitleHorizontalOffset = new Vector2(80,0);
-    public static Vector2 NumberTitleOffset = new Vector2(0,-20);
+    public static Vector2 TitleVerticalOffset = new Vector2(0, 40);
+    public static Vector2 TitleHorizontalOffset = new Vector2(80, 0);
+    public static Vector2 NumberTitleOffset = new Vector2(0, -20);
     private GameObject edge;
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject generalizationIcon;
     public bool hasActiveIcon = false;
     // public GameObject popupMenu;
+
     void Start()
     {
-        this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-        edgeEndTitle = GameObject.Instantiate(textbox, this.transform);
+        gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+        edgeEndTitle = GameObject.Instantiate(textbox, transform);
         edgeEndTitle.GetComponent<InputField>().text = "Enter Text ...";
-        edgeEndTitle.transform.position = Position + new Vector2(0,40);
-        edgeEndNumber = GameObject.Instantiate(textbox, this.transform);
+        edgeEndTitle.transform.position = Position + new Vector2(0, 40);
+        edgeEndNumber = GameObject.Instantiate(textbox, transform);
         edgeEndNumber.GetComponent<InputField>().text = "*";
-        edgeEndNumber.transform.position = Position + new Vector2(85,-20);
+        edgeEndNumber.transform.position = Position + new Vector2(85, -20);
 
         generalizationIcon = GameObject.Instantiate(generalizationIcon);
         aggregationIcon = GameObject.Instantiate(aggregationIcon);
@@ -53,7 +54,7 @@ public class EdgeEnd : MonoBehaviour
         aggregationIcon.GetComponent<AggregationIcon>().SetEdgeEnd(this);
         compositionIcon.GetComponent<CompositionIcon>().SetEdgeEnd(this);
 
-        Debug.Log("instatntiate");
+        Debug.Log("EdgeEnd instantiated");
     }
 
     void Update()
@@ -74,7 +75,7 @@ public class EdgeEnd : MonoBehaviour
         }
         else
         {
-            if(isLeft)
+            if (isLeft)
             {
                 titlePos = Position + TitleVerticalOffset;
             }
@@ -96,7 +97,7 @@ public class EdgeEnd : MonoBehaviour
 
     void Destroy()
     {
-         Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     public GameObject GetEdge()
@@ -123,7 +124,7 @@ public class EdgeEnd : MonoBehaviour
             return wasSet;
         }
         edge = aEdge;
-        edge.GetComponent<Edge>().AddEdgeEnd(this.gameObject);
+        edge.GetComponent<Edge>().AddEdgeEnd(gameObject);
         wasSet = true;
         Debug.Log("Edge end: Edge set");
         return wasSet;
@@ -134,9 +135,9 @@ public class EdgeEnd : MonoBehaviour
         switch (type)
         {
             case 0:
-                //TODO  
-               //ASSOCIATION - same as line, 
-               //should destroy any existing icon at intended location
+                // TODO  
+                // ASSOCIATION - same as line, 
+                // should destroy any existing icon at intended location
                 compositionIcon.SetActive(false);
                 generalizationIcon.SetActive(false);
                 aggregationIcon.SetActive(false);
@@ -144,45 +145,45 @@ public class EdgeEnd : MonoBehaviour
                 break;
             case 1:
                 hasActiveIcon = true;
-                if (compositionIcon.activeSelf==true)
+                if (compositionIcon.activeSelf)
                 {
                     compositionIcon.SetActive(false);
                 }
-                if (generalizationIcon.activeSelf==true)
+                if (generalizationIcon.activeSelf)
                 {
                     generalizationIcon.SetActive(false);
                 }
-                if (aggregationIcon.activeSelf==false)
+                if (!aggregationIcon.activeSelf)
                 {
                     aggregationIcon.SetActive(true);
                 }
                 break;
             case 2:
                 hasActiveIcon = true;
-                if (generalizationIcon.activeSelf==true)
+                if (generalizationIcon.activeSelf)
                 {
                     generalizationIcon.SetActive(false);
                 }
-                if (aggregationIcon.activeSelf==true)
+                if (aggregationIcon.activeSelf)
                 {
                     aggregationIcon.SetActive(false);
                 }
-                if (compositionIcon.activeSelf==false)
+                if (!compositionIcon.activeSelf)
                 {
                     compositionIcon.SetActive(true);
                 }
                 break;
              case 3:
                 hasActiveIcon = true;
-                if (compositionIcon.activeSelf==true)
+                if (compositionIcon.activeSelf)
                 {
                     compositionIcon.SetActive(false);
                 }
-                if (aggregationIcon.activeSelf==true)
+                if (aggregationIcon.activeSelf)
                 {
                     aggregationIcon.SetActive(false);
                 }
-                if (generalizationIcon.activeSelf==false)
+                if (!generalizationIcon.activeSelf)
                 {
                     generalizationIcon.SetActive(true);
                 }

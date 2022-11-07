@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6000982856614772004}
   - component: {fileID: -9188592338937250182}
   - component: {fileID: 1860176407141181707}
-  - component: {fileID: 1384014256186140095}
   m_Layer: 0
   m_Name: Edge
   m_TagString: Untagged
@@ -49,21 +48,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodes: []
+  nodesId: []
   edgeEnds: []
+  classes: []
   edgeEnd: {fileID: 5836386575115059614, guid: bbe52601b514c7046b823c31cc6d06f6, type: 3}
-  edgeTitleUpper: {fileID: 0}
-  edgeEndNumberUpper: {fileID: 0}
-  edgeTitleLower: {fileID: 0}
-  edgeEndNumberLower: {fileID: 0}
-  textbox: {fileID: 5633685818171654614, guid: 1409969191897be419ff942e39640dff, type: 3}
   popupLineMenu: {fileID: 496572069921609545, guid: a5a99622b2f3847d89111ee3081890f6,
     type: 3}
-  compositionIcon: {fileID: 7379804065855290417, guid: e74df07acc15e48678f08944db4e60b4,
-    type: 3}
-  aggregationIcon: {fileID: 8308989896837080067, guid: e6db718299161450dbd2d2a536223b55,
-    type: 3}
-  generalizationIcon: {fileID: 6277014932869243938, guid: 330d2a622effd4b11aceaa648a868eef,
-    type: 3}
+  diagram: {fileID: 0}
+  mousePos: {x: 0, y: 0, z: 0}
+  linePosition1: {x: 0, y: 0, z: 0}
+  linePosition2: {x: 0, y: 0, z: 0}
+  popupLineMenuOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &6000982856614772004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,15 +157,4 @@ PolygonCollider2D:
       - {x: -0.5877852, y: -0.80901706}
       - {x: 0.58778536, y: -0.80901694}
       - {x: 0.9510565, y: 0.30901712}
---- !u!114 &1384014256186140095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3910303766895365664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc6cfcc7fd4714450a4dbe797d85fd67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_UseDelaunayMesh: 0

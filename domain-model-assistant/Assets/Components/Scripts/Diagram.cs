@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Dynamic;
-using System.Linq;
 using System.Runtime.InteropServices;
 //using System.Text.Json; // TODO Use JsonSerializer.Serialize when Unity moves to .NET 6
 using UnityEngine;
@@ -15,6 +13,7 @@ using UnityEngine.UI;
 public class Diagram : MonoBehaviour
 {
 
+    // These public fields are assigned in the editor
     public TextAsset jsonFile;
     public float zoomSpeed = 1;
     public CanvasScaler CanvasScaler;
@@ -22,41 +21,36 @@ public class Diagram : MonoBehaviour
     public float smoothSpeed = 2.0f;
     public float minOrtho = 0.0f;
     public float maxOrtho = 20.0f;
-    private Vector3 dragStartPos;
-    // private bool dragging = false;
     public GameObject compartmentedRectangle;
     public List<GameObject> compartmentedRectangles;
+    public InfoBox infoBox;
+
+    private Vector3 dragStartPos;
+    // private bool dragging = false;
 
     public const bool UseWebcore = true; // Change to false to use the wrapper page JSON instead of WebCore
 
-    public const string WebcoreEndpoint = "http://localhost:8080/";
+    public const string WebcoreEndpoint = "http://localhost:8080";
 
-    public const string cdmName = "MULTIPLE_CLASSES"; // TODO Remove this once API is updated
+    public string cdmName = "AirlineSystem"; // For now, use same name as the example in Modeling Assistant backend
 
-    public const string GetCdmEndpoint = WebcoreEndpoint + "classdiagram/" + cdmName;
+    public Student student;
 
-    public const string AddClassEndpoint = GetCdmEndpoint + "/class";
+    public WebCore WebCore;
 
-    public const string DeleteClassEndpoint = AddClassEndpoint; // + "/:class_id"
-
-    public const string UpdateClassEndpoint = GetCdmEndpoint; //+ {classId}/position
-
-    public const string AddAttributeEndpoint = GetCdmEndpoint; // +/{classId}/attribute
-
-    public const string DeleteAttributeEndpoint = GetCdmEndpoint + "/class/attributes";
-
-    private ClassDiagramDTO classDTO;
+    // Temporary text used during application development
+    public const string InitialInfoBoxText = "Welcome to the Modeling Assistant! "
+        + "Please use the Debug button in the top right corner to login to a new random WebCORE account.";
 
     GraphicRaycaster raycaster;
 
-    Dictionary<string, GameObject> _namesToRects = new Dictionary<string, GameObject>();
+    readonly Dictionary<string, GameObject> _namesToRects = new();
 
-    Dictionary<string, List<Attribute>> classIdToAttributes = new Dictionary<string, List<Attribute>>();
+    readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    Dictionary<string, string> attrTypeIdsToTypes = new Dictionary<string, string>();
+    readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
-    List<string> createdAttributeIds = new List<string>();
-
+    List<string> createdAttributeIds = new();
 
     enum CanvasMode
     {
@@ -71,6 +65,12 @@ public class Diagram : MonoBehaviour
     // References to the JavaScript functions defined in Assets/Plugins/cdmeditor.jslib
 
     [DllImport("__Internal")]
+    private static extern string HttpRequest(string verb, string url, string headers, string data);
+
+    [DllImport("__Internal")]
+    private static extern string ConvertToUnityString(object o);
+
+    [DllImport("__Internal")]
     private static extern void SetCursorToAddMode();
 
     [DllImport("__Internal")]
@@ -81,40 +81,35 @@ public class Diagram : MonoBehaviour
     private bool _namesUpToDate = false;
 
     // true if app is run in browser, false if run in Unity editor
-    private bool _isWebGl = false;
+    private static readonly bool _isWebGl = Application.platform == RuntimePlatform.WebGLPlayer;
 
-    private UnityWebRequestAsyncOperation _getRequestAsyncOp;
+    private string _currCdmStr = "";
 
-    private UnityWebRequestAsyncOperation _postRequestAsyncOp;
+    public string ID { get; set; }
 
-    private UnityWebRequestAsyncOperation _deleteRequestAsyncOp;
-
-    private UnityWebRequestAsyncOperation _putRequestAsyncOp;
-
-    private string _getResult = "";
-
-    public string ID
-    { get; set; }
-
-    bool reGetRequest = false;
+    public bool reGetRequest = false;
 
     // Awake is called once to initialize this game object
     void Awake()
     {
-        if (Application.platform == RuntimePlatform.WebGLPlayer)
-        {
-            _isWebGl = true;
-        }
+        // user = User.CreateRandom(); // for now, just create a random user
+        // user.Login();
+        // user.PutRequest(CdmEndpoint()); // create the CDM
+        // Debug.Log("Initialized class diagram with user: " + user);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        CanvasScaler = this.gameObject.GetComponent<CanvasScaler>();
+        CanvasScaler = gameObject.GetComponent<CanvasScaler>();
         targetOrtho = CanvasScaler.scaleFactor;
-        this.raycaster = GetComponent<GraphicRaycaster>();
-        GetRequest(GetCdmEndpoint);
-
+        raycaster = GetComponent<GraphicRaycaster>();
+        infoBox.Value = InitialInfoBoxText;
+        if (UseWebcore)
+        {
+            WebCore = WebCore.GetInstance(this);
+        }
+        RefreshCdm();
 
         /* FOR UNITY FRONTEND DEVELOPMENT ONLY ie NO-BACKEND-SERVER*/
         // LoadData();
@@ -128,7 +123,7 @@ public class Diagram : MonoBehaviour
             (_currentMode == CanvasMode.AddingClass && InputExtender.MouseExtender.IsSingleClick()))
         {
             _updateNeeded = true;
-            AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
+            WebCore.AddClass("Class" + (compartmentedRectangles.Count + 1), Input.mousePosition);
             ActivateDefaultMode();
         }
 
@@ -136,44 +131,13 @@ public class Diagram : MonoBehaviour
 
         if (UseWebcore && _updateNeeded)
         {
-            if (_getRequestAsyncOp != null && _getRequestAsyncOp.isDone)
+            // resend get request for frames where json data is not updated in time
+            // reGetRequest is true after AddClass
+            if (reGetRequest)
             {
-                var req = _getRequestAsyncOp.webRequest;
-                if (req.downloadHandler != null && !ReferenceEquals(req.downloadHandler, null))
-                {
-                    //store GET query response in tmp&newResult
-                    var tmp = req.downloadHandler.text;
-                    if (tmp != null && tmp != "")
-                    {
-                        var newResult = tmp;
-                        //resend get request for frames where json data is not updated in time
-                        //reGetRequest is true after AddClass
-                        if (reGetRequest)
-                        {
-                            reGetRequest = false;
-                            GetRequest(GetCdmEndpoint);
-                        }
-                        else if (newResult != _getResult)
-                        {
-                            LoadJson(newResult);
-                            _getResult = newResult;
-                        }
-                    }
-                }
-                req.Dispose();
+                reGetRequest = false;
+                RefreshCdm();
             }
-        }
-        if (_postRequestAsyncOp != null && _postRequestAsyncOp.isDone)
-        {
-            _postRequestAsyncOp.webRequest.Dispose();
-        }
-        if (_deleteRequestAsyncOp != null && _deleteRequestAsyncOp.isDone)
-        {
-            _deleteRequestAsyncOp.webRequest.Dispose();
-        }
-        if (_putRequestAsyncOp != null && _putRequestAsyncOp.isDone)
-        {
-            _putRequestAsyncOp.webRequest.Dispose();
         }
     }
 
@@ -203,26 +167,39 @@ public class Diagram : MonoBehaviour
     {
         ResetDiagram();
         //Debug.Log(cdmJson);
-        var classDiagram = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
         //store attributes of class in a dictionary
-        classDiagram.classes.ForEach(cls => this.classIdToAttributes[cls._id] = cls.attributes);
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
         //store attribute types. Map type id to eclass tye
-        classDiagram.types.ForEach(type =>
+        cdmDto.classDiagram.types.ForEach(type =>
         {
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
-            string res = type.eClass.Substring(type.eClass.LastIndexOf('/') + 1).Replace("CD", "").ToLower();
+            string res = type.eClass[(type.eClass.LastIndexOf('/') + 1)..].Replace("CD", "").ToLower();
             if (!attrTypeIdsToTypes.ContainsKey(type._id))
             {
-                this.attrTypeIdsToTypes[type._id] = res;
+                attrTypeIdsToTypes[type._id] = res;
             }
         });
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
 
-        classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
-        classDiagram.layout.containers[0].value/*s*/.ForEach(contVal =>
+        cdmDto.classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
+        Debug.Log("cdmJson: " + cdmJson);
+        // Debug.Log("classDiagram: " + classDiagram);
+        // Debug.Log("classDiagram.layout: " + classDiagram.layout);
+        // Debug.Log("JsonUtility.ToJson(classDiagram.layout): " + JsonUtility.ToJson(classDiagram.layout));
+        // Debug.Log("classDiagram.layout.containers: " + classDiagram.layout.containers);
+        if (cdmDto.classDiagram.layout.containers == null)
+        {
+            Debug.Log("classDiagram.layout.containers is null, so early return");
+            return;
+        }
+        Debug.Log("classDiagram.layout.containers.Count: " + cdmDto.classDiagram.layout.containers.Count); // NullReferenceException
+        Debug.Log("classDiagram.layout.containers[0]: " + cdmDto.classDiagram.layout.containers[0]);
+        Debug.Log("classDiagram.layout.containers[0].value: " + cdmDto.classDiagram.layout.containers[0].value);
+        cdmDto.classDiagram.layout.containers[0].value.ForEach(contVal =>
         {
             if (idsToClassesAndLayouts.ContainsKey(contVal.key))
             {
@@ -239,7 +216,6 @@ public class Diagram : MonoBehaviour
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
                 _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
-
         }
         _namesUpToDate = false;
         _updateNeeded = false;
@@ -248,64 +224,10 @@ public class Diagram : MonoBehaviour
     public void AddAttributesToSection(GameObject section)
     {
         var compId = section.GetComponent<Section>().GetCompartmentedRectangle()
-                        .GetComponent<CompartmentedRectangle>().ID;
+            .GetComponent<CompartmentedRectangle>().ID;
         foreach (var attr in classIdToAttributes[compId])
         {
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attrTypeIdsToTypes[attr.type]);
-        }
-    }
-
-    /// <summary>
-    /// Adds a class to the diagram with the given name and position.
-    /// </summary>
-    public void AddClass(string name, Vector2 position)
-    {
-        if (UseWebcore)
-        {
-            CreateJson info = new CreateJson();
-            info.x = position.x;
-            info.y = position.y;
-            info.className = name;
-            string jsonData = JsonUtility.ToJson(info);
-            PostRequest(AddClassEndpoint, jsonData);
-            reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
-        }
-        else
-        {
-            CreateCompartmentedRectangle((compartmentedRectangles.Capacity + 1).ToString(), name, position);
-        }
-    }
-
-    public void DeleteClass(GameObject node)
-    {
-        if (UseWebcore)
-        {
-            string _id = node.GetComponent<CompartmentedRectangle>().ID;
-            DeleteRequest(DeleteClassEndpoint, _id);
-            reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
-            // No need to remove or destroy the node here since entire class diagram is recreated
-        }
-        else
-        {
-            RemoveNode(node);
-            Destroy(node);
-        }
-    }
-
-    public void UpdateClass(GameObject header, GameObject node)
-    {
-        if (UseWebcore)
-        {
-            string _id = node.GetComponent<CompartmentedRectangle>().ID;
-            string clsName = header.GetComponent<InputField>().text;
-            Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
-            //JSON body. Create new serializable JSON object.
-            Position pInfo = new Position(newPosition.x, newPosition.y);
-            string jsonData = JsonUtility.ToJson(pInfo);
-            //send updated position via PUT request
-            PutRequest(UpdateClassEndpoint, jsonData, _id);
         }
     }
 
@@ -316,60 +238,10 @@ public class Diagram : MonoBehaviour
     {
         foreach (var nameRectPair in _namesToRects)
         {
-            nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = nameRectPair.Key;
+            nameRectPair.Value.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text =
+                nameRectPair.Key;
         }
         _namesUpToDate = true;
-    }
-
-    /// <summary>
-    /// Add Attribute
-    /// </summary> 
-    public void AddAttribute(GameObject textbox)
-    {
-        if (UseWebcore)
-        {
-            Section section = textbox.GetComponent<TextBox>().GetSection().GetComponent<Section>();
-            CompartmentedRectangle compRect = section.GetCompartmentedRectangle()
-                                .GetComponent<CompartmentedRectangle>();
-            List<GameObject> attributes = section.GetTextBoxList();
-            string _id = compRect.ID;
-            int rankIndex = -1;
-            string name = null;
-            int typeId = -1;
-            for (int i = 0; i < attributes.Count; i++)
-            {
-                if (attributes[i] == textbox)
-                {
-                    rankIndex = i;
-                    name = textbox.GetComponent<TextBox>().GetName();
-                    typeId = textbox.GetComponent<TextBox>().GetTypeId();
-                    break;
-                }
-            }
-            AddAttributeBody info = new AddAttributeBody(rankIndex, typeId, name);
-            string jsonData = JsonUtility.ToJson(info);
-            Debug.Log(jsonData);
-            // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
-            PostRequest(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute", jsonData);
-            Debug.Log(AddAttributeEndpoint + "/" + "class" + "/" + _id + "/" + "attribute");
-            reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
-        }
-    }
-
-    /// <summary>
-    /// Deletes Attribute
-    /// </summary> 
-    public void DeleteAttribute(GameObject textBox)
-    {
-        if (UseWebcore)
-        {
-            string _id = textBox.GetComponent<TextBox>().ID;
-            DeleteRequest(DeleteAttributeEndpoint, _id);
-            reGetRequest = true;
-            GetRequest(GetCdmEndpoint);
-            // No need to remove or destroy the node here since entire class diagram is recreated
-        }
     }
 
     /// <summary>
@@ -379,7 +251,7 @@ public class Diagram : MonoBehaviour
     {
         foreach (var comp in compartmentedRectangles)
         {
-            // popup menu is destroyed in comp rect class when delete is called
+            // Pop-up menu is destroyed in comp rect class when delete is called
             // we only need to destroy the attributes.
             // get first section, loop through all attributes, destroy any attribute cross objects
             GameObject section = comp.GetComponent<CompartmentedRectangle>().GetSection(0);
@@ -407,64 +279,12 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
     {
-        var compRect = Instantiate(compartmentedRectangle, this.transform);
+        var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
         AddNode(compRect);
         return compRect;
-    }
-
-    /// <summary>
-    /// Sends a GET request to the server. The response is the class diagram JSON and is stored in _getResult.
-    /// </summary>
-    public void GetRequest(string uri)
-    {
-        // TODO Check if a `using` block can be used here, to auto-dispose the web request
-        var webRequest = UnityWebRequest.Get(uri);
-        webRequest.method = "GET";
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.timeout = 1;
-        _getRequestAsyncOp = webRequest.SendWebRequest();
-        _updateNeeded = true;
-    }
-
-    /// <summary>
-    /// Sends a POST request to the server to modify the class diagram.
-    /// </summary>
-    public void PostRequest(string uri, string data)
-    {
-        var webRequest = UnityWebRequest.Put(uri, data);
-        webRequest.method = "POST";
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        _postRequestAsyncOp = webRequest.SendWebRequest();
-    }
-
-
-    /// <summary>
-    /// Sends a DELETE request to the server to remove an item from the class diagram.
-    /// </summary>
-    public void DeleteRequest(string uri, string _id)
-    {
-        Debug.Log(uri + "/" + _id); // check if reaching
-        var webRequest = UnityWebRequest.Delete(uri + "/" + _id);
-        webRequest.method = "DELETE";
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        _deleteRequestAsyncOp = webRequest.SendWebRequest();
-        Debug.Log("Deleting done"); // check if reaching
-
-    }
-
-    public void PutRequest(string uri, string data, string _id)
-    {
-        var webRequest = UnityWebRequest.Put(uri + "/" + _id + "/" + "position", data);
-        webRequest.method = "PUT";
-        webRequest.disposeDownloadHandlerOnDispose = false;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        _putRequestAsyncOp = webRequest.SendWebRequest();
     }
 
     /// <summary>
@@ -500,7 +320,8 @@ public class Diagram : MonoBehaviour
                 targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
             }
         }
-        CanvasScaler.scaleFactor = Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
+        CanvasScaler.scaleFactor =
+            Mathf.MoveTowards(CanvasScaler.scaleFactor, targetOrtho, smoothSpeed * Time.deltaTime);
     }
 
     // ************ UI model Methods for Canvas/Diagram ****************//
@@ -535,6 +356,24 @@ public class Diagram : MonoBehaviour
     public List<GameObject> GetCompartmentedRectangles()
     {
         return compartmentedRectangles;
+    }
+
+    /// <summary>
+    /// Refreshes the class diagram by sending a GET request to the server.
+    /// </summary>
+    public bool RefreshCdm()
+    {
+        if (student != null)
+        {
+            var result = WebRequest.GetRequest(WebCore.CdmEndpoint(), student.Token);
+            if (result != _currCdmStr)
+            {
+                LoadJson(result);
+                _currCdmStr = result;
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -574,6 +413,12 @@ public class Diagram : MonoBehaviour
         }
     }
 
+    public void GetFeedbackButtonPressed()
+    {
+        Debug.Log("Getting feedback");
+        WebCore.GetFeedback();
+    }
+
     /// <summary>
     /// Perform the debug action specified in the body upon the Debug button getting clicked.
     /// </summary>
@@ -581,11 +426,36 @@ public class Diagram : MonoBehaviour
     {
         Debug.Log("Debug button clicked!");
         //LoadData();
-        GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
-          .text = "Rabbit";
+        // GetCompartmentedRectangles()[0].GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>()
+        //   .text = "Rabbit";
+
+        /*var*/ student = Student.CreateRandom();
+        Debug.Log("student: " + student);
+        Debug.Log("student.Login(): " + student.Login());
+        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        if (!student.LoggedIn)
+        {
+            infoBox.Warn("Login failed! See console for exact error. (Hint: Double check that WebCORE is running.)");
+            return;
+        }
+        // Logout logic is currently faulty, so uncommenting the lines below will cause the CreateCdm() call to fail
+        // Debug.Log("student.Logout(): " + student.Logout());
+        // Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        // Debug.Log("student.Login() again: " + student.Login());
+        // Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        var cdmCreated = WebCore.CreateCdm(cdmName);
+        Debug.Log("WebCore.CreateCdm(): " + cdmCreated);
+        if (cdmCreated)
+        {
+            infoBox.Info("Class diagram created! You can now add class diagram elements with the diagram editor.");
+        }
+        else
+        {
+            infoBox.Warn("Class diagram creation failed! See console for exact error.");
+        }
     }
 
-    public Dictionary<string, string> getAttrTypeIdsToTypes()
+    public Dictionary<string, string> GetAttrTypeIdsToTypes()
     {
         return attrTypeIdsToTypes;
     }

@@ -22,8 +22,10 @@ be translated into C# code to be used within the application.
 
 Get the entire class diagram
 ```bash
-curl --location --request GET 'http://localhost:8080/classdiagram/MULTIPLE_CLASSES' --header 'Content-Type: application/json'; echo
+curl --location --request GET 'http://localhost:8080/username/classdiagram/cdmname' --header 'Authorization: Bearer token'; echo
 ```
+
+Replace `username`, `cdmname`, and `token` with the proper values.
 
 Get all class `_id`s and names
 ```bash

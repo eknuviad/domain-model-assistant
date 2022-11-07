@@ -5,6 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class ClassDiagramDTO
 {
+    public ClassDiagram classDiagram;
+}
+
+[System.Serializable]
+public class ClassDiagram
+{
     public string eClass;
     public string _id;
     public string name;
@@ -49,7 +55,7 @@ public class ContainerMap
 {
     public string _id;
     public string key;
-    public List<ElementMap> value/*s*/; 
+    public List<ElementMap> value; // Not "values" in plural from because of Ecore conventions 
 }
 
 [System.Serializable]

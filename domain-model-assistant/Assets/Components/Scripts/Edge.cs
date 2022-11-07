@@ -43,8 +43,8 @@ public class Edge : MonoBehaviour
     {
         //_diagram = diagram.GetComponent<Diagram>();
         //Debug.Log(_diagram);
-            
     }
+
     void Start()
     {
         createEdge();
@@ -52,21 +52,20 @@ public class Edge : MonoBehaviour
 
     void Update()
     {
-    if (nodes != null)
+        if (nodes != null)
         {
-            if(nodes[0] != null && nodes[1] != null)
+            if (nodes[0] != null && nodes[1] != null)
             {
                 var node1 = nodes[0].GetComponent<Node>();
                 var node2 = nodes[1].GetComponent<Node>();
                 var node1_locs = node1.GetConnectionPointsLocations();
                 var node2_locs = node2.GetConnectionPointsLocations();
-                
-            
 
                 var edgeEnd1 = edgeEnds[0].GetComponent<EdgeEnd>();
                 var edgeEnd2 = edgeEnds[1].GetComponent<EdgeEnd>();
                 
-                int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(), node2.GetConnectionPointsAvailabilities());
+                int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(),
+                    node2.GetConnectionPointsAvailabilities());
 
                 // release previous connection points
                 node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
@@ -94,10 +93,10 @@ public class Edge : MonoBehaviour
                 line.SetPosition(0, pos1);
                 line.SetPosition(1, pos2);
 
-                edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
-                edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
-                edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
-                edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
+                edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x;
+                edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x;
+                edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y;
+                edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y;
             }
             else
             {
@@ -108,8 +107,8 @@ public class Edge : MonoBehaviour
 
     void createEdge()
     {
-        this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
-        line = this.gameObject.GetComponent<LineRenderer>();
+        gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+        line = gameObject.GetComponent<LineRenderer>();
         // line.material = material;
         line.material = new Material(Shader.Find("Sprites/Default"));
         line.material.color = Color.black;
@@ -123,8 +122,8 @@ public class Edge : MonoBehaviour
         var edgeEnd1 = GameObject.Instantiate(edgeEnd).GetComponent<EdgeEnd>();
         var edgeEnd2 = GameObject.Instantiate(edgeEnd).GetComponent<EdgeEnd>();
         
-        edgeEnd1.SetEdge(this.gameObject);
-        edgeEnd2.SetEdge(this.gameObject);
+        edgeEnd1.SetEdge(gameObject);
+        edgeEnd2.SetEdge(gameObject);
 
         var node1 = nodes[0].GetComponent<Node>();
         var node2 = nodes[1].GetComponent<Node>();
@@ -142,7 +141,8 @@ public class Edge : MonoBehaviour
             Debug.Log("Critical: Need more connection points.");
         }
 
-        int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(), node2.GetConnectionPointsAvailabilities());
+        int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(),
+            node2.GetConnectionPointsAvailabilities());
         
         // set the optimal connection points
         var edgeEnd1_loc = node1_locs[indices[0]];
@@ -166,25 +166,25 @@ public class Edge : MonoBehaviour
         line.SetPosition(0, pos1);
         line.SetPosition(1, pos2);
 
-        edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x ? true:false;
-        edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x ? true:false;
-        edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y ? true:false;
-        edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y ? true:false;
-        // // check closest node edge
-         var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
-         var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
-         if (diff_x <= diff_y)
-         {
-             gameObject.transform.position = nodes[0].transform.position + new Vector3(0,-95,0);
-        // //     CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
-        // //     CreateEdgeEndLowerObj(nodes[1]);
-         }
-         else
-         {
-            gameObject.transform.position = nodes[1].transform.position + new Vector3(95,0,0);
-        // //     CreateEdgeEndLeftObject(nodes[1]);
-        // //     CreateEdgeEndRightObject(nodes[0]);
-         }
+        edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x;
+        edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x;
+        edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y;
+        edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y;
+        // check closest node edge
+        var diff_y = nodes[0].transform.position.y - nodes[1].transform.position.y;
+        var diff_x = nodes[0].transform.position.x - nodes[1].transform.position.x;
+        if (diff_x <= diff_y)
+        {
+           gameObject.transform.position = nodes[0].transform.position + new Vector3(0, -95, 0);
+           // CreateEdgeEndUpperObj(nodes[0]);//create edge number and title textboxes for first obj
+           // CreateEdgeEndLowerObj(nodes[1]);
+        }
+        else
+        {
+           gameObject.transform.position = nodes[1].transform.position + new Vector3(95, 0, 0);
+           // CreateEdgeEndLeftObject(nodes[1]);
+           // CreateEdgeEndRightObject(nodes[0]);
+        }
     }
 
     public Vector3 GetPosition1() 
@@ -205,26 +205,14 @@ public class Edge : MonoBehaviour
         return line.startWidth;
     }
 
-    public void setColor(int color)
+    public void SetColor(Color color)
     {
-        switch(color){
-            case 0:
-                line.material.color = Color.black;
-                break;
-            case 1:
-                line.material.color = Color.blue;
-                break;
-            case 2:
-                line.material.color = Color.magenta;
-                break;
-
-
-        }
+        line.material.color = color;
     }
 
     void Destroy()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     public int IndexOfNode(GameObject aNode)
@@ -248,13 +236,13 @@ public class Edge : MonoBehaviour
         nodes.Add(aNode);
         nodesId.Add(aNode.GetComponent<CompartmentedRectangle>().ID);
 
-        if (aNode.GetComponent<Node>().IndexOfConnection(this.gameObject) != -1)
+        if (aNode.GetComponent<Node>().IndexOfConnection(gameObject) != -1)
         {
             wasAdded = true;
         }
         else
         {
-            wasAdded = aNode.GetComponent<Node>().AddConnection(this.gameObject);
+            wasAdded = aNode.GetComponent<Node>().AddConnection(gameObject);
             if (!wasAdded)
             {
                 nodes.Remove(aNode);
@@ -307,7 +295,7 @@ public class Edge : MonoBehaviour
             edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
             otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
         }
-        if(otherEdgeEnd.hasActiveIcon)
+        if (otherEdgeEnd.hasActiveIcon)
         {
             otherEdgeEnd.SetIconType(0);
         }
@@ -329,7 +317,7 @@ public class Edge : MonoBehaviour
             edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
             otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
         }
-        if(otherEdgeEnd.hasActiveIcon)
+        if (otherEdgeEnd.hasActiveIcon)
         {
             otherEdgeEnd.SetIconType(0);
         }
@@ -351,7 +339,7 @@ public class Edge : MonoBehaviour
             edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
             otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
         }
-        if(otherEdgeEnd.hasActiveIcon)
+        if (otherEdgeEnd.hasActiveIcon)
         {
             otherEdgeEnd.SetIconType(0);
         }
@@ -361,7 +349,7 @@ public class Edge : MonoBehaviour
     
     public void DeleteEdge()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
         Destroy(edgeEnds[0].gameObject);
         Destroy(edgeEnds[1].gameObject);
         //close the popup menu after clicking Delete
@@ -377,7 +365,7 @@ public class Edge : MonoBehaviour
     {
         Debug.Log("beginholdheard");
         // mousePos = Input.mousePosition;
-        this.hold = true;
+        hold = true;
         holdTimer += Time.deltaTime; 
     }
 
@@ -385,20 +373,20 @@ public class Edge : MonoBehaviour
     {
          Debug.Log("beginholdheard");
         popupLineMenuOffset = new Vector3(70, -110, 0);
-        if (this.popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
+        if (popupLineMenu.GetComponent<PopupLineMenu>().GetLine() == null)
         {
-            this.popupLineMenu = GameObject.Instantiate(this.popupLineMenu);
-            this.popupLineMenu.transform.SetParent(this.transform);
+            popupLineMenu = GameObject.Instantiate(popupLineMenu);
+            popupLineMenu.transform.SetParent(transform);
             //this can be changed so that popupline menu is always instantiated at
             //midpoint of the relationship
-            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
-            this.popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(this.popupLineMenu.transform.position);
-            this.popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
+            popupLineMenu.transform.position = mousePos + popupLineMenuOffset;
+            popupLineMenu.GetComponent<PopupLineMenu>().SetUpdateConstant(popupLineMenu.transform.position);
+            popupLineMenu.GetComponent<PopupLineMenu>().SetLine(this);
         }
         else
         {
-            this.popupLineMenu.transform.position = this.mousePos + popupLineMenuOffset;
-            this.popupLineMenu.GetComponent<PopupLineMenu>().Open();
+            popupLineMenu.transform.position = mousePos + popupLineMenuOffset;
+            popupLineMenu.GetComponent<PopupLineMenu>().Open();
         }
     }
 
@@ -410,7 +398,8 @@ public class Edge : MonoBehaviour
     /// updated connection points if they are strictly smaller in distance than the previous
     /// connection, otherwise the previous indices are returned.
     /// </summary>
-    private int[] GetIndicesOfMinDist(List<Vector2>node1_locs, List<Vector2>node2_locs, ReadOnlyCollection<bool> node1_avails, ReadOnlyCollection<bool> node2_avails)
+    private int[] GetIndicesOfMinDist(List<Vector2> node1_locs, List<Vector2> node2_locs,
+        ReadOnlyCollection<bool> node1_avails, ReadOnlyCollection<bool> node2_avails)
     {
         int[] indices = new int[2];
         float minDist = float.MaxValue;
@@ -443,7 +432,7 @@ public class Edge : MonoBehaviour
         var node1_dist = Vector3.Distance(mousePos, nodes[0].transform.position);
         var node2_dist = Vector3.Distance(mousePos, nodes[1].transform.position);
 
-        if(node1_dist < node2_dist)
+        if (node1_dist < node2_dist)
         {
             return 0;
         }
@@ -458,17 +447,18 @@ public class Edge : MonoBehaviour
         classes = GameObject.FindGameObjectsWithTag("comprec");
         foreach (var comp in classes)
         {
-            if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[0]))
+            if (Equals(comp.GetComponent<CompartmentedRectangle>().ID, nodesId[0]))
             {
                 nodes[0] = comp;
-            }else if(Equals(comp.GetComponent<CompartmentedRectangle>().ID,nodesId[1]))
+            }
+            else if (Equals(comp.GetComponent<CompartmentedRectangle>().ID, nodesId[1]))
             {
                 //Debug.Log(comp.GetComponent<CompartmentedRectangle>().ID);
                 nodes[1] = comp;
-
             }
         }
-        if(nodes[1]==null||nodes[0]==null){
+        if (nodes[1] == null || nodes[0] == null)
+        {
             Destroy();
         }
     }

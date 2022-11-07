@@ -1,64 +1,71 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class PopupLineMenu : MonoBehaviour
 {   
-    GameObject edgE;
+    GameObject edge;
     Vector3 updateConstant;
 
     // Start is called before the first frame update
     void Start()
     {
         // Debug.Log("finding canvas");
-        // this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+        // gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(gameObject != null){
+        if (gameObject != null)
+        {
             //update position on each frame here
         }
         if (Input.GetMouseButtonDown(2))
         {
-            Debug.Log("close popuplinemenu");
-            this.gameObject.SetActive(false);
+            Debug.Log("Close PopupLineMenu");
+            gameObject.SetActive(false);
         }
     }
 
-    public void SetLine(Edge edgE)
+    public void SetLine(Edge edge)
     {
-        Debug.Log("set line in popupline menu");
-        this.edgE = edgE.gameObject;
-        this.transform.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetAssociation);
-        this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetAggregation);
-        this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetComposition);
-        this.transform.GetChild(3).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.SetGeneralization);
-        this.transform.GetChild(4).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(edgE.DeleteEdge);
+        Debug.Log("PopupLineMenu.SetLine() called");
+        this.edge = edge.gameObject;
+        var listeners = new List<UnityAction>
+        {
+            edge.SetAssociation, edge.SetAggregation, edge.SetComposition, edge.SetGeneralization, edge.DeleteEdge
+        };
+        for (int i = 0; i < listeners.Count; i++)
+        {
+            transform.GetChild(i).GetComponent<Button>().onClick.AddListener(listeners[i]);
+        }
     }
+
     public GameObject GetLine()
     {
-        return this.edgE;
+        return edge;
     }
 
     public void SetUpdateConstant(Vector3 posConstant){
-        this.updateConstant = posConstant;
+        updateConstant = posConstant;
     }
     public void Close()
     {
-        Debug.Log("Closing PopuplineMenu");
-        this.gameObject.SetActive(false);
+        Debug.Log("Closing PopupLineMenu");
+        gameObject.SetActive(false);
     }
 
     public void Open()
     {
-        this.gameObject.SetActive(true);
+        gameObject.SetActive(true);
     }
 
     public void Destroy()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
 }

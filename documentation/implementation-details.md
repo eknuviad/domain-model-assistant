@@ -54,5 +54,12 @@ to expose `unity` to (trusted) external scripts, eg, the outer
 `postMessage()` function.
 
 
+## Unity Upgrade Info
+
+After upgrading the Unity version and starting the Editor for the first time,
+the project Scene needs to be manually opened like this:
+
+File > Open Scene, then navigate to `domain-model-assistant/Assets/Scenes`
+and select the correct scene file.
 
 
