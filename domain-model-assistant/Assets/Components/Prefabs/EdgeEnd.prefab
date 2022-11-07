@@ -56,4 +56,6 @@ MonoBehaviour:
     type: 3}
   generalizationIcon: {fileID: 6277014932869243938, guid: 330d2a622effd4b11aceaa648a868eef,
     type: 3}
+  arrowHeadIcon: {fileID: 6277014932869243938, guid: 4410d463b4f74422589494e830987827,
+    type: 3}
   hasActiveIcon: 0

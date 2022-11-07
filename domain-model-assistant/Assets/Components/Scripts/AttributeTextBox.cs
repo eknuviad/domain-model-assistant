@@ -29,14 +29,13 @@ public class AttributeTextBox : TextBox
 
     void Start() {
         GetComponent<InputField>().onSubmit.AddListener(e =>
-    {
-        if (GetComponent<InputField>().isFocused)
         {
-            addAttribute();
-        }
+            if (GetComponent<InputField>().isFocused)
+            {
+                addAttribute();
+            }
 
-    });
-
+        });
     }
 
     void Update()
@@ -128,8 +127,8 @@ public class AttributeTextBox : TextBox
         }
     }
 
-    public void addAttribute(){
-        
+    public void addAttribute()
+    {    
             Debug.Log("TextBox: Enter button pressed， intextbox");
             string _id = ID;
             if (IsValid() )//&& "-1".Equals(_id))

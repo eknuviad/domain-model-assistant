@@ -11,7 +11,7 @@ public abstract class Node: MonoBehaviour
 
     // renamed textbox as header to avoid parent and child
     // from having the same serializable field
-    public GameObject header;
+    private GameObject _header;
     private List<GameObject> _connections = new List<GameObject>();
     private List<GameObject> _edgeEnds;
 
@@ -48,7 +48,7 @@ public abstract class Node: MonoBehaviour
 
     public GameObject GetHeader()
     {
-        return header;
+        return _header;
     }
 
     public bool AddHeader(GameObject aHeader)
@@ -57,7 +57,7 @@ public abstract class Node: MonoBehaviour
         {
             return false;
         }
-        header = aHeader;
+        _header = aHeader;
         return true;
     }
 

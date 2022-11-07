@@ -94,6 +94,9 @@ public class Edge : MonoBehaviour
                 line.SetPosition(0, pos1);
                 line.SetPosition(1, pos2);
 
+                float angle = Vector3.Angle(pos2 - pos1, new Vector3(0,1,0));
+                edgeEnd2.Angle = angle;
+
                 edgeEnd1.isLeft = edgeEnd1_loc.x < edgeEnd2_loc.x;
                 edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x;
                 edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y;
@@ -281,8 +284,8 @@ public class Edge : MonoBehaviour
         edgeEnd.SetIconType(0);
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
-    
-    public void SetAggregation()
+
+    public void SetUniNavigability()
     {
         EdgeEnd edgeEnd;
         EdgeEnd otherEdgeEnd;
@@ -301,10 +304,13 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(1);
+
+        float angle = Vector3.Angle(otherEdgeEnd.transform.position - edgeEnd.transform.position, new Vector3(0,1,0));
+        edgeEnd.Angle = angle;
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
     
-    public void SetComposition()
+    public void SetAggregation()
     {
         EdgeEnd edgeEnd;
         EdgeEnd otherEdgeEnd;
@@ -326,7 +332,7 @@ public class Edge : MonoBehaviour
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
     
-    public void SetGeneralization()
+    public void SetComposition()
     {
         EdgeEnd edgeEnd;
         EdgeEnd otherEdgeEnd;
@@ -345,6 +351,28 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(3);
+        popupLineMenu.GetComponent<PopupLineMenu>().Close();
+    }
+    
+    public void SetGeneralization()
+    {
+        EdgeEnd edgeEnd;
+        EdgeEnd otherEdgeEnd;
+        if (GetClosestEdgeEndIndex() == 1)
+        {
+            edgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+        }
+        else
+        {
+            edgeEnd = edgeEnds[0].GetComponent<EdgeEnd>();
+            otherEdgeEnd = edgeEnds[1].GetComponent<EdgeEnd>();
+        }
+        if (otherEdgeEnd.hasActiveIcon)
+        {
+            otherEdgeEnd.SetIconType(0);
+        }
+        edgeEnd.SetIconType(4);
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
     

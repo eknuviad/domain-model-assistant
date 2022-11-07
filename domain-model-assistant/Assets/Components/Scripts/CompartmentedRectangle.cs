@@ -15,8 +15,6 @@ public class CompartmentedRectangle : Node
     public GameObject textbox; //this allows to instantiate textbox prefabs
     public GameObject section;
     public List<GameObject> sections = new();
-    public TextBox text;
-    // popup menu variables
     public GameObject popupMenu;
     public RectTransform rectangle;
     
@@ -31,13 +29,12 @@ public class CompartmentedRectangle : Node
 
     private string id; //should move to node class later
     private Vector2 _prevPosition;
-    private float rectHeight;
-    private float rectWidth;
+    private const int HeaderBackgroundHeight = 34;
     private int headerOffsetX = -31;
     private int headerOffsetY = 70;
-    private int sectionOffsetY = -71;
+    private int sectionOffsetY = -30;
     private int popupMenuOffsetX = 138;
-
+    public string ClassName { get; set;}
     public bool IsHighlighted { get; set; }
 
     public enum State
@@ -60,11 +57,23 @@ public class CompartmentedRectangle : Node
         {
             connectionPointsAvailable.Add(true);
         }
-        rectangle = (RectTransform)transform;
-        rectHeight = rectangle.rect.height;
-        rectWidth = rectangle.rect.width;
+
         CreateHeader();
         CreateSection();
+
+        Canvas.ForceUpdateCanvases();
+
+        RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
+        RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
+
+        var total_height = rtSection0.rect.height + rtSection1.rect.height;
+
+        rectangle = (RectTransform)transform;
+        rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
+
+        // rectHeight = rectangle.rect.height;
+        // rectWidth = rectangle.rect.width;
+
         id = GetComponent<CompartmentedRectangle>().ID;
 
         // for (int i = 0; i < transform.childCount; i++)
@@ -80,13 +89,15 @@ public class CompartmentedRectangle : Node
 
         // the following changes header background to horizontal stretch middle anchor preset
         RectTransform headerBackground = (RectTransform) transform.GetChild(headerIndex);
-        headerBackground.anchorMin = new Vector2(0, 0.5f);
-        headerBackground.anchorMax = new Vector2(1, 0.5f);
-        headerBackground.anchoredPosition = new Vector2(0, 73);
-        headerBackground.sizeDelta = new Vector2 (0, 34);
-        
+        headerBackground.anchorMin = new Vector2(0, 1);
+        headerBackground.anchorMax = new Vector2(1, 1);
+        headerBackground.anchoredPosition = new Vector2(0, -17);
+        headerBackground.sizeDelta = new Vector2 (0, HeaderBackgroundHeight);
+
         headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
         sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
+
+        _diagram.AddAttributesToSection(GetSection(0));//add atrributes to first section
     }
 
     // Update is called once per frame
@@ -96,6 +107,9 @@ public class CompartmentedRectangle : Node
         {
             OnBeginHold();
         }
+        // RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
+        // RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
+        // Debug.Log("rtSection0 height =" + rtSection0.rect.height);
         //transform.GetChild(1).gameObject.GetComponent<Image>().material.color = Color.white;
     }
 
@@ -104,21 +118,23 @@ public class CompartmentedRectangle : Node
     public void CreateHeader()
     {
         var header = GameObject.Instantiate(textbox, transform);
-        //vector position will need to be obtained from transform of gameobject in the future
-        header.transform.position = transform.position + new Vector3(headerOffsetX, headerOffsetY, 0);
+        if (ClassName != null) 
+        {
+            header.GetComponent<ClassHeaderTextBox>().gameObject.GetComponent<InputField>().text = ClassName;
+        }
         AddHeader(header);
     }
 
     public void CreateSection()
     {
-        Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+        Vector2 offset = new Vector2(0,-15) + new Vector2(0,-34) + new Vector2(0, -1);
         for (int i = 0; i < 2; i++) /*loop for a class with 2 sections*/
         {
             var sect = GameObject.Instantiate(section, transform);
-            sect.transform.position = oldPosition + new Vector3(0, sectionOffsetY, 0) * sections.Count;
+            RectTransform rt_sect = (RectTransform) sect.transform; 
+            rt_sect.anchoredPosition = offset + new Vector2(0, sectionOffsetY) * sections.Count;
             AddSection(sect);
         }
-        _diagram.AddAttributesToSection(GetSection(0));//add atrributes to first section
     }
 
     public void OnBeginHold()
@@ -204,8 +220,12 @@ public class CompartmentedRectangle : Node
         // {
         //     Debug.Log("avail " + debug_count++ + " :" + avail);
         // }
+        RectTransform rectangle = (RectTransform)transform;
+        var rectWidth = rectangle.rect.width;
+        var rectHeight = rectangle.rect.height;
+
         List<Vector2> locations = new();
-        var origin = GetPosition() + new Vector2(-rectHeight/2, -rectWidth/2);
+        var origin = GetPosition() + new Vector2(-rectWidth/2, -rectHeight/2);
         var increment = rectWidth / (NumOfConnectionPoints / 4);
         // int count = 0;
         for (float x = 0; x <= rectWidth; x += increment)

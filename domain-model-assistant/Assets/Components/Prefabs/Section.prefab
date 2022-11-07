@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8699455690723162217}
   - component: {fileID: 3466169481931202284}
   - component: {fileID: 7622629696153032133}
+  - component: {fileID: 5892576030851339134}
   m_Layer: 5
   m_Name: Section
   m_TagString: Untagged
@@ -37,10 +38,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 562.8508, y: 171.15512}
-  m_SizeDelta: {x: 176, y: 70}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -50}
+  m_SizeDelta: {x: 176, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8699455690723162220
 CanvasRenderer:
@@ -119,7 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 150
+  m_MinWidth: 176
   m_MinHeight: 30
   m_PreferredWidth: -1
   m_PreferredHeight: -1
@@ -157,3 +158,17 @@ MonoBehaviour:
     type: 3}
   textbox: {fileID: 5633685818171654614, guid: be57e3827332241508d2375b1f920feb, type: 3}
   textboxes: []
+--- !u!114 &5892576030851339134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8699455690723162231}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2

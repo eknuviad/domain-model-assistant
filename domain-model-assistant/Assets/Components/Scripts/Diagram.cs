@@ -230,6 +230,7 @@ public class Diagram : MonoBehaviour
         {
             var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr_type_title_case);
+            // Canvas.ForceUpdateCanvases();
         }
     }
 
@@ -297,7 +298,7 @@ public class Diagram : MonoBehaviour
         var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
-        compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
+        compRect.GetComponent<CompartmentedRectangle>().ClassName = name;
         if (!AddNode(compRect))
         {
             Debug.Log("Fail to add node");

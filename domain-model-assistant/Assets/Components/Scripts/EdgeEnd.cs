@@ -30,8 +30,10 @@ public class EdgeEnd : MonoBehaviour
     public GameObject compositionIcon;
     public GameObject aggregationIcon;
     public GameObject generalizationIcon;
+    public GameObject arrowHeadIcon;
     public bool hasActiveIcon = false;
     // public GameObject popupMenu;
+    public float Angle {get; set;}
 
     void Start()
     {
@@ -51,7 +53,9 @@ public class EdgeEnd : MonoBehaviour
         generalizationIcon = GameObject.Instantiate(generalizationIcon);
         aggregationIcon = GameObject.Instantiate(aggregationIcon);
         compositionIcon = GameObject.Instantiate(compositionIcon);
+        arrowHeadIcon = GameObject.Instantiate(arrowHeadIcon);
 
+        arrowHeadIcon.SetActive(false);
         generalizationIcon.SetActive(false);
         aggregationIcon.SetActive(false);
         compositionIcon.SetActive(false);
@@ -59,6 +63,8 @@ public class EdgeEnd : MonoBehaviour
         generalizationIcon.GetComponent<GeneralizationIcon>().SetEdgeEnd(this);
         aggregationIcon.GetComponent<AggregationIcon>().SetEdgeEnd(this);
         compositionIcon.GetComponent<CompositionIcon>().SetEdgeEnd(this);
+        arrowHeadIcon.GetComponent<ArrowHeadIcon>().SetEdgeEnd(this);
+
 
         Debug.Log("EdgeEnd instantiated");
     }
@@ -96,9 +102,13 @@ public class EdgeEnd : MonoBehaviour
         _edgeEndTitle.transform.position = titlePos;
         _edgeEndNumber.transform.position = numberPos;
 
+        arrowHeadIcon.transform.position = Position;
         compositionIcon.transform.position = Position;
         aggregationIcon.transform.position = Position;
         generalizationIcon.transform.position = Position;
+
+        Debug.Log("Angle: " + Angle);
+        arrowHeadIcon.transform.eulerAngles = Vector3.forward * -Angle;
     }
 
     void Destroy()
@@ -256,6 +266,7 @@ public class EdgeEnd : MonoBehaviour
                 // TODO  
                 // ASSOCIATION - same as line, 
                 // should destroy any existing icon at intended location
+                arrowHeadIcon.SetActive(false);
                 compositionIcon.SetActive(false);
                 generalizationIcon.SetActive(false);
                 aggregationIcon.SetActive(false);
@@ -271,13 +282,40 @@ public class EdgeEnd : MonoBehaviour
                 {
                     generalizationIcon.SetActive(false);
                 }
+                if (aggregationIcon.activeSelf)
+                {
+                    aggregationIcon.SetActive(false);
+                }
+                if (!arrowHeadIcon.activeSelf)
+                {
+                    arrowHeadIcon.SetActive(true);
+                }
+                break;
+            case 2:
+                hasActiveIcon = true;
+                if (arrowHeadIcon.activeSelf)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (compositionIcon.activeSelf)
+                {
+                    compositionIcon.SetActive(false);
+                }
+                if (generalizationIcon.activeSelf)
+                {
+                    generalizationIcon.SetActive(false);
+                }
                 if (!aggregationIcon.activeSelf)
                 {
                     aggregationIcon.SetActive(true);
                 }
                 break;
-            case 2:
+            case 3:
                 hasActiveIcon = true;
+                if (arrowHeadIcon.activeSelf)
+                {
+                    compositionIcon.SetActive(false);
+                }
                 if (generalizationIcon.activeSelf)
                 {
                     generalizationIcon.SetActive(false);
@@ -291,8 +329,12 @@ public class EdgeEnd : MonoBehaviour
                     compositionIcon.SetActive(true);
                 }
                 break;
-             case 3:
+             case 4:
                 hasActiveIcon = true;
+                if (arrowHeadIcon.activeSelf)
+                {
+                    compositionIcon.SetActive(false);
+                }
                 if (compositionIcon.activeSelf)
                 {
                     compositionIcon.SetActive(false);
