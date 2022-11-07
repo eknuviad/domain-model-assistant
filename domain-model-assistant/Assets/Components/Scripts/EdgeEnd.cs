@@ -15,7 +15,7 @@ public class EdgeEnd : MonoBehaviour
     
     public Vector2 Position
     { get; set; }
-
+    private string _nodeId;
     private GameObject _edgeEndTitle;
     private GameObject _edgeEndNumber;
     public GameObject edgeEndTitle;
@@ -25,6 +25,7 @@ public class EdgeEnd : MonoBehaviour
     public static Vector2 TitleVerticalOffset = new Vector2(0, 40);
     public static Vector2 TitleHorizontalOffset = new Vector2(80, 0);
     public static Vector2 NumberTitleOffset = new Vector2(0, -20);
+    private GameObject[] canvasClasses;
     private GameObject _edge;
     private GameObject _node;
     public GameObject compositionIcon;
@@ -71,6 +72,7 @@ public class EdgeEnd : MonoBehaviour
 
     void Update()
     {
+
         Vector2 titlePos;
         Vector2 numberPos;
 
@@ -216,6 +218,7 @@ public class EdgeEnd : MonoBehaviour
 
         GameObject existingNode = _node;
         _node = aNode;
+        _nodeId = aNode.GetComponent<CompartmentedRectangle>().ID;
         if (existingNode != null && !existingNode.Equals(aNode))
         {
             existingNode.GetComponent<Node>().RemoveEdgeEnd(gameObject);
@@ -350,6 +353,21 @@ public class EdgeEnd : MonoBehaviour
                 break;
             default:
                 break;
+        }
+    }
+
+    public void RetrieveNode()
+    {
+        canvasClasses = GameObject.FindGameObjectsWithTag("comprec");
+        foreach (var comp in canvasClasses)
+        {
+            if (Equals(comp.GetComponent<CompartmentedRectangle>().ID,_nodeId))
+            {
+                SetNode(comp);
+            }
+        }
+        if(_node==null){
+            Destroy();
         }
     }
 
