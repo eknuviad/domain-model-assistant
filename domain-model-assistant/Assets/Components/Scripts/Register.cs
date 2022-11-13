@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+
 
 public class Register : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class Register : MonoBehaviour
         if (passwordInputField.text == confirmedPasswordInputField.text)
         {
             User user = new User(emailInputField.text, passwordInputField.text);
+            errorlog.text = "";
+            SceneManager.LoadScene(0);
         }
         else
         {
@@ -26,4 +30,5 @@ public class Register : MonoBehaviour
         Debug.Log(passwordInputField.text);
         Debug.Log(confirmedPasswordInputField.text);
     }
+
 }
