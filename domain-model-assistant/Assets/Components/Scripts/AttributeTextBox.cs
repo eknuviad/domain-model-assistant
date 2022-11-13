@@ -32,7 +32,7 @@ public class AttributeTextBox : TextBox
         {
             if (GetComponent<InputField>().isFocused)
             {
-                addAttribute();
+                AddAttribute();
             }
 
         });
@@ -127,7 +127,7 @@ public class AttributeTextBox : TextBox
         }
     }
 
-    public void addAttribute()
+    public void AddAttribute()
     {    
             Debug.Log("TextBox: Enter button pressed， intextbox");
             string _id = ID;
@@ -138,7 +138,7 @@ public class AttributeTextBox : TextBox
                 WebCore.AddAttribute(gameObject);
                 _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("Attribute added");
                 //WebCore.AddOperation(gameObject);
-            }else{
+            } else {
                 _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("Attribute format error, example: int age");
                 GetComponent<InputField>().text = " ";
             }

@@ -131,6 +131,19 @@ public class WebCore
         _diagram.RefreshCdm();
     }
 
+    private void UpdateClass_(string name, Vector2 position)
+    {
+        string jsonData = JsonUtility.ToJson(new AddClassDTO()
+        {
+            x = position.x,
+            y = position.y,
+            className = name
+        });
+        WebRequest.PostRequest(AddClassEndpoint(), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+    }
+
     private void UpdateClassPosition_(GameObject header, GameObject node)
     {
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
