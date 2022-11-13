@@ -15,7 +15,7 @@ public class Register : MonoBehaviour
     {
         if (passwordInputField.text == confirmedPasswordInputField.text)
         {
-            User user = new User(userInputField.text, passwordInputField.text);
+            User user = new User(emailInputField.text, passwordInputField.text);
         }
         else
         {
