@@ -36,7 +36,7 @@ public class PopupLineMenu : MonoBehaviour
         this.edge = edge.gameObject;
         var listeners = new List<UnityAction>
         {
-            edge.SetAssociation, edge.SetAggregation, edge.SetComposition, edge.SetGeneralization, edge.DeleteEdge
+            edge.SetAssociation, edge.SetUniNavigability, edge.SetAggregation, edge.SetComposition, edge.SetGeneralization, edge.DeleteEdge
         };
         for (int i = 0; i < listeners.Count; i++)
         {

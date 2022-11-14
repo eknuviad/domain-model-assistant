@@ -13,24 +13,33 @@ public class RoleNameTextBox : TextBox
         _diagram = GetComponentInParent<Diagram>();
     }
 
-    void Start() {}
+    void Start() {
+        GetComponent<InputField>().onSubmit.AddListener(e =>
+        {
+            if (GetComponent<InputField>().isFocused)
+            {
+                // addMultiplicity();
+            }
+
+        });
+    }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            Debug.Log("TextBox: Enter button pressed");
-            string _id = ID;
-            if (IsValid())
-            {
-                // Debug.Log(EdgeEnd.GetComponent<EdgeEnd>().ID);
-                if(GetTitleOwner().GetComponent<EdgeEnd>() == null)
-                {
-                    Debug.Log("edgeEnd component is null");
-                }
-                WebCore.UpdateRelationshipMultiplicities(gameObject);
-            }
-        }
+        // if (Input.GetKeyDown(KeyCode.Return))
+        // {
+        //     Debug.Log("TextBox: Enter button pressed");
+        //     string _id = ID;
+        //     if (IsValid())
+        //     {
+        //         // Debug.Log(EdgeEnd.GetComponent<EdgeEnd>().ID);
+        //         if(GetTitleOwner().GetComponent<EdgeEnd>() == null)
+        //         {
+        //             Debug.Log("edgeEnd component is null");
+        //         }
+        //         WebCore.UpdateRelationshipMultiplicities(gameObject);
+        //     }
+        // }
 
         if (hold2)
         {

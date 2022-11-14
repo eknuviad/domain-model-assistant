@@ -1017,7 +1017,6 @@ MonoBehaviour:
   maxOrtho: 20
   compartmentedRectangle: {fileID: 4578845948308175784, guid: 1c64aa7f3de0201478e30aeb7c4219e4,
     type: 3}
-  compartmentedRectangles: []
   infoBox: {fileID: 213745104}
   cdmName: FerrySystem
   reGetRequest: 0
@@ -1052,6 +1051,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   edge: {fileID: 3910303766895365664, guid: 29d3db3d260da4f4e8e81156b5624613, type: 3}
   line: {fileID: 0}
+  edgeEnd: {fileID: 5836386575115059614, guid: bbe52601b514c7046b823c31cc6d06f6, type: 3}
 --- !u!1 &1405035122
 GameObject:
   m_ObjectHideFlags: 0

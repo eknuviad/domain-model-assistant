@@ -54,6 +54,8 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
+    readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
+
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
@@ -210,6 +212,7 @@ public class Diagram : MonoBehaviour
                 attrTypeIdsToTypes[type._id] = res;
             }
         });
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
         
@@ -351,7 +354,7 @@ public class Diagram : MonoBehaviour
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().setSectionCount(sectionCount);
         
-        compRect.GetComponent<CompartmentedRectangle>().GetHeader().GetComponent<InputField>().text = name;
+        compRect.GetComponent<CompartmentedRectangle>().ClassName = name;
         if (!AddNode(compRect))
         {
             Debug.Log("Fail to add node");
