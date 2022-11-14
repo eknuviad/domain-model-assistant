@@ -1,17 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System;
 
 public class ClassHeaderTextBox : TextBox
 {
     private GameObject _headerOwner;
+    public GameObject compRect;
+    public bool isEnum { get; set; }
+    public string Name { get; set; }
 
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
     }
 
-    void Start() {}
+    void Start() {
+        GetComponent<InputField>().onSubmit.AddListener(e =>
+    {
+        if (GetComponent<InputField>().isFocused)
+        {
+            UpdateName();
+        }
+
+    });
+    }
 
     void Update()
     {
@@ -60,6 +74,23 @@ public class ClassHeaderTextBox : TextBox
         Destroy(gameObject);
     }
 
+
+    public bool SetCompartmentedRectangle(GameObject aCompRect)
+    {
+        if (aCompRect == null)
+        {
+            return false;
+        }
+        compRect = aCompRect;
+        return true;
+    }
+
+    public GameObject GetCompartmentedRectangle()
+    {
+        return compRect;
+    }
+
+
     public GameObject GetHeaderOwner()
     {
         return _headerOwner;
@@ -88,5 +119,15 @@ public class ClassHeaderTextBox : TextBox
         }
         wasSet = true;
         return wasSet;
+    }
+
+    public void UpdateName(){
+        Name =GetComponent<InputField>().text;
+        if(isEnum){
+            WebCore.RenameEnum(gameObject);
+        }else{
+            WebCore.RenameClass(gameObject);
+        }
+
     }
 }

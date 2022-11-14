@@ -32,21 +32,22 @@ public class CompartmentedRectangle : Node
 
     private string id; //should move to node class later
     private Vector2 _prevPosition;
+    private const int HeaderBackgroundHeight = 34;
     private float rectHeight;
     private float rectWidth;
 
     private int headerOffsetX = -31;
     private int headerOffsetY = 70;
 
-    private int enumHeaderOffsetY = 63;
+    private int enumHeaderOffsetY = -24;
 
     private int enumSignOffsetX = -62;
-    private int enumSignOffsetY = 84;
+    private int enumSignOffsetY = -8;
 
-    private int sectionOffsetY = -71;
+    private int sectionOffsetY = -30;
     private int popupMenuOffsetX = 138;
     public string ClassName { get; set;}
-    public bool isEnum = false;
+    public bool isEnum { get; set;}
 
     public bool IsHighlighted { get; set; }
 
@@ -71,18 +72,18 @@ public class CompartmentedRectangle : Node
             connectionPointsAvailable.Add(true);
         }
 
-        CreateHeader();
-        CreateSection();
+        //CreateHeader();
+        //CreateSection();
 
         Canvas.ForceUpdateCanvases();
 
-        RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
-        RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
+        //RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
+        //RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
 
-        var total_height = rtSection0.rect.height + rtSection1.rect.height;
+        //var total_height = rtSection0.rect.height + rtSection1.rect.height;
 
-        rectangle = (RectTransform)transform;
-        rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
+        //rectangle = (RectTransform)transform;
+        //rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
 
         // rectHeight = rectangle.rect.height;
         // rectWidth = rectangle.rect.width;
@@ -102,16 +103,16 @@ public class CompartmentedRectangle : Node
 
         // the following changes header background to horizontal stretch middle anchor preset
         RectTransform headerBackground = (RectTransform) transform.GetChild(headerIndex);
-        headerBackground.anchorMin = new Vector2(0, 0.5f);
-        headerBackground.anchorMax = new Vector2(1, 0.5f);
-        headerBackground.anchoredPosition = new Vector2(0, 73);
-        headerBackground.sizeDelta = new Vector2 (0, 34);
+        headerBackground.anchorMin = new Vector2(0, 1);
+        headerBackground.anchorMax = new Vector2(1, 1);
+        headerBackground.anchoredPosition = new Vector2(0, -17);
+        headerBackground.sizeDelta = new Vector2 (0, HeaderBackgroundHeight);
         
         //transform.childCount
         Debug.Log("transform.childCount:"+transform.childCount);
         Debug.Log("headerIndex:"+headerIndex);
         headerIndex = 1;
-        headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
+        //headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
         //sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
     }
 
@@ -136,6 +137,7 @@ public class CompartmentedRectangle : Node
         if (ClassName != null) 
         {
             header.GetComponent<ClassHeaderTextBox>().gameObject.GetComponent<InputField>().text = ClassName;
+            header.GetComponent<ClassHeaderTextBox>().Name = ClassName;
         }
         AddHeader(header);
     }
@@ -349,30 +351,57 @@ public class CompartmentedRectangle : Node
         if(num == 2){
             //regular class
             isEnum = false;
-            Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+            CreateHeader();
+            var header = GetHeader();//.GetComponent<ClassHeaderTextBox>();
+            header.GetComponent<ClassHeaderTextBox>().isEnum = false;
+
+            Vector2 offset = new Vector2(0,-15) + new Vector2(0,-34) + new Vector2(0, -1);
             for (int i = 0; i < 2; i++) /*loop for a class with 2 sections*/
             {
                 var sect = GameObject.Instantiate(section, transform);
-                sect.transform.position = oldPosition + new Vector3(0, sectionOffsetY, 0) * sections.Count;
+                RectTransform rt_sect = (RectTransform) sect.transform; 
+                rt_sect.anchoredPosition = offset + new Vector2(0, sectionOffsetY) * sections.Count;
                 AddSection(sect);
-        }
+            }
+
+            RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
+            RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
+
+            var total_height = rtSection0.rect.height + rtSection1.rect.height;
+
+            rectangle = (RectTransform)transform;
+            rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
+
             _diagram.AddAttributesToSection(GetSection(0));//add atrributes to first section
 
         }
         if(num == 1){
             //enum class
             isEnum = true;
+            CreateHeader();
+            Debug.Log("transform position:"+transform.position);
             var sign = GameObject.Instantiate(enumSign, transform);
+            RectTransform rt_sign = (RectTransform) sign.transform; 
+            rt_sign.anchoredPosition =  new Vector3(0, enumSignOffsetY, 0);
             sign.GetComponent<InputField>().text = "<<Enumeration>>";
-            sign.transform.position = transform.position + new Vector3(enumSignOffsetX, enumSignOffsetY, 0);
-            Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
-            GetHeader().GetComponent<AttributeTextBox>().transform.position = transform.position + new Vector3(headerOffsetX, enumHeaderOffsetY, 0);
-            Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
-            Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+ 
+            var header = GetHeader();//.GetComponent<ClassHeaderTextBox>();
+            header.GetComponent<ClassHeaderTextBox>().isEnum = true;
+            RectTransform rt_name = (RectTransform) header.transform; 
+            rt_name.anchoredPosition =  new Vector3(0, enumHeaderOffsetY, 0);
+            //Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
+            //Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+
+            Vector2 offset = new Vector2(0,-15) + new Vector2(0,-34) + new Vector2(0, -1);
             var sect = GameObject.Instantiate(section, transform);
-            sect.GetComponent<RectTransform>().sizeDelta = new Vector2(176, 140);
-            sect.transform.position = oldPosition+ new Vector3(0, -36, 0) ;//* sections.Count;
-                AddSection(sect);
+            RectTransform rt_sect = (RectTransform) sect.transform; 
+            rt_sect.anchoredPosition = offset + new Vector2(0, sectionOffsetY) * sections.Count;
+            AddSection(sect);
+            RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;           
+            var total_height = rtSection0.rect.height;
+
+            rectangle = (RectTransform)transform;
+            rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
             _diagram.AddLiteralsToSection(GetSection(0));
             //header.GetComponent<RectTransform>().sizeDelta = new Vector2(176, 140);
 

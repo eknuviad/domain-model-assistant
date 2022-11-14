@@ -69,3 +69,15 @@ public class AddLiteralBody
     }
 
 }
+
+public class RenameEnumBody
+{
+    public string newName;
+ 
+    public RenameEnumBody(string nName)
+    {
+        newName = nName;
+    }
+
+}
+

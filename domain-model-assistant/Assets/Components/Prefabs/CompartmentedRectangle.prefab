@@ -171,7 +171,7 @@ MonoBehaviour:
   canvas: {fileID: 0}
   textbox: {fileID: 5633685818171654614, guid: f55903a7297374953b8fd19427536d72, type: 3}
   section: {fileID: 8699455690723162231, guid: 1396b8a5385e3cd4ca1b245b6b8891d1, type: 3}
-  enumSign: {fileID: 5633685818171654614, guid: be57e3827332241508d2375b1f920feb,
+  enumSign: {fileID: 5633685818171654614, guid: c4ba541a24846488abe4bb1be09d3876,
     type: 3}
   sections: []
   popupMenu: {fileID: 8564540208968287839, guid: 9913a5b3d214e7642a24bee2f858e6e7,

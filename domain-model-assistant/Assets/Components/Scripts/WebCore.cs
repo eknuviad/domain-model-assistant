@@ -63,6 +63,23 @@ public class WebCore
     }
 
     /// <summary>
+    /// Renames the given enum.
+    /// </summary>
+    public static void RenameEnum(GameObject textbox)
+    {
+        instance.RenameEnum_(textbox);
+    }
+
+    /// <summary>
+    /// Renames the given class.
+    /// </summary>
+    public static void RenameClass(GameObject textbox)
+    {
+        instance.RenameClass_(textbox);
+    }
+
+
+    /// <summary>
     /// Adds a literal to the enum class in the diagram with the given name.
     /// </summary>
     public static void AddLiteral(GameObject textbox)
@@ -367,6 +384,36 @@ public class WebCore
         // No need to remove or destroy the node here since entire class diagram is recreated
     }
 
+    private void RenameEnum_(GameObject textbox)
+    {
+        Debug.Log("WebCore.RenameEnum() called");
+        CompartmentedRectangle compRect = textbox.GetComponent<ClassHeaderTextBox>().compRect.GetComponent<CompartmentedRectangle>();
+        string _id = compRect.ID;
+        string newName = textbox.GetComponent<ClassHeaderTextBox>().Name.ToLower();;
+        var info = new RenameEnumBody(newName);
+        string jsonData = JsonUtility.ToJson(info);
+        Debug.Log(jsonData);
+        WebRequest.PutRequest(RenameEnumEndpoint(_id), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+
+    private void RenameClass_(GameObject textbox)
+    {
+        Debug.Log("WebCore.RenameClass() called");
+        CompartmentedRectangle compRect = textbox.GetComponent<ClassHeaderTextBox>().compRect.GetComponent<CompartmentedRectangle>();
+        string _id = compRect.ID;
+        string newName = textbox.GetComponent<ClassHeaderTextBox>().Name.ToLower();;
+        var info = new RenameEnumBody(newName);
+        string jsonData = JsonUtility.ToJson(info);
+        Debug.Log(jsonData);
+        WebRequest.PutRequest(RenameClassEndpoint(_id), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+
     // additional helper methods
 
     /// <summary>
@@ -450,6 +497,22 @@ public class WebCore
     public string DeleteEnumEndpoint(string enumId)
     {
         return $"{CdmEndpoint()}/enum/{enumId}";
+    }
+
+    /// <summary>
+    /// Returns the rename enum endpoint URL for the given class _id.
+    /// </summary>
+    public string RenameEnumEndpoint(string enumId)
+    {
+        return $"{CdmEndpoint()}/enum/{enumId}/rename";
+    }
+
+    /// <summary>
+    /// Returns the rename class endpoint URL for the given class _id.
+    /// </summary>
+    public string RenameClassEndpoint(string classId)
+    {
+        return $"{CdmEndpoint()}/class/{classId}/rename";
     }
 
     /// <summary>
