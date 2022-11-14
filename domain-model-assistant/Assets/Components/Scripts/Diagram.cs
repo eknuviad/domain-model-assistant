@@ -277,6 +277,7 @@ public class Diagram : MonoBehaviour
     {
         var compId = section.GetComponent<Section>().GetCompartmentedRectangle()
             .GetComponent<CompartmentedRectangle>().ID;
+        classIdToAttributes[compId].Reverse();
         foreach (var attr in classIdToAttributes[compId])
         {
             var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
