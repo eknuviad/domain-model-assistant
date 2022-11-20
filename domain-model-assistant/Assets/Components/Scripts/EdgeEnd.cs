@@ -50,7 +50,7 @@ public class EdgeEnd : MonoBehaviour
         
         _edgeEndNumber.GetComponent<MultiplicityTextBox>().SetNumberOwner(this.gameObject);
 
-        _edgeEndNumber.GetComponent<InputField>().text = "*";
+        _edgeEndNumber.GetComponent<InputField>().text = "1";
         _edgeEndNumber.transform.position = Position + new Vector2(85, -20);
 
         generalizationIcon = GameObject.Instantiate(generalizationIcon);
@@ -382,9 +382,9 @@ public class EdgeEnd : MonoBehaviour
     {
         // Assign the edge ends the highest id (newest association end)
         var diagram = _node.GetComponent<CompartmentedRectangle>().GetDiagram();
-        var endsDTO = diagram.GetComponent<Diagram>().classIdToAssociationEnds[_nodeId];
+        var endsDTO = diagram.GetComponent<Diagram>().classIdToAssociationEndsDTO[_nodeId];
         int maxID;
-        int.TryParse(endsDTO[0]._id, out maxID);
+        int.TryParse(endsDTO[0]._id, out maxID); // Intialize max ID with the ID of the first element
         foreach (var ends in endsDTO)
         {
             int id;

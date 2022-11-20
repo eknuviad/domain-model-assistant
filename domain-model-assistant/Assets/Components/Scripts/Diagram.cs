@@ -49,7 +49,7 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
+    public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEndsDTO = new();
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
@@ -165,18 +165,11 @@ public class Diagram : MonoBehaviour
         LoadJson(jsonFile.text);
     }
 
-    /// <summary>
-    /// Loads and displays the class diagram encoded by the input JSON string.
-    /// </summary>
-    public void LoadJson(string cdmJson)
+    public void InitializeDiagram(string cdmJson)
     {
-        ResetDiagram();
-        //Debug.Log(cdmJson);
-        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
-        //store attributes of class in a dictionary
-        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
-        //store attribute types. Map type id to eclass tye
+        //store attribute types. Map type id to eclass type
         cdmDto.classDiagram.types.ForEach(type =>
         {
             //cache eClass attr with shortened substring
@@ -187,12 +180,49 @@ public class Diagram : MonoBehaviour
                 attrTypeIdsToTypes[type._id] = res;
             }
         });
-        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
+
+        //store attributes of class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        //store association ends of a class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEndsDTO[cls._id] = cls.associationEnds);        
+
+        CreateClassesFromDTO(cdmDto);
+
+        if (cdmDto.classDiagram.associations != null)
+        {
+            //TODO
+        }
+
+        _updateNeeded = false;
+
+        Debug.Log("Diagram initialized");
+    }
+
+    /// <summary>
+    /// Loads and displays the class diagram encoded by the input JSON string.
+    /// </summary>
+    public void LoadJson(string cdmJson)
+    {
+        Debug.Log("cdmJson: " + cdmJson);
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+
+        //store attributes of class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        //store association ends of a class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEndsDTO[cls._id] = cls.associationEnds);
+
+        ClearClasses();
+        CreateClassesFromDTO(cdmDto);
+
+        _updateNeeded = false;
+    }
+
+    private void CreateClassesFromDTO(ClassDiagramDTO cdmDto)
+    {
         // maps each _id to its (class object, position) pair 
-        var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
+        var idsToClassesAndLayouts = new Dictionary<string, List<object>>();   
 
         cdmDto.classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
-        Debug.Log("cdmJson: " + cdmJson);
         // Debug.Log("classDiagram: " + classDiagram);
         // Debug.Log("classDiagram.layout: " + classDiagram.layout);
         // Debug.Log("JsonUtility.ToJson(classDiagram.layout): " + JsonUtility.ToJson(classDiagram.layout));
@@ -228,8 +258,8 @@ public class Diagram : MonoBehaviour
             _namesToRects[className] = CreateCompartmentedRectangle(
                 _id, className, new Vector2(layoutElement.x, layoutElement.y));
         }
+
         _namesUpToDate = false;
-        _updateNeeded = false;
     }
 
     public void AddAttributesToSection(GameObject section)
@@ -260,9 +290,9 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
     /// </summary>
-    public void ResetDiagram()
+    public void ClearClasses()
     {
-        Debug.Log("Reset Diagram called");
+        Debug.Log("Clear Classes called");
         foreach (var node in _nodes)
         {
             Debug.Log("Reset Diagram: Node" + node.GetComponent<CompartmentedRectangle>().ID);
@@ -365,6 +395,13 @@ public class Diagram : MonoBehaviour
         if (student != null)
         {
             var result = WebRequest.GetRequest(WebCore.CdmEndpoint(), student.Token);
+            if (string.Equals(_currCdmStr, ""))
+            {
+                // initialize diagram
+                InitializeDiagram(result);
+                _currCdmStr = result;
+                return true;                
+            }
             if (result != _currCdmStr)
             {
                 LoadJson(result);
