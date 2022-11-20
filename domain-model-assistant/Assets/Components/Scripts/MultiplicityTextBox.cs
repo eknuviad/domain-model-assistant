@@ -7,6 +7,7 @@ using System;
 public class MultiplicityTextBox : TextBox
 {
     private GameObject _numberOwner;
+    private string prevText;
     public int UpperBound { get; set; }
     public int LowerBound { get; set; }
 
@@ -15,29 +16,25 @@ public class MultiplicityTextBox : TextBox
         _diagram = GetComponentInParent<Diagram>();
     }
 
-    void Start() {}
+    void Start() 
+    {
+        GetComponent<InputField>().onSubmit.AddListener(e =>
+        {
+            if (GetComponent<InputField>().isFocused)
+            {
+                SetMultiplicity();
+            }
+        });
+
+        // if (IsValid())
+        // {
+        //     WebCore.UpdateRelationshipMultiplicities(gameObject);
+        // }
+        prevText = GetComponent<InputField>().text;
+    }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            Debug.Log("TextBox: Enter button pressed");
-            string _id = ID;
-            if (IsValid())
-            {
-                // Debug.Log(EdgeEnd.GetComponent<EdgeEnd>().ID);
-                if(GetNumberOwner().GetComponent<EdgeEnd>() == null)
-                {
-                    Debug.Log("edgeEnd component is null");
-                }
-                WebCore.UpdateRelationshipMultiplicities(gameObject);
-            }
-        }
-
-        if (hold2)
-        {
-            OnBeginHoldTB();
-        }
         text = GetComponent<Text>();
         if (IsHighlightedtext)
         {
@@ -58,12 +55,13 @@ public class MultiplicityTextBox : TextBox
         {
             // check if the input field is a number or '*'
             int value1;
-            if(values[0] == "*")
+            if (values[0] == "*")
             {
                 LowerBound = -1;
                 UpperBound = -1;
                 isValid = true;
-            } else if (int.TryParse(values[0], out value1))
+            } 
+            else if (int.TryParse(values[0], out value1))
             {
                 LowerBound = value1;
                 UpperBound = value1;
@@ -71,19 +69,22 @@ public class MultiplicityTextBox : TextBox
             }
             Debug.Log("first element is: " + values[0]);
 
-            if(values.Length == 2 && isValid)
+            if (values.Length == 2 && isValid)
             {
                 int value2;
-                if(values[0] == "*")
+                if (values[1] == "*")
                 {
+                    Debug.Log("UpperBound set");
                     UpperBound = -1;
                     isValid = true;
-                } else if (int.TryParse(values[0], out value2))
+                } 
+                else if (int.TryParse(values[1], out value2))
                 {
-                    LowerBound = value2;
+                    Debug.Log("UpperBound set");
                     UpperBound = value2;
                     isValid = true;
-                } else
+                }
+                else
                 {
                     isValid = false;
                 }
@@ -92,6 +93,24 @@ public class MultiplicityTextBox : TextBox
         }
 
         return isValid; 
+    }
+
+    public void SetMultiplicity()
+    {
+        if (IsValid())
+        {
+            // Debug.Log(EdgeEnd.GetComponent<EdgeEnd>().ID);
+            if (_numberOwner.GetComponent<EdgeEnd>() == null)
+            {
+                Debug.Log("edgeEnd component is null");
+            }
+            WebCore.SetMultiplicity(gameObject);
+            prevText = GetComponent<InputField>().text;
+            _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("Multiplicity updated");
+        } else {
+            _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("Multiplicity format error, examples: *, 1, 1..*");
+            GetComponent<InputField>().text = prevText;
+        }
     }
 
     public override void OnEndHoldTB()

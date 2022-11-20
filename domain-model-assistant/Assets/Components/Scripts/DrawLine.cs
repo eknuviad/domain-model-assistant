@@ -34,14 +34,10 @@ public class DrawLine: MonoBehaviour
         end1.GetComponent<EdgeEnd>().SetEdge(line);
         end2.GetComponent<EdgeEnd>().SetEdge(line);
 
-        // line.AddComponent<LineRenderer>();
-
         var pos1 = Camera.main.ScreenToWorldPoint(compRec1.transform.position + new Vector3(0,-95,0));
         pos1.z = 0;
         var pos2 = Camera.main.ScreenToWorldPoint(compRec2.transform.position + new Vector3(0,95,0));
         pos2.z = 0;
-        Debug.Log("position1: "+ pos1);
-        Debug.Log("position2: "+ pos2);
             
         line.GetComponent<LineRenderer>().SetPosition(0, pos1);
         line.GetComponent<LineRenderer>().SetPosition(1, pos2); 

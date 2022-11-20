@@ -57,7 +57,7 @@ public class PopupMenu : MonoBehaviour
 
     public void Destroy()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
 }

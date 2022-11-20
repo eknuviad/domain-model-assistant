@@ -49,7 +49,7 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
+    public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
@@ -527,7 +527,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public bool AddNode(GameObject aNode)
     {
-        Debug.Log("Add Node called");
+        // Debug.Log("Add Node called");
         bool wasAdded = false;
         if (_nodes.Contains(aNode))
         {
@@ -537,7 +537,7 @@ public class Diagram : MonoBehaviour
         GameObject existingDiagram = node.GetDiagram();
         if (existingDiagram == null)
         {
-            Debug.Log("Diagram null");
+            // Debug.Log("Diagram null");
             node.SetDiagram(gameObject);
         }
         else if (!gameObject.Equals(existingDiagram))
@@ -548,7 +548,7 @@ public class Diagram : MonoBehaviour
         else
         {
             _nodes.Add(aNode);
-            Debug.Log("Node added to list");
+            // Debug.Log("Node added to list");
             aNode.GetComponent<CompartmentedRectangle>().SetDiagram(gameObject);
         }
         wasAdded = true;

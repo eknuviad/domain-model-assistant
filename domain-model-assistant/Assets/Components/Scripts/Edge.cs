@@ -55,6 +55,7 @@ public class Edge : MonoBehaviour
                 if (edgeEnd1 == null)
                 {
                     DeleteEdge();
+                    return;
                 }
             }
 
@@ -64,9 +65,15 @@ public class Edge : MonoBehaviour
                 if (edgeEnd2 == null)
                 {
                     DeleteEdge();
+                    return;
                 }
             }
 
+            if (edgeEnd1.GetNode() == null || edgeEnd2.GetNode() == null)
+            {
+                DeleteEdge();
+                return;
+            }
             var node1 = edgeEnd1.GetNode().GetComponent<Node>();
             var node2 = edgeEnd2.GetNode().GetComponent<Node>();
             var node1_locs = node1.GetConnectionPointsLocations();
@@ -385,6 +392,7 @@ public class Edge : MonoBehaviour
         Destroy(_edgeEnds[1].gameObject);
         //close the popup menu after clicking Delete
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
+        Debug.Log("Edge deleted");
     }
 
     public GameObject GetPopUpLineMenu()

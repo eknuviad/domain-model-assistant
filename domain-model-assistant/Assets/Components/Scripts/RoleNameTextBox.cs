@@ -7,6 +7,7 @@ using System;
 public class RoleNameTextBox : TextBox
 {
     private GameObject _titleOwner;
+    private string prevText;
 
     void Awake()
     {
@@ -18,33 +19,14 @@ public class RoleNameTextBox : TextBox
         {
             if (GetComponent<InputField>().isFocused)
             {
-                // addMultiplicity();
+                SetRoleName();
             }
-
         });
+        prevText = GetComponent<InputField>().text;
     }
 
     void Update()
     {
-        // if (Input.GetKeyDown(KeyCode.Return))
-        // {
-        //     Debug.Log("TextBox: Enter button pressed");
-        //     string _id = ID;
-        //     if (IsValid())
-        //     {
-        //         // Debug.Log(EdgeEnd.GetComponent<EdgeEnd>().ID);
-        //         if(GetTitleOwner().GetComponent<EdgeEnd>() == null)
-        //         {
-        //             Debug.Log("edgeEnd component is null");
-        //         }
-        //         WebCore.UpdateRelationshipMultiplicities(gameObject);
-        //     }
-        // }
-
-        if (hold2)
-        {
-            OnBeginHoldTB();
-        }
         text = GetComponent<Text>();
         if (IsHighlightedtext)
         {
@@ -55,19 +37,30 @@ public class RoleNameTextBox : TextBox
     public override bool IsValid()
     {
         bool isValid = false;
-        string text = GetComponent<InputField>().text;
-        //check that inputfield is of a particular format (Eg. int year)
-        string[] values = text.Split("..");
-
-        Debug.Log(values.Length);
-        
-        if(values.Length == 1)
+        var text = GetComponent<InputField>().text.Split(" ");        
+        if (text.Length == 1)
         {
-            // check if the input field is a number or '*'
             isValid = true;
         }
-
         return isValid; 
+    }
+
+    public void SetRoleName()
+    {
+        if (IsValid())
+        {
+            // Debug.Log(EdgeEnd.GetComponent<EdgeEnd>().ID);
+            if (_titleOwner.GetComponent<EdgeEnd>() == null)
+            {
+                Debug.Log("edgeEnd component is null");
+            }
+            WebCore.SetRoleName(gameObject);
+            prevText = GetComponent<InputField>().text;
+            _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("rolename updated");
+        } else {
+            _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Warn("rolename format error, single word only");
+            GetComponent<InputField>().text = prevText;
+        }
     }
 
     public override void OnEndHoldTB()

@@ -39,7 +39,6 @@ public abstract class Node: MonoBehaviour
         }
         if (aDiagram != null)
         {
-            Debug.Log("Set Diagram not null");
             aDiagram.GetComponent<Diagram>().AddNode(gameObject);
         }
         wasSet = true;

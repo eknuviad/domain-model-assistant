@@ -55,6 +55,14 @@ public class WebCore
     }
 
     /// <summary>
+    /// Updates the class position.
+    /// </summary>
+    public static void RenameClass(GameObject node)
+    {
+        instance.RenameClass_(node);
+    }
+
+    /// <summary>
     /// Deletes the given class.
     /// </summary>
     public static void DeleteClass(GameObject node)
@@ -88,14 +96,14 @@ public class WebCore
         instance.AddAssociation_(node1, node2);
     }
 
-    public static void UpdateRelationshipMultiplicities(GameObject textbox)
+    public static void SetMultiplicity(GameObject textbox)
     {
-        instance.UpdateRelationshipMultiplicities_(textbox);
+        instance.SetMultiplicity_(textbox);
     }
 
-    public static void UpdateRelationshipRoleNames()
+    public static void SetRoleName(GameObject textbox)
     {
-        instance.UpdateRelationshipRoleNames_();
+        instance.SetRoleName_(textbox);
     }
 
     public static void UpdateRelationshipType()
@@ -131,13 +139,27 @@ public class WebCore
         _diagram.RefreshCdm();
     }
 
+    private void RenameClass_(GameObject node)
+    {
+        string _id = node.GetComponent<CompartmentedRectangle>().ID;
+        var header = node.GetComponent<CompartmentedRectangle>().GetHeader();
+        string newName = header.GetComponent<InputField>().text;
+        // JSON body. Create new serializable JSON object.
+        var newNameInfo = new RenameClassDTO(newName);
+        string jsonData = JsonUtility.ToJson(newNameInfo);
+        // send new name via PUT request
+        WebRequest.PutRequest(RenameClassEndpoint(_id), jsonData, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+    }
+
     private void UpdateClassPosition_(GameObject header, GameObject node)
     {
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
         string clsName = header.GetComponent<InputField>().text;
         Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
         // JSON body. Create new serializable JSON object.
-        var positionInfo = new Position(newPosition.x, newPosition.y);
+        var positionInfo = new PositionDTO(newPosition.x, newPosition.y);
         string jsonData = JsonUtility.ToJson(positionInfo);
         // send updated position via PUT request
         WebRequest.PutRequest(UpdateClassPositionEndpoint(_id), jsonData, Student.Token);
@@ -173,7 +195,7 @@ public class WebCore
                 break;
             }
         }
-        var info = new AddAttributeBody(rankIndex, typeId, name);
+        var info = new AddAttributeBodyDTO(rankIndex, typeId, name);
         string jsonData = JsonUtility.ToJson(info);
         Debug.Log(jsonData);
         // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
@@ -207,7 +229,7 @@ public class WebCore
         _diagram.RefreshCdm();
     }
 
-    private void UpdateRelationshipMultiplicities_(GameObject textBox)
+    private void SetMultiplicity_(GameObject textBox)
     {
         var multiplicityTextBox = textBox.GetComponent<MultiplicityTextBox>();
         string id = multiplicityTextBox.GetNumberOwner().GetComponent<EdgeEnd>().ID;
@@ -217,23 +239,23 @@ public class WebCore
         int uBound = multiplicityTextBox.UpperBound;
         int lBound = multiplicityTextBox.LowerBound;
 
-        WebRequest.PutRequest(AddRelationshipMultiplicitiesEndpoint("1"), 
+        WebRequest.PutRequest(SetMultiplicityEndpoint(id), 
             new { lowerBound = lBound, upperBound = uBound}, Student.Token);
         _diagram.reGetRequest = true;
         _diagram.RefreshCdm();
     }
 
-    private void UpdateRelationshipRoleNames_()
+    private void SetRoleName_(GameObject textBox)
     {
-        // var roleNameTextBox = textBox.GetComponent<RoleNameTextBox>();
-        // string id = multiplicityTextBox.EdgeEnd.GetComponent<EdgeEnd>().ID;
+        var roleNameTextBox = textBox.GetComponent<RoleNameTextBox>();
+        string id = roleNameTextBox.GetTitleOwner().GetComponent<EdgeEnd>().ID;
         
-        // Debug.Log($"WebCore.UpdateRelationshipRoleNames_({id}, called");
+        Debug.Log($"WebCore.UpdateRelationshipRoleNames_({id}, called");
 
-        // WebRequest.PutRequest(AddRelationshipMultiplicitiesEndpoint("1"), 
-        //     new { lowerBound = lBound, upperBound = uBound}, Student.Token);
-        // _diagram.reGetRequest = true;
-        // _diagram.RefreshCdm();
+        WebRequest.PutRequest(SetRolenameEndpoint(id), 
+            new { roleName = roleNameTextBox.GetComponent<InputField>().text}, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
     }
 
     private void UpdateRelationshipType_()
@@ -312,6 +334,14 @@ public class WebCore
     }
 
     /// <summary>
+    /// Returns the rename class endpoint URL for the given class _id.
+    /// </summary>
+    public string RenameClassEndpoint(string classId)
+    {
+        return $"{CdmEndpoint()}/class/{classId}/rename";
+    }
+
+    /// <summary>
     /// Returns the delete class endpoint URL for the given class _id.
     /// </summary>
     public string DeleteClassEndpoint(string classId)
@@ -348,9 +378,14 @@ public class WebCore
         return $"{CdmEndpoint()}/association";
     }
 
-    public string AddRelationshipMultiplicitiesEndpoint(string associationEndId)
+    public string SetMultiplicityEndpoint(string associationEndId)
     {
         return $"{CdmEndpoint()}/association/end/{associationEndId}/multiplicity";
+    }
+
+    public string SetRolenameEndpoint(string associationEndId)
+    {
+        return $"{CdmEndpoint()}/association/end/{associationEndId}/rolename";
     }
 
     public string GetFeedbackEndpoint()

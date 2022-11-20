@@ -118,6 +118,7 @@ public class CompartmentedRectangle : Node
     public void CreateHeader()
     {
         var header = GameObject.Instantiate(textbox, transform);
+        header.GetComponent<ClassHeaderTextBox>().SetHeaderOwner(gameObject);
         if (ClassName != null) 
         {
             header.GetComponent<ClassHeaderTextBox>().gameObject.GetComponent<InputField>().text = ClassName;

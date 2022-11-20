@@ -40,7 +40,7 @@ public class EdgeEnd : MonoBehaviour
     {
         gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
 
-        ID = "-1";
+        ID = "-1"; // initialize id with -1
 
         SetEdgeEndTitle(GameObject.Instantiate(edgeEndTitle, transform));
         _edgeEndTitle.GetComponent<RoleNameTextBox>().SetTitleOwner(this.gameObject);
@@ -49,7 +49,6 @@ public class EdgeEnd : MonoBehaviour
         _edgeEndNumber = GameObject.Instantiate(edgeEndNumber, transform);
         
         _edgeEndNumber.GetComponent<MultiplicityTextBox>().SetNumberOwner(this.gameObject);
-        Debug.Log(this.ID);
 
         _edgeEndNumber.GetComponent<InputField>().text = "*";
         _edgeEndNumber.transform.position = Position + new Vector2(85, -20);
@@ -367,11 +366,36 @@ public class EdgeEnd : MonoBehaviour
             if (Equals(comp.GetComponent<CompartmentedRectangle>().ID,_nodeId))
             {
                 SetNode(comp);
+                
+                if (string.Equals(ID, "-1")) // id not initialized
+                {
+                    InitIDFromJSON(); // get the ID from backend
+                }
             }
         }
-        if (_node==null){
+        if (_node == null){
             Destroy();
         }
+    }
+
+    private void InitIDFromJSON()
+    {
+        // Assign the edge ends the highest id (newest association end)
+        var diagram = _node.GetComponent<CompartmentedRectangle>().GetDiagram();
+        var endsDTO = diagram.GetComponent<Diagram>().classIdToAssociationEnds[_nodeId];
+        int maxID;
+        int.TryParse(endsDTO[0]._id, out maxID);
+        foreach (var ends in endsDTO)
+        {
+            int id;
+            int.TryParse(ends._id, out id);
+            if (id > maxID)
+            {
+                maxID = id;
+            }
+        }
+        ID = maxID.ToString();
+        Debug.Log("EdgeEnd assigned id: " + ID);
     }
 
 }
