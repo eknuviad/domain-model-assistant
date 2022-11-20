@@ -58,7 +58,9 @@ public abstract class Node: MonoBehaviour
             return false;
         }
         _header = aHeader;
+
         aHeader.GetComponent<ClassHeaderTextBox>().SetCompartmentedRectangle(gameObject);
+
         return true;
     }
 

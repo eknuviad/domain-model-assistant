@@ -1,20 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using UnityEngine.UI;
 using System;
+
 
 public class ClassHeaderTextBox : TextBox
 {
     private GameObject _headerOwner;
+
     public GameObject compRect;
     public bool isEnum { get; set; }
     public string Name { get; set; }
+
 
     void Awake()
     {
         _diagram = GetComponentInParent<Diagram>();
     }
+
 
     void Start() {
         GetComponent<InputField>().onSubmit.AddListener(e =>
@@ -26,6 +31,7 @@ public class ClassHeaderTextBox : TextBox
 
     });
     }
+
 
     void Update()
     {
@@ -75,6 +81,7 @@ public class ClassHeaderTextBox : TextBox
     }
 
 
+
     public bool SetCompartmentedRectangle(GameObject aCompRect)
     {
         if (aCompRect == null)
@@ -89,6 +96,7 @@ public class ClassHeaderTextBox : TextBox
     {
         return compRect;
     }
+
 
 
     public GameObject GetHeaderOwner()
@@ -121,6 +129,7 @@ public class ClassHeaderTextBox : TextBox
         return wasSet;
     }
 
+
     public void UpdateName(){
         Name =GetComponent<InputField>().text;
         if(isEnum){
@@ -132,4 +141,5 @@ public class ClassHeaderTextBox : TextBox
         }
 
     }
+
 }

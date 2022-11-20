@@ -56,7 +56,9 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
 
+
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
+
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
@@ -213,12 +215,7 @@ public class Diagram : MonoBehaviour
                 attrTypeIdsToTypes[type._id] = res;
             }
         });
-        foreach(KeyValuePair<string, string> entry in attrTypeIdsToTypes)
-{
-    // do something with entry.Value or entry.Key
-    Debug.Log("key: " + entry.Key +"; value:"+entry.Value);
 
-}
         cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
@@ -282,6 +279,7 @@ public class Diagram : MonoBehaviour
         {
             var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr_type_title_case);
+            // Canvas.ForceUpdateCanvases();
         }
     }
 

@@ -33,6 +33,7 @@ public class CompartmentedRectangle : Node
     private string id; //should move to node class later
     private Vector2 _prevPosition;
     private const int HeaderBackgroundHeight = 34;
+
     private float rectHeight;
     private float rectWidth;
 
@@ -48,6 +49,7 @@ public class CompartmentedRectangle : Node
     private int popupMenuOffsetX = 138;
     public string ClassName { get; set;}
     public bool isEnum { get; set;}
+
 
     public bool IsHighlighted { get; set; }
 
@@ -72,6 +74,7 @@ public class CompartmentedRectangle : Node
             connectionPointsAvailable.Add(true);
         }
 
+
         //CreateHeader();
         //CreateSection();
 
@@ -84,6 +87,7 @@ public class CompartmentedRectangle : Node
 
         //rectangle = (RectTransform)transform;
         //rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
+
 
         // rectHeight = rectangle.rect.height;
         // rectWidth = rectangle.rect.width;
@@ -107,6 +111,7 @@ public class CompartmentedRectangle : Node
         headerBackground.anchorMax = new Vector2(1, 1);
         headerBackground.anchoredPosition = new Vector2(0, -17);
         headerBackground.sizeDelta = new Vector2 (0, HeaderBackgroundHeight);
+
         
         //transform.childCount
         Debug.Log("transform.childCount:"+transform.childCount);
@@ -114,6 +119,7 @@ public class CompartmentedRectangle : Node
         headerIndex = 1;
         //headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
         //sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
+
     }
 
     // Update is called once per frame
@@ -138,6 +144,7 @@ public class CompartmentedRectangle : Node
         {
             header.GetComponent<ClassHeaderTextBox>().gameObject.GetComponent<InputField>().text = ClassName;
             header.GetComponent<ClassHeaderTextBox>().Name = ClassName;
+
         }
         AddHeader(header);
     }

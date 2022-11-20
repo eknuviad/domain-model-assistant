@@ -122,6 +122,7 @@ public class Section : MonoBehaviour
         this.AddTextBox(TB);
     }
 
+
     // Used when creating attributes from popup menu
     public void AddLiteral()
     {
@@ -167,10 +168,12 @@ public class Section : MonoBehaviour
         RectTransform rt_sec0 = (RectTransform) gameObject.GetComponent<Section>().transform;
         rt_sec0.sizeDelta = new Vector2 (rt_sec0.sizeDelta.x, rt_sec0.sizeDelta.y+20);
         rt_sec0.anchoredPosition = rt_sec0.anchoredPosition + new Vector2(0, -10);
+
         if(!compRect.GetComponent<CompartmentedRectangle>().isEnum){
             RectTransform rt_sec1 = (RectTransform) compRect.GetComponent<CompartmentedRectangle>().GetSection(1).GetComponent<Section>().transform;
             rt_sec1.anchoredPosition = rt_sec1.anchoredPosition + new Vector2(0, -20);       
         }
+
         RectTransform compRect_rt = (RectTransform) compRect.GetComponent<CompartmentedRectangle>().transform;
         compRect_rt.sizeDelta = new Vector2 (compRect_rt.sizeDelta.x, compRect_rt.sizeDelta.y+20);
     }
