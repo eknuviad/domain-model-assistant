@@ -37,7 +37,10 @@ public class PopupMenu : MonoBehaviour
         
         // Adding line
         this.transform.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.SetLine);
-        this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.Destroy);
+        //delete class
+        this.transform.GetChild(3).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.Destroy);
+        //to abstraction class
+        this.transform.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.AddListener(compRect.ToAbstract);
     }
 
     public GameObject GetCompartmentedRectangle()

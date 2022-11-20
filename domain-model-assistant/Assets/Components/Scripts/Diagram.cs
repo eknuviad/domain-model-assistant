@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -170,7 +171,10 @@ public class Diagram : MonoBehaviour
     {
         ResetDiagram();
         //Debug.Log(cdmJson);
-        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+        var cdmJsonDirty = new StringBuilder(cdmJson);
+        cdmJsonDirty.Replace("abstract", "isAbstract");
+        var cdmJsonClean = cdmJsonDirty.ToString();
+        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJsonClean);
 
         //store attributes of class in a dictionary
         cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
@@ -219,7 +223,7 @@ public class Diagram : MonoBehaviour
             var cls = (Class)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
-                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
+                _id, cls.name, cls.isAbstract, new Vector2(layoutElement.x, layoutElement.y));
         }
         _namesUpToDate = false;
         _updateNeeded = false;
@@ -295,13 +299,18 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Creates a compartmented rectangle with the given name and position.
     /// </summary>
-    public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position)
+    public GameObject CreateCompartmentedRectangle(string _id, string name, string isAbstract, Vector2 position)
     {
         Debug.Log("CreateCompartmentedRectangle");
         var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().ClassName = name;
+        if(isAbstract != null) 
+        {
+            Debug.Log("class id: " + _id + " is abstract");
+            compRect.GetComponent<CompartmentedRectangle>().isAbstract = true;
+        }
         if (!AddNode(compRect))
         {
             Debug.Log("Fail to add node");

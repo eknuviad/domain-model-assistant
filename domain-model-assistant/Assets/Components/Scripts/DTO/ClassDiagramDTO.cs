@@ -26,6 +26,7 @@ public class Class
     public string eClass;
     public string _id;
     public string name;
+    public string isAbstract;
     public List<Attribute> attributes;
     public List<AssociationEnd> associationEnds;
 }

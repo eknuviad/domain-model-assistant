@@ -17,6 +17,7 @@ public class CompartmentedRectangle : Node
     public List<GameObject> sections = new();
     public GameObject popupMenu;
     public RectTransform rectangle;
+    public GameObject abstractSign;
     
     public Color highlight = new(0.61f, 0.81f, 0.973f); // light blue
     public Color headerColor; // = transform.GetChild(1).gameObject.GetComponent<Image>().color;
@@ -34,8 +35,12 @@ public class CompartmentedRectangle : Node
     private int headerOffsetY = 70;
     private int sectionOffsetY = -30;
     private int popupMenuOffsetX = 138;
+    private int abstractHeaderOffsetY = 63;
+    private int abstractSignOffsetX = -50;
+    private int abstractSignOffsetY = 64;
     public string ClassName { get; set;}
     public bool IsHighlighted { get; set; }
+    public bool isAbstract { get; set; }
 
     public enum State
     {
@@ -61,7 +66,13 @@ public class CompartmentedRectangle : Node
         CreateHeader();
         CreateSection();
 
-        Canvas.ForceUpdateCanvases();
+        if (isAbstract)
+        {
+            Debug.Log("Called abstract from CompRect");
+            ToAbstractForm();
+        }
+
+        // Canvas.ForceUpdateCanvases();
 
         RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
         RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
@@ -94,8 +105,8 @@ public class CompartmentedRectangle : Node
         headerBackground.anchoredPosition = new Vector2(0, -17);
         headerBackground.sizeDelta = new Vector2 (0, HeaderBackgroundHeight);
 
-        headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
-        sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
+        //headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
+        //sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
 
         _diagram.AddAttributesToSection(GetSection(0));//add atrributes to first section
     }
@@ -152,7 +163,7 @@ public class CompartmentedRectangle : Node
         }
         holdTimer = 0;
         hold = false;
-        ToggleHighlight();
+        //ToggleHighlight();
         
         //update class position
         WebCore.UpdateClassPosition(textbox, gameObject);
@@ -180,6 +191,69 @@ public class CompartmentedRectangle : Node
     {
         WebCore.DeleteClass(gameObject);
         popupMenu.GetComponent<PopupMenu>().Destroy();
+    }
+    /// <summary>
+    /// change class to abstraction class when click on to abstract.
+    /// </summary>ßß
+    public void ToAbstract()
+    {
+        WebCore.SwitchAbstract(gameObject);
+        popupMenu.GetComponent<PopupMenu>().Close(); // close the popup menu
+    }
+
+    public void ToAbstractForm()
+    {
+        // var temp = GetHeader().GetComponent<InputField>().text;
+        // string decor = "<<Abstraction>>";
+        // string content = decor + temp;
+        // GetHeader().GetComponent<InputField>().text = content;
+        // Debug.Log("content is :"+GetHeader().GetComponent<InputField>().text);
+
+
+
+
+        // CreateHeader();
+        // var sign = GameObject.Instantiate(abstractSign, transform);
+        // sign.GetComponent<InputField>().text = "<<Abstraction>>";
+        // sign.transform.position = transform.position + new Vector3(abstractSignOffsetX, abstractSignOffsetY, 0);
+        // //Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
+        // GetHeader().GetComponent<AttributeTextBox>().transform.position = transform.position + new Vector3(headerOffsetX, abstractHeaderOffsetY, 0);
+        // //Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
+        // Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+        // var sect = GameObject.Instantiate(section, transform);
+        // sect.GetComponent<RectTransform>().sizeDelta = new Vector2(176, 140);
+        // sect.transform.position = oldPosition+ new Vector3(0, -36, 0) ;//* sections.Count;
+        // //AddSection(sect);
+        // //_diagram.AddLiteralsToSection(GetSection(0));
+        // //header.GetComponent<RectTransform>().sizeDelta = new Vector2(176, 140);
+
+
+        //CreateHeader();
+        Debug.Log("transform position:"+transform.position);
+        var sign = GameObject.Instantiate(abstractSign, transform);
+        //sign.transform.position = transform.position + new Vector3(abstractSignOffsetX, abstractSignOffsetY, 0);
+        RectTransform rt_sign = (RectTransform) sign.transform; 
+        rt_sign.anchoredPosition =  new Vector3(abstractSignOffsetX, abstractSignOffsetY, 0);
+        sign.GetComponent<InputField>().text = "<<Abstraction>>";
+
+        // //var header = GetHeader();//.GetComponent<ClassHeaderTextBox>();
+        // //header.GetComponent<ClassHeaderTextBox>().isEnum = true;
+        // //RectTransform rt_name = (RectTransform) header.transform; 
+        // //rt_name.anchoredPosition =  new Vector3(0, 0, 0);
+        // //Debug.Log("position:"+GetHeader().GetComponent<AttributeTextBox>().transform.position);
+        // Vector3 oldPosition = transform.position + new Vector3(0, 18, 0);
+
+        // Vector2 offset = new Vector2(0,-15) + new Vector2(0,-34) + new Vector2(0, -1);
+        // var sect = GameObject.Instantiate(section, transform);
+        // RectTransform rt_sect = (RectTransform) sect.transform; 
+        // rt_sect.anchoredPosition = offset + new Vector2(0, sectionOffsetY) * sections.Count;
+        // AddSection(sect);
+        // RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;           
+        // var total_height = rtSection0.rect.height;
+
+        //rectangle = (RectTransform)transform;
+        //rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
+        //_diagram.AddLiteralsToSection(GetSection(0));
     }
 
     // ************ END Controller Methods for Compartmented Rectangle ****************//
