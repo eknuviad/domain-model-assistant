@@ -53,6 +53,8 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
+    public Dictionary<string, string> classIdToClassNames = new();
+
     List<string> createdAttributeIds = new();
 
     enum CanvasMode
@@ -218,8 +220,13 @@ public class Diagram : MonoBehaviour
             var clsAndContval = keyValuePair.Value;
             var cls = (Class)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
-            _namesToRects[cls.name] = CreateCompartmentedRectangle(
-                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y));
+            string className;
+            if (!classIdToClassNames.TryGetValue(_id, out className)) 
+            {
+                className = cls.name;
+            }
+            _namesToRects[className] = CreateCompartmentedRectangle(
+                _id, className, new Vector2(layoutElement.x, layoutElement.y));
         }
         _namesUpToDate = false;
         _updateNeeded = false;
