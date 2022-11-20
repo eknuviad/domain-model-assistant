@@ -133,8 +133,8 @@ public class AttributeTextBox : TextBox
             string _id = ID;
             if (IsValid() )//&& "-1".Equals(_id))
             {
-                Debug.Log(Section.GetComponent<Section>()
-                    .GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
+                //Debug.Log(Section.GetComponent<Section>()
+                    //.GetCompartmentedRectangle().GetComponent<CompartmentedRectangle>().ID);
                 WebCore.AddAttribute(gameObject);
                 _diagram.GetComponent<Diagram>().GetInfoBox().GetComponent<InfoBox>().Info("Attribute added");
                 //WebCore.AddOperation(gameObject);

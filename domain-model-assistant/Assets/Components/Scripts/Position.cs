@@ -28,6 +28,14 @@ public class AddClassDTO
     public float y; 
 }
 
+public class AddEnumClassDTO
+{
+    public string enumName;
+
+    public float x;
+
+    public float y; 
+}
 
 public class AddAttributeBody
 {
@@ -46,3 +54,30 @@ public class AddAttributeBody
     }
 
 }
+
+public class AddLiteralBody
+{
+    public int rankIndex;
+
+    public string literalName;
+
+    
+    public AddLiteralBody(int rIndex, string name)
+    {
+        rankIndex = rIndex;
+        literalName = name;
+    }
+
+}
+
+public class RenameEnumBody
+{
+    public string newName;
+ 
+    public RenameEnumBody(string nName)
+    {
+        newName = nName;
+    }
+
+}
+
