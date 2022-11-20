@@ -124,9 +124,11 @@ public class ClassHeaderTextBox : TextBox
     public void UpdateName(){
         Name =GetComponent<InputField>().text;
         if(isEnum){
-            WebCore.RenameEnum(gameObject);
+            Debug.Log("call WebCore.RenameEnum()");
+            //WebCore.RenameEnum(gameObject);
         }else{
-            WebCore.RenameClass(gameObject);
+            Debug.Log("call WebCore.RenameClass()");
+            //WebCore.RenameClass(gameObject);
         }
 
     }
