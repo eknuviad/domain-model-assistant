@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 ﻿using System;
 using System.Text;
+=======
+﻿using System.ComponentModel;
+using System.Reflection.Emit;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading;
+using System;
+>>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -52,6 +61,10 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
 
+
+    readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
+
+
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
     List<string> createdAttributeIds = new();
@@ -60,6 +73,7 @@ public class Diagram : MonoBehaviour
     {
         Default,
         AddingClass,
+        AddingEnumClass,
         AddingAttribute,
         // ...
     }
@@ -130,6 +144,13 @@ public class Diagram : MonoBehaviour
             WebCore.AddClass("Class" + (_nodes.Count + 1), Input.mousePosition);
             ActivateDefaultMode();
         }
+        if ((_currentMode == CanvasMode.AddingEnumClass && InputExtender.MouseExtender.IsSingleClick()))
+        {
+            _updateNeeded = true;
+            WebCore.AddEnumClass("Class" + (_nodes.Count + 1), Input.mousePosition);
+            ActivateDefaultMode();
+        }
+
 
         Zoom();
 
@@ -177,22 +198,36 @@ public class Diagram : MonoBehaviour
         var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJsonClean);
 
         //store attributes of class in a dictionary
-        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        cdmDto.classDiagram.classes.ForEach(cls => 
+        {classIdToAttributes[cls._id] = cls.attributes;
+        //Debug.Log("class type: " + cls.GetType());
+    });
+        var idsToEnumsAndLayouts = new Dictionary<string, List<object>>();
         //store attribute types. Map type id to eclass tye
         cdmDto.classDiagram.types.ForEach(type =>
         {
             //cache eClass attr with shortened substring
             //Eg. http://cs.mcgill.ca/sel/cdm/1.0#//CDString -> string
             string res = type.eClass[(type.eClass.LastIndexOf('/') + 1)..].Replace("CD", "").ToLower();
-            if (!attrTypeIdsToTypes.ContainsKey(type._id))
+            
+            if(res=="enum")
+            {
+                idsToEnumsAndLayouts[type._id] = new List<object> { type, null };
+                classIdToLiterals[type._id] = type.literals;
+                attrTypeIdsToTypes[type._id] = type.name.ToLower();
+                
+                
+            }
+            else if(!attrTypeIdsToTypes.ContainsKey(type._id))
             {
                 attrTypeIdsToTypes[type._id] = res;
             }
         });
+
         cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
         // maps each _id to its (class object, position) pair 
         var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
-
+        
         cdmDto.classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
         Debug.Log("cdmJson: " + cdmJson);
         // Debug.Log("classDiagram: " + classDiagram);
@@ -213,6 +248,10 @@ public class Diagram : MonoBehaviour
             {
                 idsToClassesAndLayouts[contVal.key][1] = contVal;
             }
+            if (idsToEnumsAndLayouts.ContainsKey(contVal.key))
+            {
+                idsToEnumsAndLayouts[contVal.key][1] = contVal;
+            }
         });
         _namesToRects.Clear();
 
@@ -220,10 +259,24 @@ public class Diagram : MonoBehaviour
         {
             var _id = keyValuePair.Key;
             var clsAndContval = keyValuePair.Value;
+            //Debug.Log("class type: " + type.GetType());
             var cls = (Class)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
+<<<<<<< HEAD
                 _id, cls.name, cls.isAbstract, new Vector2(layoutElement.x, layoutElement.y));
+=======
+                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 2);
+        }
+        foreach (var keyValuePair in idsToEnumsAndLayouts)
+        {
+            var _id = keyValuePair.Key;
+            var clsAndContval = keyValuePair.Value;
+            var cls = (CDType)clsAndContval[0];
+            var layoutElement = ((ElementMap)clsAndContval[1]).value;
+            _namesToRects[cls.name] = CreateCompartmentedRectangle(
+                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 1);
+>>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
         }
         _namesUpToDate = false;
         _updateNeeded = false;
@@ -233,11 +286,23 @@ public class Diagram : MonoBehaviour
     {
         var compId = section.GetComponent<Section>().GetCompartmentedRectangle()
             .GetComponent<CompartmentedRectangle>().ID;
+        classIdToAttributes[compId].Reverse();
         foreach (var attr in classIdToAttributes[compId])
         {
             var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
             section.GetComponent<Section>().AddAttribute(attr._id, attr.name, attr_type_title_case);
             // Canvas.ForceUpdateCanvases();
+        }
+    }
+
+     public void AddLiteralsToSection(GameObject section)
+    {
+        var compId = section.GetComponent<Section>().GetCompartmentedRectangle()
+            .GetComponent<CompartmentedRectangle>().ID;
+        foreach (var lit in classIdToLiterals[compId])
+        {
+            //var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
+            section.GetComponent<Section>().AddLiteral(lit._id, lit.name);
         }
     }
 
@@ -299,18 +364,28 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Creates a compartmented rectangle with the given name and position.
     /// </summary>
+<<<<<<< HEAD
     public GameObject CreateCompartmentedRectangle(string _id, string name, string isAbstract, Vector2 position)
+=======
+    public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position, int sectionCount)
+>>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
     {
         Debug.Log("CreateCompartmentedRectangle");
         var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().ClassName = name;
+<<<<<<< HEAD
         if(isAbstract != null) 
         {
             Debug.Log("class id: " + _id + " is abstract");
             compRect.GetComponent<CompartmentedRectangle>().isAbstract = true;
         }
+=======
+        compRect.GetComponent<CompartmentedRectangle>().setSectionCount(sectionCount);
+        
+        
+>>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
         if (!AddNode(compRect))
         {
             Debug.Log("Fail to add node");
@@ -399,6 +474,16 @@ public class Diagram : MonoBehaviour
         _currentMode = CanvasMode.AddingClass;
     }
 
+    public void EnterAddEnumClassMode()
+    {
+        if (_isWebGl)
+        {
+            SetCursorToAddMode();
+        }
+        Debug.Log("Entering Add enum class mode");
+        _currentMode = CanvasMode.AddingEnumClass;
+    }
+
     /// <summary>
     /// Called by AddClassAction when the AddClass button is pressed.
     /// </summary>
@@ -411,6 +496,21 @@ public class Diagram : MonoBehaviour
         else
         {
             EnterAddClassMode();
+        }
+    }
+
+    /// <summary>
+    /// Called by AddClassAction when the AddClass button is pressed.
+    /// </summary>
+    public void AddEnumClassButtonPressed()
+    {
+        if (_currentMode == CanvasMode.AddingEnumClass)
+        {
+            ActivateDefaultMode();
+        }
+        else
+        {
+            EnterAddEnumClassMode();
         }
     }
 
