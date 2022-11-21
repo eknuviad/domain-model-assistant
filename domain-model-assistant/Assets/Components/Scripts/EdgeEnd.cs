@@ -78,6 +78,8 @@ public class EdgeEnd : MonoBehaviour
         Vector2 titlePos;
         Vector2 numberPos;
 
+        transform.position = Position;
+
         if (isUpper)
         {
             if (isLeft)

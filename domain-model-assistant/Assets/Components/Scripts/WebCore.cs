@@ -154,6 +154,11 @@ public class WebCore
         instance.SetRoleName_(textbox);
     }
 
+    public static void SetReferenceType(GameObject edgeEnd, string type)
+    {
+        instance.SetReferenceType_(edgeEnd, type);
+    }
+
     public static void UpdateRelationshipType()
     {
         instance.UpdateRelationshipType_();
@@ -453,6 +458,18 @@ public class WebCore
         // No need to remove or destroy the node here since entire class diagram is recreated
     }
 
+    private void SetReferenceType_(GameObject edgeEnd, string type)
+    {
+        string id = edgeEnd.GetComponent<EdgeEnd>().ID;
+        
+        Debug.Log($"WebCore.SetReferenceType({id}, called");
+
+        WebRequest.PutRequest(SetReferenceTypeEndpoint(id), 
+            new { referenceType = type}, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+    }
+
     // additional helper methods
 
     /// <summary>
@@ -537,6 +554,11 @@ public class WebCore
     public string SetRolenameEndpoint(string associationEndId)
     {
         return $"{CdmEndpoint()}/association/end/{associationEndId}/rolename";
+    }
+
+    public string SetReferenceTypeEndpoint(string associationEndId)
+    {
+        return $"{CdmEndpoint()}/association/end/{associationEndId}/referencetype";
     }
 
     public string GetFeedbackEndpoint()
