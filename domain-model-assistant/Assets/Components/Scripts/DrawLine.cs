@@ -15,6 +15,7 @@ public class DrawLine: MonoBehaviour
     public GameObject edgeEnd;
     private GameObject end1;
     private GameObject end2;
+    //private GameObject diagram;
     private Vector3 mousePos;
 
     private GameObject compRec1;

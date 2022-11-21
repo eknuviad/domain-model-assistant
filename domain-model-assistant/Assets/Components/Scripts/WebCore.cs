@@ -137,6 +137,13 @@ public class WebCore
         instance.AddAssociation_(node1, node2);
     }
 
+    public static void DeleteAssociation(GameObject edge)
+    {
+        instance.DeleteAssociation_(edge);
+    }
+
+    
+
     public static void SetMultiplicity(GameObject textbox)
     {
         instance.SetMultiplicity_(textbox);
@@ -268,6 +275,16 @@ public class WebCore
             new { fromClassId = id1, toClassId = id2, bidirectional = true }, Student.Token);
         _diagram.reGetRequest = true;
         _diagram.RefreshCdm();
+    }
+
+    private void DeleteAssociation_(GameObject edge)
+    {
+        Debug.Log("WebCore.DeleteAssociation() called");
+        string _id = edge.GetComponent<Edge>().ID;
+        WebRequest.DeleteRequest(DeleteAssociationEndpoint(_id), Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
     }
 
     private void SetMultiplicity_(GameObject textBox)
@@ -503,6 +520,15 @@ public class WebCore
         return $"{CdmEndpoint()}/association";
     }
 
+       /// <summary>
+    /// Returns the delete assocition endpoint URL for the given attribute _id.
+    /// </summary>
+    public string DeleteAssociationEndpoint(string associationId)
+    {
+        return $"{CdmEndpoint()}/association/{associationId}";
+    }
+
+
     public string SetMultiplicityEndpoint(string associationEndId)
     {
         return $"{CdmEndpoint()}/association/end/{associationEndId}/multiplicity";
@@ -549,5 +575,7 @@ public class WebCore
     {
         return $"{CdmEndpoint()}/enum/{enumId}/literal";
     }
+
+    
 
 }

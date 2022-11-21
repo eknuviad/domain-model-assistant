@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ public class Edge : MonoBehaviour
     bool hold = false;
 
     public GameObject diagram;
-    private GameObject _diagram;
+    private Diagram _diagram;
     public Vector3 mousePos;
     public Vector3 linePosition1;
     public Vector3 linePosition2;
@@ -33,7 +34,8 @@ public class Edge : MonoBehaviour
     void Awake()
     {
         //_diagram = diagram.GetComponent<Diagram>();
-        //Debug.Log(_diagram);
+        _diagram = GameObject.Find("Canvas").GetComponent<Diagram>();
+        Debug.Log(_diagram);
     }
 
     void Start()
@@ -115,6 +117,12 @@ public class Edge : MonoBehaviour
             edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x;
             edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y;
             edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y;
+            //Debug.Log("association id is"+ID);
+            if(string.Equals(ID,"-1")){
+                _diagram.SetAssociationID(gameObject);
+                Debug.Log("set association id to "+ID);
+
+            }
         }
     }
 
@@ -198,6 +206,7 @@ public class Edge : MonoBehaviour
             // CreateEdgeEndLeftObject(nodes[1]);
             // CreateEdgeEndRightObject(nodes[0]);
         }
+        ID = "-1";
     }
 
     public Vector3 GetPosition1()
@@ -387,9 +396,11 @@ public class Edge : MonoBehaviour
 
     public void DeleteEdge()
     {
+        WebCore.DeleteAssociation(gameObject);
         Destroy(gameObject);
         Destroy(_edgeEnds[0].gameObject);
         Destroy(_edgeEnds[1].gameObject);
+        
         //close the popup menu after clicking Delete
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
         Debug.Log("Edge deleted");
@@ -435,7 +446,7 @@ public class Edge : MonoBehaviour
 
     public GameObject GetDiagram()
     {
-        return _diagram;
+        return diagram;
     }
 
     public bool HasDiagram()
@@ -493,8 +504,8 @@ public class Edge : MonoBehaviour
     public bool SetDiagram(GameObject aDiagram)
     {
         bool wasSet = false;
-        GameObject existingDiagram = _diagram;
-        _diagram = aDiagram;
+        GameObject existingDiagram = diagram;
+        diagram = aDiagram;
         if (existingDiagram != null && !existingDiagram.Equals(aDiagram))
         {
             existingDiagram.GetComponent<Diagram>().RemoveEdge(gameObject);

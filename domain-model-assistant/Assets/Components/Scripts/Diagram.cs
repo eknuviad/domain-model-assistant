@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿
+using System.ComponentModel;
 using System.Reflection.Emit;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -56,6 +57,7 @@ public class Diagram : MonoBehaviour
 
     public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEndsDTO = new();
 
+    public Dictionary< string, List<string>> associationIdToEndsList = new();
 
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
 
@@ -196,6 +198,7 @@ public class Diagram : MonoBehaviour
         if (cdmDto.classDiagram.associations != null)
         {
             //TODO
+            cdmDto.classDiagram.associations.ForEach(association => associationIdToEndsList[association._id] = association.ends);    
         }
 
         _updateNeeded = false;
@@ -218,6 +221,11 @@ public class Diagram : MonoBehaviour
 
         ClearClasses();
         CreateClassesFromDTO(cdmDto);
+        if (cdmDto.classDiagram.associations != null)
+        {
+            //TODO
+            cdmDto.classDiagram.associations.ForEach(association => associationIdToEndsList[association._id] = association.ends);    
+        }
 
         _updateNeeded = false;
     }
@@ -325,6 +333,17 @@ public class Diagram : MonoBehaviour
         {
             //var attr_type_title_case = FirstCharacterUpper(attrTypeIdsToTypes[attr.type]);
             section.GetComponent<Section>().AddLiteral(lit._id, lit.name);
+        }
+    }
+
+    public void SetAssociationID(GameObject edge){
+        var end1 = edge.GetComponent<Edge>().GetEdgeEnd(0).GetComponent<EdgeEnd>().ID;
+        var end2 = edge.GetComponent<Edge>().GetEdgeEnd(1).GetComponent<EdgeEnd>().ID;
+        foreach (var keyValuePair in associationIdToEndsList)
+        {
+            if(keyValuePair.Value.Contains(end1)&&keyValuePair.Value.Contains(end2)){
+                edge.GetComponent<Edge>().ID = keyValuePair.Key;
+            }
         }
     }
 
