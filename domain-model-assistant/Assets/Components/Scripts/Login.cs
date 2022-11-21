@@ -10,7 +10,7 @@ public class Login : MonoBehaviour
     public void LoginUser()
     {
         // find user in database
-        User user = new User(emailInputField.text, passwordInputField.text);
+        User user = User.Users[emailInputField.text];
         Debug.Log(user.Login());
         Debug.Log(emailInputField.text);
         Debug.Log(passwordInputField.text);

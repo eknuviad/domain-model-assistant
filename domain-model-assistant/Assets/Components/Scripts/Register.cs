@@ -18,6 +18,7 @@ public class Register : MonoBehaviour
         if (passwordInputField.text == confirmedPasswordInputField.text)
         {
             User user = new User(emailInputField.text, passwordInputField.text);
+            User.Users[emailInputField.text] = user;
             errorlog.text = "";
             SceneManager.LoadScene(0);
         }
