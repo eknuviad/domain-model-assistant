@@ -35,6 +35,8 @@ public class CDType
 {
     public string eClass;
     public string _id;
+    public string name;
+    public List<Literal> literals;
 }
 
 [System.Serializable]
@@ -68,6 +70,13 @@ public class Association
     public string _id;
     public string name;
     public List<string> ends;
+}
+
+[System.Serializable]
+public class Literal
+{
+    public string _id;
+    public string name;
 }
 
 [System.Serializable]

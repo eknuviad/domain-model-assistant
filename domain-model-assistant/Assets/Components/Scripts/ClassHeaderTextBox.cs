@@ -4,10 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
+using UnityEngine.UI;
+using System;
+
+
 public class ClassHeaderTextBox : TextBox
 {
     private GameObject _headerOwner;
     private string _text;
+
+    public GameObject compRect;
+    public bool isEnum { get; set; }
+    public string Name { get; set; }
+
 
     void Awake()
     {
@@ -93,6 +102,25 @@ public class ClassHeaderTextBox : TextBox
         Destroy(gameObject);
     }
 
+
+
+    public bool SetCompartmentedRectangle(GameObject aCompRect)
+    {
+        if (aCompRect == null)
+        {
+            return false;
+        }
+        compRect = aCompRect;
+        return true;
+    }
+
+    public GameObject GetCompartmentedRectangle()
+    {
+        return compRect;
+    }
+
+
+
     public GameObject GetHeaderOwner()
     {
         return _headerOwner;
@@ -122,4 +150,18 @@ public class ClassHeaderTextBox : TextBox
         wasSet = true;
         return wasSet;
     }
+
+
+    public void UpdateName(){
+        Name =GetComponent<InputField>().text;
+        if(isEnum){
+            Debug.Log("call WebCore.RenameEnum()");
+            //WebCore.RenameEnum(gameObject);
+        }else{
+            Debug.Log("call WebCore.RenameClass()");
+            //WebCore.RenameClass(gameObject);
+        }
+
+    }
+
 }
