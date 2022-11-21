@@ -21,7 +21,7 @@ public class Reset : MonoBehaviour
 
   public void ResetAction()
   {
-    _diagram.ResetDiagram();
+    _diagram.ClearClasses(); //TODO implement reset 
   }
 
 }

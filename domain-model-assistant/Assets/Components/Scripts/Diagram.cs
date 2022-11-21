@@ -54,13 +54,15 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
+    public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEndsDTO = new();
 
 
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
 
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
+
+    public Dictionary<string, string> classIdToClassNames = new();
 
     List<string> createdAttributeIds = new();
 
@@ -180,20 +182,48 @@ public class Diagram : MonoBehaviour
         LoadJson(jsonFile.text);
     }
 
+    public void InitializeDiagram(string cdmJson)
+    {
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+
+        //store attributes of class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        //store association ends of a class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEndsDTO[cls._id] = cls.associationEnds);        
+
+        CreateClassesFromDTO(cdmDto);
+
+        if (cdmDto.classDiagram.associations != null)
+        {
+            //TODO
+        }
+
+        _updateNeeded = false;
+
+        Debug.Log("Diagram initialized");
+    }
+
     /// <summary>
     /// Loads and displays the class diagram encoded by the input JSON string.
     /// </summary>
     public void LoadJson(string cdmJson)
     {
-        ResetDiagram();
-        //Debug.Log(cdmJson);
-        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+        Debug.Log("cdmJson: " + cdmJson);
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
 
         //store attributes of class in a dictionary
-        cdmDto.classDiagram.classes.ForEach(cls => 
-        {classIdToAttributes[cls._id] = cls.attributes;
-        //Debug.Log("class type: " + cls.GetType());
-    });
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        //store association ends of a class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEndsDTO[cls._id] = cls.associationEnds);
+
+        ClearClasses();
+        CreateClassesFromDTO(cdmDto);
+
+        _updateNeeded = false;
+    }
+
+    private void CreateClassesFromDTO(ClassDiagramDTO cdmDto)
+    {
         var idsToEnumsAndLayouts = new Dictionary<string, List<object>>();
         //store attribute types. Map type id to eclass tye
         cdmDto.classDiagram.types.ForEach(type =>
@@ -216,12 +246,10 @@ public class Diagram : MonoBehaviour
             }
         });
 
-        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
         // maps each _id to its (class object, position) pair 
-        var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
-        
+        var idsToClassesAndLayouts = new Dictionary<string, List<object>>();   
+
         cdmDto.classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
-        Debug.Log("cdmJson: " + cdmJson);
         // Debug.Log("classDiagram: " + classDiagram);
         // Debug.Log("classDiagram.layout: " + classDiagram.layout);
         // Debug.Log("JsonUtility.ToJson(classDiagram.layout): " + JsonUtility.ToJson(classDiagram.layout));
@@ -254,8 +282,14 @@ public class Diagram : MonoBehaviour
             //Debug.Log("class type: " + type.GetType());
             var cls = (Class)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
+
+            string className;
+            if (!classIdToClassNames.TryGetValue(_id, out className)) 
+            {
+                className = cls.name;
+            }
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
-                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 2);
+                _id, className, new Vector2(layoutElement.x, layoutElement.y), 2);
         }
         foreach (var keyValuePair in idsToEnumsAndLayouts)
         {
@@ -266,8 +300,8 @@ public class Diagram : MonoBehaviour
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
                 _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 1);
         }
+
         _namesUpToDate = false;
-        _updateNeeded = false;
     }
 
     public void AddAttributesToSection(GameObject section)
@@ -310,9 +344,9 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
     /// </summary>
-    public void ResetDiagram()
+    public void ClearClasses()
     {
-        Debug.Log("Reset Diagram called");
+        Debug.Log("Clear Classes called");
         foreach (var node in _nodes)
         {
             Debug.Log("Reset Diagram: Node" + node.GetComponent<CompartmentedRectangle>().ID);
@@ -418,6 +452,13 @@ public class Diagram : MonoBehaviour
         if (student != null)
         {
             var result = WebRequest.GetRequest(WebCore.CdmEndpoint(), student.Token);
+            if (string.Equals(_currCdmStr, ""))
+            {
+                // initialize diagram
+                InitializeDiagram(result);
+                _currCdmStr = result;
+                return true;                
+            }
             if (result != _currCdmStr)
             {
                 LoadJson(result);
@@ -612,7 +653,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public bool AddNode(GameObject aNode)
     {
-        Debug.Log("Add Node called");
+        // Debug.Log("Add Node called");
         bool wasAdded = false;
         if (_nodes.Contains(aNode))
         {
@@ -622,7 +663,7 @@ public class Diagram : MonoBehaviour
         GameObject existingDiagram = node.GetDiagram();
         if (existingDiagram == null)
         {
-            Debug.Log("Diagram null");
+            // Debug.Log("Diagram null");
             node.SetDiagram(gameObject);
         }
         else if (!gameObject.Equals(existingDiagram))
@@ -633,7 +674,7 @@ public class Diagram : MonoBehaviour
         else
         {
             _nodes.Add(aNode);
-            Debug.Log("Node added to list");
+            // Debug.Log("Node added to list");
             aNode.GetComponent<CompartmentedRectangle>().SetDiagram(gameObject);
         }
         wasAdded = true;

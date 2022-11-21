@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Position
+public class PositionDTO
 {
     public float xPosition;
     public float yPosition;
 
-    public Position(float positionX, float positionY)
+    public PositionDTO(float positionX, float positionY)
     {
         this.xPosition = positionX;
         this.yPosition = positionY;
@@ -37,7 +37,7 @@ public class AddEnumClassDTO
     public float y; 
 }
 
-public class AddAttributeBody
+public class AddAttributeBodyDTO
 {
     public int rankIndex;
 
@@ -45,14 +45,23 @@ public class AddAttributeBody
 
     public string attributeName;
 
-    
-    public AddAttributeBody(int rIndex, int aTypeId, string name)
+    public AddAttributeBodyDTO(int rIndex, int aTypeId, string name)
     {
         rankIndex = rIndex;
         typeId = aTypeId;
         attributeName = name;
     }
 
+}
+
+public class RenameClassDTO
+{
+    public string newName;
+    
+    public RenameClassDTO(string name)
+    {
+        newName = name;
+    }
 }
 
 public class AddLiteralBody
@@ -81,3 +90,14 @@ public class RenameEnumBody
 
 }
 
+public class SetMultiplicityDTO
+{
+    public int lowerBound;
+    public int upperBound;
+
+    public SetMultiplicityDTO(int lB, int uB)
+    {
+        lowerBound = lB;
+        upperBound = uB;
+    }
+}
