@@ -66,6 +66,8 @@ public class Diagram : MonoBehaviour
 
     List<string> createdAttributeIds = new();
 
+    // public Dictionary<List<string>, string>
+
     enum CanvasMode
     {
         Default,
@@ -561,6 +563,29 @@ public class Diagram : MonoBehaviour
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
         // Debug.Log("student.Login() again: " + student.Login());
         // Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        var cdmCreated = WebCore.CreateCdm(cdmName);
+        Debug.Log("WebCore.CreateCdm(): " + cdmCreated);
+        if (cdmCreated)
+        {
+            infoBox.Info("Class diagram created! You can now add class diagram elements with the diagram editor.");
+        }
+        else
+        {
+            infoBox.Warn("Class diagram creation failed! See console for exact error.");
+        }
+    }
+
+    public void LogIn(Student student)
+    {
+        Debug.Log("Debug button clicked!");
+
+        Debug.Log("student.Login(): " + student.Login());
+        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        if (!student.LoggedIn)
+        {
+            infoBox.Warn("Login failed! See console for exact error. (Hint: Double check that WebCORE is running.)");
+            return;
+        }
         var cdmCreated = WebCore.CreateCdm(cdmName);
         Debug.Log("WebCore.CreateCdm(): " + cdmCreated);
         if (cdmCreated)

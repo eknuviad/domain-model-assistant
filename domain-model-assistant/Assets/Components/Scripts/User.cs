@@ -156,5 +156,11 @@ public class Student : User
         WebCore.Student = student;
         return student;
     }
+    public static new Student CreateNewStudent(string username, string password)
+    {
+        Student student = new(username, password);
+        WebCore.Student = student;
+        return student;
+    }
 
 }
