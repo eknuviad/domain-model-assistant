@@ -51,28 +51,32 @@ public class Edge : MonoBehaviour
             if (edgeEnd1.GetNode() == null)
             {
                 edgeEnd1.RetrieveNode();
-                if (edgeEnd1 == null)
-                {
-                    DeleteEdge();
-                    return;
-                }
+                // if (edgeEnd1 == null)
+                // {
+                //     DeleteEdge();
+                //     return;
+                // }
             }
 
             if (edgeEnd2.GetNode() == null)
             {
                 edgeEnd2.RetrieveNode();
-                if (edgeEnd2 == null)
-                {
-                    DeleteEdge();
-                    return;
-                }
+                // if (edgeEnd2 == null)
+                // {
+                //     DeleteEdge();
+                //     return;
+                // }
             }
 
             if (edgeEnd1.GetNode() == null || edgeEnd2.GetNode() == null)
             {
-                DeleteEdge();
+                // no call to WebCore as the backend edge is already deleted for referential integrity
+                Destroy(gameObject);
+                Destroy(_edgeEnds[0].gameObject);
+                Destroy(_edgeEnds[1].gameObject);
                 return;
             }
+
             var node1 = edgeEnd1.GetNode().GetComponent<Node>();
             var node2 = edgeEnd2.GetNode().GetComponent<Node>();
             var node1_locs = node1.GetConnectionPointsLocations();

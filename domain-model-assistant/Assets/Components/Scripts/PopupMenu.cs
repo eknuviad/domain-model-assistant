@@ -12,6 +12,7 @@ public class PopupMenu : MonoBehaviour
     void Start()
     {
         this.gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
+        gameObject.transform.SetAsFirstSibling(); // makes the popupMenu render first
     }
 
     // Update is called once per frame
