@@ -110,8 +110,6 @@ public abstract class Node: MonoBehaviour
 
     public void SetConnectionPointAvailable(int index, bool isAvailable)
     {
-        // Debug.Log("index: " + index);
-        // Debug.Log("Array size: " + connectionPointAvailable.Count);
         connectionPointsAvailable[index] = isAvailable;
     }
 

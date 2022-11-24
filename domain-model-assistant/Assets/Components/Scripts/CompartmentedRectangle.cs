@@ -208,7 +208,7 @@ public class CompartmentedRectangle : Node
         if (popupMenuEnum.GetComponent<PopupMenuEnum>().GetCompartmentedRectangle() == null)
         {
             popupMenuEnum = Instantiate(popupMenuEnum);
-            popupMenuEnum.transform.position = transform.position + new Vector3(popupMenuOffsetX, 0, 0);
+            popupMenuEnum.transform.position = transform.position + new Vector3(popupMenuOffsetX, 0, 10);
             popupMenuEnum.GetComponent<PopupMenuEnum>().SetCompartmentedRectangle(this);
             popupMenuEnum.GetComponent<PopupMenuEnum>().Open();
         }
@@ -277,12 +277,13 @@ public class CompartmentedRectangle : Node
         var rectHeight = rectangle.rect.height;
 
         List<Vector2> locations = new();
-        var origin = GetPosition() + new Vector2(-rectWidth/2, -rectHeight/2);
-        var increment = rectWidth / (NumOfConnectionPoints / 4);
+        var origin = GetPosition() + new Vector2(-rectWidth/2f, -rectHeight/2f);
+        var hor_increment = (float)rectWidth / (NumOfConnectionPoints / 4);
+        var var_increment = (float)rectHeight / (NumOfConnectionPoints / 4);
         // int count = 0;
-        for (float x = 0; x <= rectWidth; x += increment)
+        for (float x = 0; x <= rectWidth; x += hor_increment)
         {
-            for (float y = rectHeight; y >= 0; y -= increment)
+            for (float y = rectHeight; y >= 0; y -= var_increment)
             {
                 if (y > 0 && y < rectHeight && x > 0 && x < rectWidth)
                 {
