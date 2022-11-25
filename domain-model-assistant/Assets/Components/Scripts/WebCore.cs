@@ -112,6 +112,14 @@ public class WebCore
     }
 
     /// <summary>
+    /// switch to Abstraction class the given class.
+    /// </summary>
+    public static void SwitchAbstract(GameObject node)
+    {
+        instance.SwitchAbstract_(node);
+    }
+
+    /// <summary>
     /// Adds an Attribute to the given textbox.
     /// </summary>
     public static void AddAttribute(GameObject textbox)
@@ -223,6 +231,18 @@ public class WebCore
         Debug.Log("WebCore.DeleteClass() called");
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
         WebRequest.DeleteRequest(DeleteClassEndpoint(_id), Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+
+    private void SwitchAbstract_(GameObject node)
+    {
+        Debug.Log("WebCore.switchAbstract() called");
+        string _id = node.GetComponent<CompartmentedRectangle>().ID;
+        //string aspectname = "<<Abstract>>";
+        //string jsonData = JsonUtility.ToJson(aspectname);
+        WebRequest.PutRequest(SwitchClassEndpoint(_id),"", Student.Token);
         _diagram.reGetRequest = true;
         _diagram.RefreshCdm();
         // No need to remove or destroy the node here since entire class diagram is recreated
@@ -506,6 +526,13 @@ public class WebCore
     public string DeleteClassEndpoint(string classId)
     {
         return $"{CdmEndpoint()}/class/{classId}";
+    }
+    /// <summary>
+    /// Returns the change to abstraction class endpoint URL for the given class _id.
+    /// </summary>
+    public string SwitchClassEndpoint(string classId)
+    {
+        return $"{CdmEndpoint()}/class/{classId}/abstract";
     }
 
     /// <summary>
