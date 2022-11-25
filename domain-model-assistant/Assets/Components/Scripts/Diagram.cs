@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Text;
 using System.ComponentModel;
 using System.Reflection.Emit;
 using System.Linq.Expressions;
@@ -57,7 +59,7 @@ public class Diagram : MonoBehaviour
 
     public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEndsDTO = new();
 
-    public Dictionary<string, List<string>> associationIdToEndsList = new();
+    public Dictionary< string, List<string>> associationIdToEndsList = new();
 
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
 
@@ -214,7 +216,10 @@ public class Diagram : MonoBehaviour
     public void LoadJson(string cdmJson)
     {
         Debug.Log("cdmJson: " + cdmJson);
-        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+        var cdmJsonDirty = new StringBuilder(cdmJson);
+        cdmJsonDirty.Replace("abstract", "isAbstract");
+        var cdmJsonClean = cdmJsonDirty.ToString();
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJsonClean);
 
         //store attributes of class in a dictionary
         cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
@@ -298,8 +303,8 @@ public class Diagram : MonoBehaviour
             {
                 className = cls.name;
             }
-            _namesToRects[className] = CreateCompartmentedRectangle(
-                _id, className, new Vector2(layoutElement.x, layoutElement.y), 2);
+            _namesToRects[cls.name] = CreateCompartmentedRectangle(
+                _id, cls.name, cls.isAbstract, new Vector2(layoutElement.x, layoutElement.y), 2);
         }
         foreach (var keyValuePair in idsToEnumsAndLayouts)
         {
@@ -307,14 +312,8 @@ public class Diagram : MonoBehaviour
             var clsAndContval = keyValuePair.Value;
             var cls = (CDType)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
-
-            string className;
-            if (!classIdToClassNames.TryGetValue(_id, out className)) 
-            {
-                className = cls.name;
-            }
-            _namesToRects[className] = CreateCompartmentedRectangle(
-                _id, className, new Vector2(layoutElement.x, layoutElement.y), 1);
+            _namesToRects[cls.name] = CreateCompartmentedRectangle(
+                _id, cls.name, "None", new Vector2(layoutElement.x, layoutElement.y), 1);
         }
 
         _namesUpToDate = false;
@@ -413,15 +412,21 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Creates a compartmented rectangle with the given name and position.
     /// </summary>
-    public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position, int sectionCount)
+    public GameObject CreateCompartmentedRectangle(string _id, string name, string isAbstract, Vector2 position, int sectionCount)
     {
         Debug.Log("CreateCompartmentedRectangle");
         var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().ClassName = name;
+
+        if(isAbstract != null && isAbstract.CompareTo("None")!=0) 
+        {
+            Debug.Log("class id: " + _id + " is abstract");
+            compRect.GetComponent<CompartmentedRectangle>().isAbstract = true;
+        }
+
         compRect.GetComponent<CompartmentedRectangle>().setSectionCount(sectionCount);
-        
         
         if (!AddNode(compRect))
         {

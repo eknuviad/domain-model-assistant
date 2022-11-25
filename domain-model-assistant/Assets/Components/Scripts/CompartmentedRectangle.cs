@@ -20,6 +20,7 @@ public class CompartmentedRectangle : Node
     public GameObject popupMenu;
     public GameObject popupMenuEnum;
     public RectTransform rectangle;
+    public GameObject abstractSign;
     
     public Color highlight = new(0.61f, 0.81f, 0.973f); // light blue
     public Color headerColor; // = transform.GetChild(1).gameObject.GetComponent<Image>().color;
@@ -47,11 +48,15 @@ public class CompartmentedRectangle : Node
 
     private int sectionOffsetY = -30;
     private int popupMenuOffsetX = 138;
+    private int abstractHeaderOffsetY = 63;
+    private int abstractSignOffsetX = -50;
+    private int abstractSignOffsetY = 64;
     public string ClassName { get; set;}
     public bool isEnum { get; set;}
 
 
     public bool IsHighlighted { get; set; }
+    public bool isAbstract { get; set; }
 
     public enum State
     {
@@ -78,7 +83,14 @@ public class CompartmentedRectangle : Node
         //CreateHeader();
         //CreateSection();
 
-        Canvas.ForceUpdateCanvases();
+        if (isAbstract && isAbstract)
+        {
+            
+            Debug.Log("Called abstract from CompRect");
+            ToAbstractForm();
+        }
+
+        // Canvas.ForceUpdateCanvases();
 
         //RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;
         //RectTransform rtSection1 = (RectTransform)sections[1].GetComponent<Section>().transform;
@@ -232,6 +244,49 @@ public class CompartmentedRectangle : Node
         }
         
         
+    }
+    /// <summary>
+    /// change class to abstraction class when click on to abstract.
+    /// </summary>ßß
+    public void ToAbstract()
+    {
+        WebCore.SwitchAbstract(gameObject);
+        popupMenu.GetComponent<PopupMenu>().Close(); // close the popup menu
+    }
+
+    public void ToAbstractForm()
+    {
+        //CreateHeader();
+        Debug.Log("transform position:"+transform.position);
+        var sign = GameObject.Instantiate(enumSign, transform);
+        RectTransform rt_sign = (RectTransform) sign.transform; 
+        rt_sign.anchoredPosition =  new Vector3(0, 0, 0);
+        sign.GetComponent<InputField>().text = "<<Abstract>>";
+ 
+        var headerBackground = (RectTransform) gameObject.transform.GetChild(2);
+        headerBackground.anchorMin = new Vector2(0, 1);
+        headerBackground.anchorMax = new Vector2(1, 1);
+        headerBackground.pivot = new Vector2(0.5f, 0.5f);
+        headerBackground.sizeDelta = new Vector2(0, 45);
+        headerBackground.anchoredPosition = new Vector3(0, -8, 0);
+
+        //var header = GetHeader();//.GetComponent<ClassHeaderTextBox>();
+        //RectTransform rt_name = (RectTransform) header.transform; 
+        
+        //rt_name.anchoredPosition =  new Vector3(0, -24, 0);
+
+        // Vector2 offset = new Vector2(0,-15) + new Vector2(0,-34) + new Vector2(0, -1);
+        // var sect = GameObject.Instantiate(section, transform);
+        // RectTransform rt_sect = (RectTransform) sect.transform; 
+        // rt_sect.anchoredPosition = offset + new Vector2(0, sectionOffsetY) * sections.Count;
+        // AddSection(sect);
+        // RectTransform rtSection0 = (RectTransform)sections[0].GetComponent<Section>().transform;           
+        // var total_height = rtSection0.rect.height;
+
+        //rectangle = (RectTransform)transform;
+        //rectangle.sizeDelta = new Vector2 (180, total_height+HeaderBackgroundHeight+3);
+
+
     }
 
     // ************ END Controller Methods for Compartmented Rectangle ****************//

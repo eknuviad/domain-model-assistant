@@ -179,6 +179,8 @@ MonoBehaviour:
   popupMenuEnum: {fileID: 8564540208968287839, guid: 29b2042eeb4a14b9a83313672666c155,
     type: 3}
   rectangle: {fileID: 0}
+  abstractSign: {fileID: 5633685818171654614, guid: be57e3827332241508d2375b1f920feb,
+    type: 3}
   highlight: {r: 0.61, g: 0.81, b: 0.973, a: 1}
   headerColor: {r: 0, g: 0, b: 0, a: 0}
   sectionColor: {r: 0, g: 0, b: 0, a: 0}
