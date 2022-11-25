@@ -118,8 +118,12 @@ public class EdgeEnd : MonoBehaviour
         arrowHeadIcon.transform.eulerAngles = Vector3.forward * -Angle;
     }
 
-    void Destroy()
+    public void DeleteEdgeEnd()
     {
+        Destroy(arrowHeadIcon);
+        Destroy(compositionIcon);
+        Destroy(generalizationIcon);
+        Destroy(aggregationIcon);
         Destroy(gameObject);
     }
 
@@ -377,7 +381,7 @@ public class EdgeEnd : MonoBehaviour
             }
         }
         if (_node == null){
-            Destroy();
+            DeleteEdgeEnd();
         }
     }
 

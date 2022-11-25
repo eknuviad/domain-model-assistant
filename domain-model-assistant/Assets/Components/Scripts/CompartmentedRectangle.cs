@@ -223,15 +223,14 @@ public class CompartmentedRectangle : Node
     /// </summary>
     public override void Destroy()
     {
-        if(isEnum){
+        if (isEnum)
+        {
             WebCore.DeleteEnum(gameObject);
             popupMenuEnum.GetComponent<PopupMenuEnum>().Destroy();
         }else{
             WebCore.DeleteClass(gameObject);
             popupMenu.GetComponent<PopupMenu>().Destroy();
-        }
-        
-        
+        }    
     }
 
     // ************ END Controller Methods for Compartmented Rectangle ****************//

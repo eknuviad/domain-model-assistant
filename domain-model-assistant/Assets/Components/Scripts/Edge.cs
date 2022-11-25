@@ -493,8 +493,8 @@ public class Edge : MonoBehaviour
     {
         WebCore.DeleteAssociation(gameObject);
         Destroy(gameObject);
-        Destroy(_edgeEnds[0].gameObject);
-        Destroy(_edgeEnds[1].gameObject);
+        _edgeEnds[0].GetComponent<EdgeEnd>().DeleteEdgeEnd();
+        _edgeEnds[1].GetComponent<EdgeEnd>().DeleteEdgeEnd();
         
         //close the popup menu after clicking Delete
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
