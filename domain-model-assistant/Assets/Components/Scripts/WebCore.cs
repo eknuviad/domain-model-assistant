@@ -70,13 +70,13 @@ public class WebCore
         instance.RenameEnum_(textbox);
     }
 
-    /// <summary>
-    /// Renames the given class.
-    /// </summary>
-    public static void RenameClass(GameObject textbox)
-    {
-        instance.RenameClass_(textbox);
-    }
+    // /// <summary>
+    // /// Renames the given class.
+    // /// </summary>
+    // public static void RenameClass(GameObject textbox)
+    // {
+    //     instance.RenameClass_(textbox);
+    // }
 
 
     /// <summary>
@@ -93,6 +93,14 @@ public class WebCore
     public static void UpdateClassPosition(GameObject header, GameObject node)
     {
         instance.UpdateClassPosition_(header, node);
+    }
+
+    /// <summary>
+    /// Updates the class position.
+    /// </summary>
+    public static void RenameClass(GameObject node)
+    {
+        instance.RenameClass_(node);
     }
 
     /// <summary>
@@ -137,14 +145,26 @@ public class WebCore
         instance.AddAssociation_(node1, node2);
     }
 
-    public static void UpdateRelationshipMultiplicities(GameObject textbox)
+    public static void DeleteAssociation(GameObject edge)
     {
-        instance.UpdateRelationshipMultiplicities_(textbox);
+        instance.DeleteAssociation_(edge);
     }
 
-    public static void UpdateRelationshipRoleNames()
+    
+
+    public static void SetMultiplicity(GameObject textbox)
     {
-        instance.UpdateRelationshipRoleNames_();
+        instance.SetMultiplicity_(textbox);
+    }
+
+    public static void SetRoleName(GameObject textbox)
+    {
+        instance.SetRoleName_(textbox);
+    }
+
+    public static void SetReferenceType(GameObject edgeEnd, string type)
+    {
+        instance.SetReferenceType_(edgeEnd, type);
     }
 
     public static void UpdateRelationshipType()
@@ -180,13 +200,27 @@ public class WebCore
         _diagram.RefreshCdm();
     }
 
+    // private void RenameClass_(GameObject node)
+    // {
+    //     string _id = node.GetComponent<CompartmentedRectangle>().ID;
+    //     var header = node.GetComponent<CompartmentedRectangle>().GetHeader();
+    //     string newName = header.GetComponent<InputField>().text;
+    //     // JSON body. Create new serializable JSON object.
+    //     var newNameInfo = new RenameClassDTO(newName);
+    //     string jsonData = JsonUtility.ToJson(newNameInfo);
+    //     // send new name via PUT request
+    //     WebRequest.PutRequest(RenameClassEndpoint(_id), jsonData, Student.Token);
+    //     _diagram.reGetRequest = true;
+    //     _diagram.RefreshCdm();
+    // }
+
     private void UpdateClassPosition_(GameObject header, GameObject node)
     {
         string _id = node.GetComponent<CompartmentedRectangle>().ID;
         string clsName = header.GetComponent<InputField>().text;
         Vector2 newPosition = node.GetComponent<CompartmentedRectangle>().GetPosition();
         // JSON body. Create new serializable JSON object.
-        var positionInfo = new Position(newPosition.x, newPosition.y);
+        var positionInfo = new PositionDTO(newPosition.x, newPosition.y);
         string jsonData = JsonUtility.ToJson(positionInfo);
         // send updated position via PUT request
         WebRequest.PutRequest(UpdateClassPositionEndpoint(_id), jsonData, Student.Token);
@@ -234,7 +268,7 @@ public class WebCore
                 break;
             }
         }
-        var info = new AddAttributeBody(rankIndex, typeId, name);
+        var info = new AddAttributeBodyDTO(rankIndex, typeId, name);
         string jsonData = JsonUtility.ToJson(info);
         Debug.Log(jsonData);
         // @param body {"rankIndex": Integer, "typeId": Integer, "attributeName": String}
@@ -268,7 +302,17 @@ public class WebCore
         _diagram.RefreshCdm();
     }
 
-    private void UpdateRelationshipMultiplicities_(GameObject textBox)
+    private void DeleteAssociation_(GameObject edge)
+    {
+        Debug.Log("WebCore.DeleteAssociation() called");
+        string _id = edge.GetComponent<Edge>().ID;
+        WebRequest.DeleteRequest(DeleteAssociationEndpoint(_id), Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+        // No need to remove or destroy the node here since entire class diagram is recreated
+    }
+
+    private void SetMultiplicity_(GameObject textBox)
     {
         var multiplicityTextBox = textBox.GetComponent<MultiplicityTextBox>();
         string id = multiplicityTextBox.GetNumberOwner().GetComponent<EdgeEnd>().ID;
@@ -278,23 +322,23 @@ public class WebCore
         int uBound = multiplicityTextBox.UpperBound;
         int lBound = multiplicityTextBox.LowerBound;
 
-        WebRequest.PutRequest(AddRelationshipMultiplicitiesEndpoint("1"), 
+        WebRequest.PutRequest(SetMultiplicityEndpoint(id), 
             new { lowerBound = lBound, upperBound = uBound}, Student.Token);
         _diagram.reGetRequest = true;
         _diagram.RefreshCdm();
     }
 
-    private void UpdateRelationshipRoleNames_()
+    private void SetRoleName_(GameObject textBox)
     {
-        // var roleNameTextBox = textBox.GetComponent<RoleNameTextBox>();
-        // string id = multiplicityTextBox.EdgeEnd.GetComponent<EdgeEnd>().ID;
+        var roleNameTextBox = textBox.GetComponent<RoleNameTextBox>();
+        string id = roleNameTextBox.GetTitleOwner().GetComponent<EdgeEnd>().ID;
         
-        // Debug.Log($"WebCore.UpdateRelationshipRoleNames_({id}, called");
+        Debug.Log($"WebCore.UpdateRelationshipRoleNames_({id}, called");
 
-        // WebRequest.PutRequest(AddRelationshipMultiplicitiesEndpoint("1"), 
-        //     new { lowerBound = lBound, upperBound = uBound}, Student.Token);
-        // _diagram.reGetRequest = true;
-        // _diagram.RefreshCdm();
+        WebRequest.PutRequest(SetRolenameEndpoint(id), 
+            new { roleName = roleNameTextBox.GetComponent<InputField>().text}, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
     }
 
     private void UpdateRelationshipType_()
@@ -434,6 +478,18 @@ public class WebCore
         // No need to remove or destroy the node here since entire class diagram is recreated
     }
 
+    private void SetReferenceType_(GameObject edgeEnd, string type)
+    {
+        string id = edgeEnd.GetComponent<EdgeEnd>().ID;
+        
+        Debug.Log($"WebCore.SetReferenceType({id}, called");
+
+        WebRequest.PutRequest(SetReferenceTypeEndpoint(id), 
+            new { referenceType = type}, Student.Token);
+        _diagram.reGetRequest = true;
+        _diagram.RefreshCdm();
+    }
+
     // additional helper methods
 
     /// <summary>
@@ -454,6 +510,14 @@ public class WebCore
     public string AddClassEndpoint()
     {
         return $"{CdmEndpoint()}/class";
+    }
+
+    /// <summary>
+    /// Returns the rename class endpoint URL for the given class _id.
+    /// </summary>
+    public string RenameClassEndpoint(string classId)
+    {
+        return $"{CdmEndpoint()}/class/{classId}/rename";
     }
 
     /// <summary>
@@ -500,9 +564,28 @@ public class WebCore
         return $"{CdmEndpoint()}/association";
     }
 
-    public string AddRelationshipMultiplicitiesEndpoint(string associationEndId)
+       /// <summary>
+    /// Returns the delete assocition endpoint URL for the given attribute _id.
+    /// </summary>
+    public string DeleteAssociationEndpoint(string associationId)
+    {
+        return $"{CdmEndpoint()}/association/{associationId}";
+    }
+
+
+    public string SetMultiplicityEndpoint(string associationEndId)
     {
         return $"{CdmEndpoint()}/association/end/{associationEndId}/multiplicity";
+    }
+
+    public string SetRolenameEndpoint(string associationEndId)
+    {
+        return $"{CdmEndpoint()}/association/end/{associationEndId}/rolename";
+    }
+
+    public string SetReferenceTypeEndpoint(string associationEndId)
+    {
+        return $"{CdmEndpoint()}/association/end/{associationEndId}/referencetype";
     }
 
     public string GetFeedbackEndpoint()
@@ -535,19 +618,13 @@ public class WebCore
     }
 
     /// <summary>
-    /// Returns the rename class endpoint URL for the given class _id.
-    /// </summary>
-    public string RenameClassEndpoint(string classId)
-    {
-        return $"{CdmEndpoint()}/class/{classId}/rename";
-    }
-
-    /// <summary>
     /// Returns the add literal endpoint URL.
     /// </summary>
     public string AddLiteralEndpoint(string enumId)
     {
         return $"{CdmEndpoint()}/enum/{enumId}/literal";
     }
+
+    
 
 }

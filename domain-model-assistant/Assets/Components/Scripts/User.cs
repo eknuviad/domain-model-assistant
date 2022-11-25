@@ -11,7 +11,7 @@ using UnityEngine.Networking;
 /// </summary>
 public class User
 {
-
+    
     public const string UserRegisterEndpoint = Constants.WebcoreEndpoint + "/user/public/register";
     public const string UserLoginEndpoint = Constants.WebcoreEndpoint + "/user/public/login";
     public const string UserLogoutEndpoint = Constants.WebcoreEndpoint + "/user/logout";
@@ -23,6 +23,7 @@ public class User
     private string _password;
     
     public string Token { get; set; }
+    public static Dictionary<string, User> Users = new();
 
     private readonly bool _isWebGl = Application.platform == RuntimePlatform.WebGLPlayer;
 
@@ -43,6 +44,7 @@ public class User
         _password = password;
         Token = GetToken();
         LoggedIn = false;
+        Users[name] = this;
     }
 
     /// <summary>
@@ -150,6 +152,12 @@ public class Student : User
     public static new Student CreateRandom()
     {
         var (username, password) = GetRandomCreds();
+        Student student = new(username, password);
+        WebCore.Student = student;
+        return student;
+    }
+    public static new Student CreateNewStudent(string username, string password)
+    {
         Student student = new(username, password);
         WebCore.Student = student;
         return student;

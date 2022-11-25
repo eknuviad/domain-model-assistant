@@ -83,8 +83,9 @@ public class CompartmentedRectangle : Node
         //CreateHeader();
         //CreateSection();
 
-        if (isAbstract)
+        if (isAbstract && isAbstract)
         {
+            
             Debug.Log("Called abstract from CompRect");
             ToAbstractForm();
         }
@@ -123,14 +124,11 @@ public class CompartmentedRectangle : Node
         headerBackground.anchoredPosition = new Vector2(0, -17);
         headerBackground.sizeDelta = new Vector2 (0, HeaderBackgroundHeight);
 
-<<<<<<< HEAD
-=======
         
         //transform.childCount
         Debug.Log("transform.childCount:"+transform.childCount);
         Debug.Log("headerIndex:"+headerIndex);
         headerIndex = 1;
->>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
         //headerColor = transform.GetChild(headerIndex).GetComponent<Image>().color;
         //sectionColor = transform.GetChild(sectionIndex).GetComponent<Image>().color;
 
@@ -154,6 +152,7 @@ public class CompartmentedRectangle : Node
     public void CreateHeader()
     {
         var header = GameObject.Instantiate(textbox, transform);
+        header.GetComponent<ClassHeaderTextBox>().SetHeaderOwner(gameObject);
         if (ClassName != null) 
         {
             header.GetComponent<ClassHeaderTextBox>().gameObject.GetComponent<InputField>().text = ClassName;
@@ -221,7 +220,7 @@ public class CompartmentedRectangle : Node
         if (popupMenuEnum.GetComponent<PopupMenuEnum>().GetCompartmentedRectangle() == null)
         {
             popupMenuEnum = Instantiate(popupMenuEnum);
-            popupMenuEnum.transform.position = transform.position + new Vector3(popupMenuOffsetX, 0, 0);
+            popupMenuEnum.transform.position = transform.position + new Vector3(popupMenuOffsetX, 0, 10);
             popupMenuEnum.GetComponent<PopupMenuEnum>().SetCompartmentedRectangle(this);
             popupMenuEnum.GetComponent<PopupMenuEnum>().Open();
         }
@@ -288,7 +287,7 @@ public class CompartmentedRectangle : Node
         //sign.transform.position = transform.position + new Vector3(abstractSignOffsetX, abstractSignOffsetY, 0);
         RectTransform rt_sign = (RectTransform) sign.transform; 
         rt_sign.anchoredPosition =  new Vector3(abstractSignOffsetX, abstractSignOffsetY, 0);
-        sign.GetComponent<InputField>().text = "<<Abstraction>>";
+        sign.GetComponent<InputField>().text = "<<Abstract>>";
 
         // //var header = GetHeader();//.GetComponent<ClassHeaderTextBox>();
         // //header.GetComponent<ClassHeaderTextBox>().isEnum = true;
@@ -353,12 +352,13 @@ public class CompartmentedRectangle : Node
         var rectHeight = rectangle.rect.height;
 
         List<Vector2> locations = new();
-        var origin = GetPosition() + new Vector2(-rectWidth/2, -rectHeight/2);
-        var increment = rectWidth / (NumOfConnectionPoints / 4);
+        var origin = GetPosition() + new Vector2(-rectWidth/2f, -rectHeight/2f);
+        var hor_increment = (float)rectWidth / (NumOfConnectionPoints / 4);
+        var var_increment = (float)rectHeight / (NumOfConnectionPoints / 4);
         // int count = 0;
-        for (float x = 0; x <= rectWidth; x += increment)
+        for (float x = 0; x <= rectWidth; x += hor_increment)
         {
-            for (float y = rectHeight; y >= 0; y -= increment)
+            for (float y = rectHeight; y >= 0; y -= var_increment)
             {
                 if (y > 0 && y < rectHeight && x > 0 && x < rectWidth)
                 {

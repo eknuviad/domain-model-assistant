@@ -1,14 +1,12 @@
-<<<<<<< HEAD
-﻿using System;
+﻿
+using System;
 using System.Text;
-=======
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Reflection.Emit;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System;
->>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -59,15 +57,20 @@ public class Diagram : MonoBehaviour
 
     readonly Dictionary<string, List<Attribute>> classIdToAttributes = new();
 
-    readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEnds = new();
+    public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEndsDTO = new();
 
+    public Dictionary< string, List<string>> associationIdToEndsList = new();
 
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
 
 
     readonly Dictionary<string, string> attrTypeIdsToTypes = new();
 
+    public Dictionary<string, string> classIdToClassNames = new();
+
     List<string> createdAttributeIds = new();
+
+    // public Dictionary<List<string>, string>
 
     enum CanvasMode
     {
@@ -185,23 +188,57 @@ public class Diagram : MonoBehaviour
         LoadJson(jsonFile.text);
     }
 
+    public void InitializeDiagram(string cdmJson)
+    {
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJson);
+
+        //store attributes of class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        //store association ends of a class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEndsDTO[cls._id] = cls.associationEnds);        
+
+        CreateClassesFromDTO(cdmDto);
+
+        if (cdmDto.classDiagram.associations != null)
+        {
+            //TODO
+            cdmDto.classDiagram.associations.ForEach(association => associationIdToEndsList[association._id] = association.ends);    
+        }
+
+        _updateNeeded = false;
+
+        Debug.Log("Diagram initialized");
+    }
+
     /// <summary>
     /// Loads and displays the class diagram encoded by the input JSON string.
     /// </summary>
     public void LoadJson(string cdmJson)
     {
-        ResetDiagram();
-        //Debug.Log(cdmJson);
+        Debug.Log("cdmJson: " + cdmJson);
         var cdmJsonDirty = new StringBuilder(cdmJson);
         cdmJsonDirty.Replace("abstract", "isAbstract");
         var cdmJsonClean = cdmJsonDirty.ToString();
-        var cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJsonClean);
+        ClassDiagramDTO cdmDto = JsonUtility.FromJson<ClassDiagramDTO>(cdmJsonClean);
 
         //store attributes of class in a dictionary
-        cdmDto.classDiagram.classes.ForEach(cls => 
-        {classIdToAttributes[cls._id] = cls.attributes;
-        //Debug.Log("class type: " + cls.GetType());
-    });
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAttributes[cls._id] = cls.attributes);
+        //store association ends of a class in a dictionary
+        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEndsDTO[cls._id] = cls.associationEnds);
+
+        ClearClasses();
+        CreateClassesFromDTO(cdmDto);
+        if (cdmDto.classDiagram.associations != null)
+        {
+            //TODO
+            cdmDto.classDiagram.associations.ForEach(association => associationIdToEndsList[association._id] = association.ends);    
+        }
+
+        _updateNeeded = false;
+    }
+
+    private void CreateClassesFromDTO(ClassDiagramDTO cdmDto)
+    {
         var idsToEnumsAndLayouts = new Dictionary<string, List<object>>();
         //store attribute types. Map type id to eclass tye
         cdmDto.classDiagram.types.ForEach(type =>
@@ -224,12 +261,10 @@ public class Diagram : MonoBehaviour
             }
         });
 
-        cdmDto.classDiagram.classes.ForEach(cls => classIdToAssociationEnds[cls._id] = cls.associationEnds);
         // maps each _id to its (class object, position) pair 
-        var idsToClassesAndLayouts = new Dictionary<string, List<object>>();
-        
+        var idsToClassesAndLayouts = new Dictionary<string, List<object>>();   
+
         cdmDto.classDiagram.classes.ForEach(cls => idsToClassesAndLayouts[cls._id] = new List<object> { cls, null });
-        Debug.Log("cdmJson: " + cdmJson);
         // Debug.Log("classDiagram: " + classDiagram);
         // Debug.Log("classDiagram.layout: " + classDiagram.layout);
         // Debug.Log("JsonUtility.ToJson(classDiagram.layout): " + JsonUtility.ToJson(classDiagram.layout));
@@ -262,11 +297,14 @@ public class Diagram : MonoBehaviour
             //Debug.Log("class type: " + type.GetType());
             var cls = (Class)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
+
+            string className;
+            if (!classIdToClassNames.TryGetValue(_id, out className)) 
+            {
+                className = cls.name;
+            }
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
-<<<<<<< HEAD
-                _id, cls.name, cls.isAbstract, new Vector2(layoutElement.x, layoutElement.y));
-=======
-                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 2);
+                _id, cls.name, cls.isAbstract, new Vector2(layoutElement.x, layoutElement.y), 2);
         }
         foreach (var keyValuePair in idsToEnumsAndLayouts)
         {
@@ -275,11 +313,10 @@ public class Diagram : MonoBehaviour
             var cls = (CDType)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
             _namesToRects[cls.name] = CreateCompartmentedRectangle(
-                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 1);
->>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
+                _id, cls.name, "None", new Vector2(layoutElement.x, layoutElement.y), 1);
         }
+
         _namesUpToDate = false;
-        _updateNeeded = false;
     }
 
     public void AddAttributesToSection(GameObject section)
@@ -306,6 +343,17 @@ public class Diagram : MonoBehaviour
         }
     }
 
+    public void SetAssociationID(GameObject edge){
+        var end1 = edge.GetComponent<Edge>().GetEdgeEnd(0).GetComponent<EdgeEnd>().ID;
+        var end2 = edge.GetComponent<Edge>().GetEdgeEnd(1).GetComponent<EdgeEnd>().ID;
+        foreach (var keyValuePair in associationIdToEndsList)
+        {
+            if(keyValuePair.Value.Contains(end1)&&keyValuePair.Value.Contains(end2)){
+                edge.GetComponent<Edge>().ID = keyValuePair.Key;
+            }
+        }
+    }
+
     /// <summary>
     /// Updates the names of the classes (otherwise, they all have the name of the most recently added class).
     /// </summary>
@@ -322,9 +370,9 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Resets the frontend diagram representation. Does NOT reset the representation in the WebCore backend.
     /// </summary>
-    public void ResetDiagram()
+    public void ClearClasses()
     {
-        Debug.Log("Reset Diagram called");
+        Debug.Log("Clear Classes called");
         foreach (var node in _nodes)
         {
             Debug.Log("Reset Diagram: Node" + node.GetComponent<CompartmentedRectangle>().ID);
@@ -364,28 +412,22 @@ public class Diagram : MonoBehaviour
     /// <summary>
     /// Creates a compartmented rectangle with the given name and position.
     /// </summary>
-<<<<<<< HEAD
-    public GameObject CreateCompartmentedRectangle(string _id, string name, string isAbstract, Vector2 position)
-=======
-    public GameObject CreateCompartmentedRectangle(string _id, string name, Vector2 position, int sectionCount)
->>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
+    public GameObject CreateCompartmentedRectangle(string _id, string name, string isAbstract, Vector2 position, int sectionCount)
     {
         Debug.Log("CreateCompartmentedRectangle");
         var compRect = Instantiate(compartmentedRectangle, transform);
         compRect.transform.position = position;
         compRect.GetComponent<CompartmentedRectangle>().ID = _id;
         compRect.GetComponent<CompartmentedRectangle>().ClassName = name;
-<<<<<<< HEAD
-        if(isAbstract != null) 
+
+        if(isAbstract != null && isAbstract.CompareTo("None")!=0) 
         {
             Debug.Log("class id: " + _id + " is abstract");
             compRect.GetComponent<CompartmentedRectangle>().isAbstract = true;
         }
-=======
+
         compRect.GetComponent<CompartmentedRectangle>().setSectionCount(sectionCount);
         
-        
->>>>>>> 770b2622cecb6ecbfe23b8e1804c8b1c8d34da42
         if (!AddNode(compRect))
         {
             Debug.Log("Fail to add node");
@@ -442,6 +484,13 @@ public class Diagram : MonoBehaviour
         if (student != null)
         {
             var result = WebRequest.GetRequest(WebCore.CdmEndpoint(), student.Token);
+            if (string.Equals(_currCdmStr, ""))
+            {
+                // initialize diagram
+                InitializeDiagram(result);
+                _currCdmStr = result;
+                return true;                
+            }
             if (result != _currCdmStr)
             {
                 LoadJson(result);
@@ -556,6 +605,29 @@ public class Diagram : MonoBehaviour
         }
     }
 
+    public void LogIn(Student student)
+    {
+        Debug.Log("Debug button clicked!");
+
+        Debug.Log("student.Login(): " + student.Login());
+        Debug.Log("student.LoggedIn: " + student.LoggedIn);
+        if (!student.LoggedIn)
+        {
+            infoBox.Warn("Login failed! See console for exact error. (Hint: Double check that WebCORE is running.)");
+            return;
+        }
+        var cdmCreated = WebCore.CreateCdm(cdmName);
+        Debug.Log("WebCore.CreateCdm(): " + cdmCreated);
+        if (cdmCreated)
+        {
+            infoBox.Info("Class diagram created! You can now add class diagram elements with the diagram editor.");
+        }
+        else
+        {
+            infoBox.Warn("Class diagram creation failed! See console for exact error.");
+        }
+    }
+
     public Dictionary<string, string> GetAttrTypeIdsToTypes()
     {
         return attrTypeIdsToTypes;
@@ -636,7 +708,7 @@ public class Diagram : MonoBehaviour
     /// </summary>
     public bool AddNode(GameObject aNode)
     {
-        Debug.Log("Add Node called");
+        // Debug.Log("Add Node called");
         bool wasAdded = false;
         if (_nodes.Contains(aNode))
         {
@@ -646,7 +718,7 @@ public class Diagram : MonoBehaviour
         GameObject existingDiagram = node.GetDiagram();
         if (existingDiagram == null)
         {
-            Debug.Log("Diagram null");
+            // Debug.Log("Diagram null");
             node.SetDiagram(gameObject);
         }
         else if (!gameObject.Equals(existingDiagram))
@@ -657,7 +729,7 @@ public class Diagram : MonoBehaviour
         else
         {
             _nodes.Add(aNode);
-            Debug.Log("Node added to list");
+            // Debug.Log("Node added to list");
             aNode.GetComponent<CompartmentedRectangle>().SetDiagram(gameObject);
         }
         wasAdded = true;

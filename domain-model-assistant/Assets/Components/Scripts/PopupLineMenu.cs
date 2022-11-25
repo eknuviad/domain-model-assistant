@@ -12,6 +12,7 @@ public class PopupLineMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameObject.transform.SetAsFirstSibling(); // makes the popupMenu render first
         // Debug.Log("finding canvas");
         // gameObject.transform.SetParent(GameObject.Find("Canvas").transform);
     }

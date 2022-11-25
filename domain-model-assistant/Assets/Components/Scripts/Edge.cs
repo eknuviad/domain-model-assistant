@@ -22,18 +22,17 @@ public class Edge : MonoBehaviour
     public GameObject popupLineMenu;
     float holdTimer = 0;
     bool hold = false;
-
-    public GameObject diagram;
     private GameObject _diagram;
     public Vector3 mousePos;
     public Vector3 linePosition1;
     public Vector3 linePosition2;
     public Vector3 popupLineMenuOffset;
     private int[] prevConnectionPointIndices = new int[] { -1, -1 }; // used to keep track of connection point changes for updating availabilities  
+    
+    
     void Awake()
     {
-        //_diagram = diagram.GetComponent<Diagram>();
-        //Debug.Log(_diagram);
+        _diagram = GameObject.Find("Canvas");
     }
 
     void Start()
@@ -52,19 +51,30 @@ public class Edge : MonoBehaviour
             if (edgeEnd1.GetNode() == null)
             {
                 edgeEnd1.RetrieveNode();
-                if (edgeEnd1 == null)
-                {
-                    DeleteEdge();
-                }
+                // if (edgeEnd1 == null)
+                // {
+                //     DeleteEdge();
+                //     return;
+                // }
             }
 
             if (edgeEnd2.GetNode() == null)
             {
                 edgeEnd2.RetrieveNode();
-                if (edgeEnd2 == null)
-                {
-                    DeleteEdge();
-                }
+                // if (edgeEnd2 == null)
+                // {
+                //     DeleteEdge();
+                //     return;
+                // }
+            }
+
+            if (edgeEnd1.GetNode() == null || edgeEnd2.GetNode() == null)
+            {
+                // no call to WebCore as the backend edge is already deleted for referential integrity
+                Destroy(gameObject);
+                Destroy(_edgeEnds[0].gameObject);
+                Destroy(_edgeEnds[1].gameObject);
+                return;
             }
 
             var node1 = edgeEnd1.GetNode().GetComponent<Node>();
@@ -108,6 +118,12 @@ public class Edge : MonoBehaviour
             edgeEnd2.isLeft = edgeEnd1_loc.x > edgeEnd2_loc.x;
             edgeEnd1.isUpper = edgeEnd1_loc.y > edgeEnd2_loc.y;
             edgeEnd2.isUpper = edgeEnd1_loc.y < edgeEnd2_loc.y;
+            //Debug.Log("association id is"+ID);
+            if(string.Equals(ID,"-1")){
+                _diagram.GetComponent<Diagram>().SetAssociationID(gameObject);
+                Debug.Log("set association id to "+ID);
+
+            }
         }
     }
 
@@ -191,6 +207,7 @@ public class Edge : MonoBehaviour
             // CreateEdgeEndLeftObject(nodes[1]);
             // CreateEdgeEndRightObject(nodes[0]);
         }
+        ID = "-1";
     }
 
     public Vector3 GetPosition1()
@@ -284,6 +301,7 @@ public class Edge : MonoBehaviour
     {
         EdgeEnd edgeEnd = _edgeEnds[GetClosestEdgeEndIndex()].GetComponent<EdgeEnd>();
         edgeEnd.SetIconType(0);
+        WebCore.SetReferenceType(edgeEnd.gameObject, "Regular");
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
 
@@ -331,6 +349,7 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(2);
+        WebCore.SetReferenceType(edgeEnd.gameObject, "Aggregation");
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
 
@@ -353,6 +372,7 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(3);
+        WebCore.SetReferenceType(edgeEnd.gameObject, "Composition");
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
 
@@ -380,11 +400,14 @@ public class Edge : MonoBehaviour
 
     public void DeleteEdge()
     {
+        WebCore.DeleteAssociation(gameObject);
         Destroy(gameObject);
         Destroy(_edgeEnds[0].gameObject);
         Destroy(_edgeEnds[1].gameObject);
+        
         //close the popup menu after clicking Delete
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
+        Debug.Log("Edge deleted");
     }
 
     public GameObject GetPopUpLineMenu()
@@ -545,13 +568,21 @@ public class Edge : MonoBehaviour
     {
         var edgeEnd1_dist = Vector3.Distance(mousePos, _edgeEnds[0].transform.position);
         var edgeEnd2_dist = Vector3.Distance(mousePos, _edgeEnds[1].transform.position);
+        if (_edgeEnds[0].transform == _edgeEnds[1].transform)
+        {
+            Debug.Log("edge ends transfrom are the same!!!!!");
+        }
+        Debug.Log("edgeEnd1_dist: " + edgeEnd1_dist);
+        Debug.Log("edgeEnd2_dist: " + edgeEnd2_dist);
 
         if (edgeEnd1_dist < edgeEnd2_dist)
         {
+            Debug.Log("GetClosestEdgeEndIndex: 0");
             return 0;
         }
         else
         {
+            Debug.Log("GetClosestEdgeEndIndex: 1");
             return 1;
         }
     }
