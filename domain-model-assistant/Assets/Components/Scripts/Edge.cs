@@ -51,21 +51,11 @@ public class Edge : MonoBehaviour
             if (edgeEnd1.GetNode() == null)
             {
                 edgeEnd1.RetrieveNode();
-                // if (edgeEnd1 == null)
-                // {
-                //     DeleteEdge();
-                //     return;
-                // }
             }
 
             if (edgeEnd2.GetNode() == null)
             {
                 edgeEnd2.RetrieveNode();
-                // if (edgeEnd2 == null)
-                // {
-                //     DeleteEdge();
-                //     return;
-                // }
             }
 
             if (edgeEnd1.GetNode() == null || edgeEnd2.GetNode() == null)
@@ -82,8 +72,26 @@ public class Edge : MonoBehaviour
             var node1_locs = node1.GetConnectionPointsLocations();
             var node2_locs = node2.GetConnectionPointsLocations();
 
+            if (node1.isGeneralizationCntPointTaken)
+            {
+                node1.ReserveGeneralizationPt();
+            }
+            if (node2.isGeneralizationCntPointTaken)
+            {
+                node2.ReserveGeneralizationPt();
+            }
+
             int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(),
                 node2.GetConnectionPointsAvailabilities());
+
+            if (edgeEnd1.isGeneralization)
+            {
+                indices[0] = 4;
+            }
+            if (edgeEnd2.isGeneralization)
+            {
+                indices[1] = 4;
+            }
 
             // release previous connection points
             node1.SetConnectionPointAvailable(prevConnectionPointIndices[0], true);
@@ -94,6 +102,16 @@ public class Edge : MonoBehaviour
             var edgeEnd2_loc = node2_locs[indices[1]];
             edgeEnd1.Position = edgeEnd1_loc;
             edgeEnd2.Position = edgeEnd2_loc;
+
+            // if(edgeEnd1.isGeneralization)
+            // {
+            //     edgeEnd1.Position = node1.generalizationPointLoc;
+            // }
+
+            // if(edgeEnd2.isGeneralization)
+            // {
+            //     edgeEnd1.Position = node2.generalizationPointLoc;
+            // }
 
             // set the connection points as taken
             node1.SetConnectionPointAvailable(indices[0], false);
@@ -122,7 +140,6 @@ public class Edge : MonoBehaviour
             if(string.Equals(ID,"-1")){
                 _diagram.GetComponent<Diagram>().SetAssociationID(gameObject);
                 Debug.Log("set association id to "+ID);
-
             }
         }
     }
@@ -163,8 +180,26 @@ public class Edge : MonoBehaviour
             Debug.Log("Critical: Need more connection points.");
         }
 
+        if (node1.isGeneralizationCntPointTaken)
+        {
+            node1.ReserveGeneralizationPt();
+        }
+        if (node2.isGeneralizationCntPointTaken)
+        {
+            node2.ReserveGeneralizationPt();
+        }
+
         int[] indices = GetIndicesOfMinDist(node1_locs, node2_locs, node1.GetConnectionPointsAvailabilities(),
             node2.GetConnectionPointsAvailabilities());
+
+        if (edgeEnd1.isGeneralization)
+        {
+            indices[0] = 4;
+        }
+        if (edgeEnd2.isGeneralization)
+        {
+            indices[1] = 4;
+        }
 
         // set the optimal connection points
         var edgeEnd1_loc = node1_locs[indices[0]];
@@ -299,9 +334,23 @@ public class Edge : MonoBehaviour
 
     public void SetAssociation()
     {
-        EdgeEnd edgeEnd = _edgeEnds[GetClosestEdgeEndIndex()].GetComponent<EdgeEnd>();
-        edgeEnd.SetIconType(0);
-        WebCore.SetReferenceType(edgeEnd.gameObject, "Regular");
+        EdgeEnd edgeEnd_1 = _edgeEnds[0].GetComponent<EdgeEnd>();
+        EdgeEnd edgeEnd_2 = _edgeEnds[1].GetComponent<EdgeEnd>();
+        edgeEnd_1.SetIconType(0);
+        edgeEnd_2.SetIconType(0);
+
+        edgeEnd_1.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+        edgeEnd_2.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+
+        edgeEnd_1.isGeneralization = false;
+        edgeEnd_2.isGeneralization = false;
+        edgeEnd_1.GetEdgeEndTitle().SetActive(true);
+        edgeEnd_1.GetEdgeEndNumber().SetActive(true);
+        edgeEnd_2.GetEdgeEndTitle().SetActive(true);
+        edgeEnd_2.GetEdgeEndNumber().SetActive(true);
+
+        WebCore.SetReferenceType(edgeEnd_1.gameObject, "Regular");
+        WebCore.SetReferenceType(edgeEnd_2.gameObject, "Regular");
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
 
@@ -324,6 +373,16 @@ public class Edge : MonoBehaviour
             otherEdgeEnd.SetIconType(0);
         }
         edgeEnd.SetIconType(1);
+
+        edgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+        otherEdgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+
+        edgeEnd.isGeneralization = false;
+        otherEdgeEnd.isGeneralization = false;
+        edgeEnd.GetEdgeEndTitle().SetActive(true);
+        edgeEnd.GetEdgeEndNumber().SetActive(true);
+        otherEdgeEnd.GetEdgeEndTitle().SetActive(true);
+        otherEdgeEnd.GetEdgeEndNumber().SetActive(true);
 
         float angle = Vector3.Angle(otherEdgeEnd.transform.position - edgeEnd.transform.position, new Vector3(0, 1, 0));
         edgeEnd.Angle = angle;
@@ -348,6 +407,17 @@ public class Edge : MonoBehaviour
         {
             otherEdgeEnd.SetIconType(0);
         }
+
+        edgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+        otherEdgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+
+        edgeEnd.isGeneralization = false;
+        otherEdgeEnd.isGeneralization = false;
+        edgeEnd.GetEdgeEndTitle().SetActive(true);
+        edgeEnd.GetEdgeEndNumber().SetActive(true);
+        otherEdgeEnd.GetEdgeEndTitle().SetActive(true);
+        otherEdgeEnd.GetEdgeEndNumber().SetActive(true);
+
         edgeEnd.SetIconType(2);
         WebCore.SetReferenceType(edgeEnd.gameObject, "Aggregation");
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
@@ -371,6 +441,17 @@ public class Edge : MonoBehaviour
         {
             otherEdgeEnd.SetIconType(0);
         }
+
+        edgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+        otherEdgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+
+        edgeEnd.isGeneralization = false;
+        otherEdgeEnd.isGeneralization = false;
+        edgeEnd.GetEdgeEndTitle().SetActive(true);
+        edgeEnd.GetEdgeEndNumber().SetActive(true);
+        otherEdgeEnd.GetEdgeEndTitle().SetActive(true);
+        otherEdgeEnd.GetEdgeEndNumber().SetActive(true);
+
         edgeEnd.SetIconType(3);
         WebCore.SetReferenceType(edgeEnd.gameObject, "Composition");
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
@@ -394,6 +475,16 @@ public class Edge : MonoBehaviour
         {
             otherEdgeEnd.SetIconType(0);
         }
+        edgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = true;
+        otherEdgeEnd.GetNode().GetComponent<CompartmentedRectangle>().isGeneralizationCntPointTaken = false;
+
+        edgeEnd.isGeneralization = true;
+
+        edgeEnd.GetEdgeEndTitle().SetActive(false);
+        edgeEnd.GetEdgeEndNumber().SetActive(false);
+        otherEdgeEnd.GetEdgeEndTitle().SetActive(false);
+        otherEdgeEnd.GetEdgeEndNumber().SetActive(false);
+
         edgeEnd.SetIconType(4);
         popupLineMenu.GetComponent<PopupLineMenu>().Close();
     }
@@ -568,10 +659,6 @@ public class Edge : MonoBehaviour
     {
         var edgeEnd1_dist = Vector3.Distance(mousePos, _edgeEnds[0].transform.position);
         var edgeEnd2_dist = Vector3.Distance(mousePos, _edgeEnds[1].transform.position);
-        if (_edgeEnds[0].transform == _edgeEnds[1].transform)
-        {
-            Debug.Log("edge ends transfrom are the same!!!!!");
-        }
         Debug.Log("edgeEnd1_dist: " + edgeEnd1_dist);
         Debug.Log("edgeEnd2_dist: " + edgeEnd2_dist);
 
