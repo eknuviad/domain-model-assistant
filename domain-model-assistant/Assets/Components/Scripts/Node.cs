@@ -23,6 +23,9 @@ public abstract class Node: MonoBehaviour
     public string ID
     { get; set; }
 
+    public Vector2 generalizationPointLoc;
+    public bool isGeneralizationCntPointTaken = false;
+
     public GameObject GetDiagram()
     {
         return canvas;
@@ -135,6 +138,8 @@ public abstract class Node: MonoBehaviour
         }
         return count;
     }
+
+    public abstract void ReserveGeneralizationPt();
 
     public bool AddEdgeEnd(GameObject aEdgeEnd)
     {

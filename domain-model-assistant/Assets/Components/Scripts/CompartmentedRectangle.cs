@@ -279,21 +279,26 @@ public class CompartmentedRectangle : Node
         List<Vector2> locations = new();
         var origin = GetPosition() + new Vector2(-rectWidth/2f, -rectHeight/2f);
         var hor_increment = (float)rectWidth / (NumOfConnectionPoints / 4);
-        var var_increment = (float)rectHeight / (NumOfConnectionPoints / 4);
-        // int count = 0;
+        var ver_increment = (float)rectHeight / (NumOfConnectionPoints / 4);
+        int index = 0;
         for (float x = 0; x <= rectWidth; x += hor_increment)
         {
-            for (float y = rectHeight; y >= 0; y -= var_increment)
+            for (float y = rectHeight; y >= 0; y -= ver_increment)
             {
                 if (y > 0 && y < rectHeight && x > 0 && x < rectWidth)
                 {
                     continue;
                 } 
                 locations.Add(origin + new Vector2(x,y));
-                // count++;
+                index++;
             }
         }
         return locations;
+    }
+
+    public override void ReserveGeneralizationPt()
+    {
+        connectionPointsAvailable[NumOfConnectionPoints/2] = false;
     }
 
     public GameObject GetPopUpMenu()

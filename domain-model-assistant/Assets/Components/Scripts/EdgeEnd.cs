@@ -33,6 +33,7 @@ public class EdgeEnd : MonoBehaviour
     public GameObject generalizationIcon;
     public GameObject arrowHeadIcon;
     public bool hasActiveIcon = false;
+    public bool isGeneralization = false;
     // public GameObject popupMenu;
     public float Angle {get; set;}
 

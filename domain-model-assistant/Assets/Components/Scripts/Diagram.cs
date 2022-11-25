@@ -57,7 +57,7 @@ public class Diagram : MonoBehaviour
 
     public readonly Dictionary<string, List<AssociationEnd>> classIdToAssociationEndsDTO = new();
 
-    public Dictionary< string, List<string>> associationIdToEndsList = new();
+    public Dictionary<string, List<string>> associationIdToEndsList = new();
 
     readonly Dictionary<string, List<Literal>> classIdToLiterals = new();
 
@@ -298,7 +298,7 @@ public class Diagram : MonoBehaviour
             {
                 className = cls.name;
             }
-            _namesToRects[cls.name] = CreateCompartmentedRectangle(
+            _namesToRects[className] = CreateCompartmentedRectangle(
                 _id, className, new Vector2(layoutElement.x, layoutElement.y), 2);
         }
         foreach (var keyValuePair in idsToEnumsAndLayouts)
@@ -307,8 +307,14 @@ public class Diagram : MonoBehaviour
             var clsAndContval = keyValuePair.Value;
             var cls = (CDType)clsAndContval[0];
             var layoutElement = ((ElementMap)clsAndContval[1]).value;
-            _namesToRects[cls.name] = CreateCompartmentedRectangle(
-                _id, cls.name, new Vector2(layoutElement.x, layoutElement.y), 1);
+
+            string className;
+            if (!classIdToClassNames.TryGetValue(_id, out className)) 
+            {
+                className = cls.name;
+            }
+            _namesToRects[className] = CreateCompartmentedRectangle(
+                _id, className, new Vector2(layoutElement.x, layoutElement.y), 1);
         }
 
         _namesUpToDate = false;
